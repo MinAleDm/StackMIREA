@@ -1,0 +1,73 @@
+.docs-prose {
+  @apply prose prose-slate max-w-none dark:prose-invert;
+  --tw-prose-body: hsl(var(--foreground));
+  --tw-prose-headings: hsl(var(--foreground));
+  --tw-prose-links: hsl(var(--primary));
+  --tw-prose-bold: hsl(var(--foreground));
+  --tw-prose-counters: hsl(var(--muted-foreground));
+  --tw-prose-bullets: hsl(var(--muted-foreground));
+  --tw-prose-hr: hsl(var(--border));
+  --tw-prose-quotes: hsl(var(--foreground));
+  --tw-prose-quote-borders: hsl(var(--border));
+  --tw-prose-captions: hsl(var(--muted-foreground));
+}
+
+.docs-prose :where(h1, h2, h3, h4) {
+  @apply font-semibold tracking-tight;
+}
+
+.docs-prose :where(h2, h3) {
+  scroll-margin-top: 6.5rem;
+}
+
+.docs-prose h2 {
+  @apply mt-12 border-b border-border/60 pb-2;
+}
+
+.docs-prose p {
+  @apply leading-7 text-foreground;
+}
+
+.docs-prose a {
+  @apply no-underline transition-opacity hover:opacity-80;
+}
+
+.docs-prose code {
+  @apply rounded bg-muted px-1.5 py-0.5 text-[0.9em] font-medium;
+}
+
+.docs-prose pre {
+  @apply m-0 bg-transparent p-0;
+}
+
+.docs-prose pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.docs-prose blockquote {
+  @apply border-l-2 border-border pl-4 italic text-muted-foreground;
+}
+
+.docs-prose img {
+  @apply rounded-lg border border-border/70;
+}
+
+.shiki {
+  margin: 0;
+  overflow-x: auto;
+  border-radius: 0;
+  border: none;
+  background: transparent !important;
+}
+
+.shiki code {
+  display: grid;
+  min-width: max-content;
+}
+
+.shiki .line {
+  display: inline-block;
+  min-height: 1.5rem;
+  padding-right: 1rem;
+}

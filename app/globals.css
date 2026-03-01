@@ -1,0 +1,65 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "../styles/docs.css";
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222 84% 5%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 84% 5%;
+  --primary: 217 91% 55%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 40% 97%;
+  --muted-foreground: 215 16% 45%;
+  --accent: 217 91% 55%;
+  --accent-foreground: 210 40% 98%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 217 91% 55%;
+}
+
+.dark {
+  --background: 222 47% 11%;
+  --foreground: 214 32% 91%;
+  --card: 222 47% 13%;
+  --card-foreground: 214 32% 91%;
+  --primary: 217 91% 55%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 221 39% 18%;
+  --secondary-foreground: 214 32% 91%;
+  --muted: 221 39% 18%;
+  --muted-foreground: 215 20% 70%;
+  --accent: 217 91% 55%;
+  --accent-foreground: 210 40% 98%;
+  --border: 217 33% 18%;
+  --input: 217 33% 18%;
+  --ring: 217 91% 55%;
+}
+
+* {
+  @apply border-border;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+  min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+.site-background {
+  background:
+    radial-gradient(1100px 640px at 88% -12%, rgb(37 99 235 / 0.16), transparent 58%),
+    radial-gradient(900px 520px at -8% 18%, rgb(14 165 233 / 0.1), transparent 56%),
+    hsl(var(--background));
+}

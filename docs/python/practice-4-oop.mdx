@@ -1,0 +1,52 @@
+---
+title: Практика 4 — OOP
+sidebar_position: 2
+description: Инкапсуляция, объекты и методы в Python.
+slug: /python/practice-4-oop
+---
+
+## Теория
+
+Объектно-ориентированное программирование позволяет описывать предметную область через классы и объекты. Базовые принципы: инкапсуляция, композиция и переиспользование поведения через методы.
+
+## Код
+
+```python title="practice_4_oop.py"
+class Student:
+    def __init__(self, name: str, score: float) -> None:
+        self.name = name
+        self.score = score
+
+    def passed(self) -> bool:
+        return self.score >= 60
+
+
+students = [
+    Student("Anna", 78),
+    Student("Nikita", 54),
+]
+
+for student in students:
+    status = "passed" if student.passed() else "failed"
+    print(f"{student.name}: {status}")
+```
+
+## Разбор
+
+Класс `Student` инкапсулирует состояние и поведение. Логика проверки результата (`passed`) находится внутри объекта, поэтому основной цикл остаётся чистым и понятным.
+
+Исходник практики: `pr_Python/pr_Python/pract4.ipynb`.
+
+## Важные моменты
+
+:::tip
+Держите доменную логику внутри класса, а не в процедурном коде вокруг него.
+:::
+
+:::warning
+Не перегружайте класс лишней ответственностью. Один класс должен решать одну задачу.
+:::
+
+## Вывод
+
+Практика закрепляет базовый ООП-подход и формирует привычку проектировать код вокруг объектов.

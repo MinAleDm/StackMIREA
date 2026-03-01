@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Practice Make Perfect">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="22" fill="#020617" stroke="url(#g1)" stroke-width="6"/>
+  <path d="M36 83V45h18c13 0 21 7 21 19s-8 19-21 19H36zm14-11h3c5 0 8-3 8-8s-3-8-8-8h-3v16z" fill="#e2e8f0"/>
+  <path d="M84 83V45h10l14 20V45h10v38h-10L94 63v20H84z" fill="#67e8f9"/>
+</svg>

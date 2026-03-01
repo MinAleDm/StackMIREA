@@ -1,0 +1,47 @@
+{
+  "name": "practice-make-perfect",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Static-first documentation platform for Practice-Make-Perfect.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "export": "node -e \"console.log('Static export is produced by next build when output=\\'export\\'')\"",
+    "start": "npx serve out -p 3000",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "content:sync": "node scripts/sync-content.mjs",
+    "prebuild": "npm run content:sync"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "github-slugger": "^2.0.0",
+    "gray-matter": "^4.0.3",
+    "lucide-react": "^0.468.0",
+    "next": "^14.2.26",
+    "next-mdx-remote": "^5.0.0",
+    "next-themes": "^0.4.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "rehype-slug": "^6.0.0",
+    "remark-gfm": "^4.0.1",
+    "shiki": "^1.24.4",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/node": "^22.13.9",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.26",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

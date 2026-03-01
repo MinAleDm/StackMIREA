@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Java icon">
+  <rect width="256" height="256" rx="44" fill="#111827"/>
+  <path d="M128 45c13 15-13 25-13 37 0 8 7 13 7 13s-16-5-16-19c0-16 21-21 22-31Z" fill="#f97316"/>
+  <path d="M88 162c0 12 20 22 45 22s45-10 45-22c0-7-7-13-17-17 5 4 8 8 8 13 0 10-16 18-36 18s-36-8-36-18c0-5 4-10 11-14-12 4-20 11-20 18Z" fill="#60a5fa"/>
+  <path d="M82 118h92c8 0 15 7 15 15v5c0 33-25 60-56 60h-4c-31 0-56-27-56-60v-5c0-8 7-15 15-15Z" fill="#e2e8f0"/>
+  <path d="M96 134h64" stroke="#1e293b" stroke-width="8" stroke-linecap="round"/>
+</svg>
