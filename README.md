@@ -1,10 +1,8 @@
-# StackMIREA
-
 [![Deploy to GitHub Pages](https://github.com/MinAleDm/StackMIREA/actions/workflows/deploy-gh-pages.yml/badge.svg)](https://github.com/MinAleDm/StackMIREA/actions/workflows/deploy-gh-pages.yml)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
-[![License: MIT](https://img.shields.io/github/license/MinAleDm/StackMIREA)](https://github.com/MinAleDm/StackMIREA/blob/main/LICENSE)
 
-## About
+# StackMIREA
+
 StackMIREA — это интерактивная образовательная платформа и цифровая методичка для студентов IT-направления МИРЭА. Проект собирает практические задания, готовые решения, теорию и разборы задач в единой, удобной для изучения структуре.
 
 ## Features
