@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 
+import type { GitHubPerson } from "@/lib/authors";
+import { getDefaultDocAuthor, toGitHubPerson } from "@/lib/authors";
 import { toTitleCase } from "@/lib/utils";
 
 export interface DocFrontmatter {
@@ -9,6 +11,7 @@ export interface DocFrontmatter {
   description?: string;
   order?: number;
   sidebar_position?: number;
+  author?: string;
 }
 
 export interface DocEntry {
@@ -21,6 +24,7 @@ export interface DocEntry {
   sourcePath: string;
   section: string;
   body: string;
+  author: GitHubPerson;
   isSectionIndex: boolean;
 }
 
@@ -135,6 +139,8 @@ function createDocEntry(filePath: string): DocEntry {
   const safeOrder = Number.isFinite(parsedOrder) ? parsedOrder : isSectionIndex ? 0 : 9999;
   const title = parsed.data.title?.toString().trim() || toTitleCase(slug.at(-1) ?? section);
   const description = parsed.data.description?.toString().trim() || "";
+  const rawAuthor = parsed.data.author?.toString().trim();
+  const author = rawAuthor ? toGitHubPerson(rawAuthor) : getDefaultDocAuthor();
 
   return {
     slug,
@@ -146,6 +152,7 @@ function createDocEntry(filePath: string): DocEntry {
     sourcePath: relativePath,
     section,
     body: parsed.content,
+    author,
     isSectionIndex
   };
 }

@@ -9,7 +9,7 @@
     "export": "node -e \"console.log('Static export is produced by next build when output=\\'export\\'')\"",
     "start": "npx serve out -p 3000",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit --incremental false",
     "content:sync": "node scripts/sync-content.mjs",
     "prebuild": "npm run content:sync"
   },

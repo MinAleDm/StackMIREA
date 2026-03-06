@@ -17,6 +17,11 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`
   },
   description: SITE_DESCRIPTION,
+  icons: {
+    icon: "favicon.png",
+    shortcut: "favicon.png",
+    apple: "favicon.png"
+  },
   keywords: ["Next.js docs", "documentation platform", "python", "ai", "bigdata", "java", "algorithms", "mdx", "shiki"],
   openGraph: {
     type: "website",
@@ -43,7 +48,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ru" suppressHydrationWarning>
       <body className="site-background font-sans antialiased">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" forcedTheme="light" disableTransitionOnChange>
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">{children}</main>

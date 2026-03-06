@@ -7,6 +7,7 @@ import { MobileDocsMenu } from "@/components/layout/MobileDocsMenu";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Toc } from "@/components/layout/Toc";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { GitHubUserBadge } from "@/components/ui/GitHubUserBadge";
 import { Pagination } from "@/components/ui/Pagination";
 import { compileDocMdx } from "@/lib/mdx";
 import { getAllDocs, getDocBySlug, getDocPagination, getSidebarGroups } from "@/lib/navigation";
@@ -65,6 +66,9 @@ export default async function DocPage({ params }: DocPageProps) {
           <header className="mb-10 border-b border-border/70 pb-7">
             <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">{doc.title}</h1>
             {doc.description ? <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">{doc.description}</p> : null}
+            <div className="mt-5">
+              <GitHubUserBadge person={doc.author} description="Автор публикации" />
+            </div>
             <Link
               href={editUrl}
               target="_blank"
