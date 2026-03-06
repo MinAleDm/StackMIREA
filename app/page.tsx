@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Bot, Brain, Code2, Sigma } from "lucide-react";
+import { ArrowRight, Bot, Brain, Code2, Database, Sigma } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 export const dynamic = "force-static";
 
 const tracks = [
+  // Keep cards in the same order as sidebar section ordering for predictable navigation.
   {
     title: "Python",
     subtitle: "Практики по OOP, тестированию и функциональному стилю",
@@ -18,6 +19,12 @@ const tracks = [
     subtitle: "Ноутбуки Notebook1..Notebook8 по курсу ИИ",
     href: "/docs/ai",
     icon: Bot
+  },
+  {
+    title: "BigData",
+    subtitle: "Практики по анализу данных, классификации и кластеризации",
+    href: "/docs/bigdata",
+    icon: Database
   },
   {
     title: "Java",
@@ -59,8 +66,8 @@ export default function HomePage() {
             className="mt-6 max-w-3xl text-pretty text-base leading-7 text-muted-foreground opacity-0 sm:text-lg"
             style={{ animation: "fade-up 720ms ease-out forwards", animationDelay: "220ms" }}
           >
-            Учебные материалы StackMIREA: отдельные треки Python, AI, Java и Algorithms. Каждая страница оформлена как
-            техническая документация с кодом, разбором и привязкой к исходникам.
+            Учебные материалы StackMIREA: отдельные треки Python, AI, BigData, Java и Algorithms. Каждая страница
+            оформлена как техническая документация с кодом, разбором и привязкой к исходникам.
           </p>
 
           <div
@@ -81,7 +88,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {tracks.map((track, index) => {
           const Icon = track.icon;
           return (

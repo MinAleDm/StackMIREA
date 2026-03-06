@@ -17,7 +17,7 @@ export default function DocsIndexPage() {
         <header className="mb-10">
           <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">Documentation</h1>
           <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-            Structured tracks for Python, AI, Java and algorithms with scalable static architecture.
+            Structured tracks for Python, AI, BigData, Java and algorithms with scalable static architecture.
           </p>
         </header>
 
@@ -26,7 +26,8 @@ export default function DocsIndexPage() {
             <section key={group.id} className="rounded-xl border border-border/80 bg-card/70 p-5">
               <h2 className="mb-4 text-lg font-medium">{group.title}</h2>
               <ul className="space-y-2">
-                {group.items.slice(0, 7).map((item) => (
+                {/* Show the full list of works per section instead of a shortened preview. */}
+                {group.items.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}

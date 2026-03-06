@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`
   },
   description: SITE_DESCRIPTION,
-  keywords: ["Next.js docs", "documentation platform", "python", "java", "algorithms", "mdx", "shiki"],
+  keywords: ["Next.js docs", "documentation platform", "python", "ai", "bigdata", "java", "algorithms", "mdx", "shiki"],
   openGraph: {
     type: "website",
     title: `${SITE_NAME} Docs`,

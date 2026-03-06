@@ -18,6 +18,11 @@ const SECTION_INDEX = {
     file: "index.mdx",
     body: `---\ntitle: AI\ndescription: Рабочие тетради по искусственному интеллекту из Pr_Ai в формате MDX.\norder: 1\n---\n\n## Что внутри\n\n- Ноутбуки Notebook1..Notebook8\n- Теория, код и выводы из исходных тетрадей\n- Материалы по NumPy, pandas, ML, нейросетям и кластеризации\n`
   },
+  // BigData is kept in SECTION_INDEX so content:sync always restores section landing page.
+  bigdata: {
+    file: "index.mdx",
+    body: `---\ntitle: BigData\ndescription: Практики по анализу больших данных, ML, классификации и кластеризации.\norder: 1\n---\n\n## О разделе\n\nВ этом разделе собраны практические работы по дисциплине BigData в формате MDX.\n\n## Работы\n\n- [Практика 1. Введение в BigData](./practice-01-introduction)\n- [Практика 2. Аналитика данных](./practice-02-data-analysis)\n- [Практика 3. Регрессия и наборы данных](./practice-03-regression-and-datasets)\n- [Практика 4. Анализ данных страхования](./practice-04-insurance-analysis)\n- [Практика 5. Классификация](./practice-05-classification)\n- [Практика 6. Кластеризация](./practice-06-clustering)\n- [Практика 7. Ансамблевое обучение](./practice-07-ensemble-learning)\n- [Практика 8. Итоговая работа](./practice-08-final-report)\n\n## Ресурсы\n\nФайлы с датасетами перенесены в папку:\n\n- [resources/bigdata (GitHub)](https://github.com/MinAleDm/StackMIREA/tree/main/resources/bigdata)\n`
+  },
   algorithms: {
     file: "index.mdx",
     body: `---\ntitle: Algorithms\ndescription: Вводные и вспомогательные материалы StackMIREA Docs.\norder: 1\n---\n\n## Что внутри\n\n- Введение и навигация по проекту\n- MDX-структура и правила оформления\n- Связь с Python и Java треками\n`

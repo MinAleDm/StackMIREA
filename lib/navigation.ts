@@ -43,10 +43,12 @@ interface DocsIndex {
 
 const CONTENT_ROOT = path.join(process.cwd(), "content");
 const SECTION_ORDER: Record<string, number> = {
+  // Keep explicit section order so new tracks appear consistently in sidebar/docs index.
   python: 1,
   ai: 2,
-  java: 3,
-  algorithms: 4
+  bigdata: 3,
+  java: 4,
+  algorithms: 5
 };
 
 let cachedDocsIndex: DocsIndex | null = null;

@@ -7,7 +7,7 @@ StackMIREA — это интерактивная образовательная 
 
 ## Features
 - Документация в формате MDX с поддержкой кода и callout-блоков.
-- Отдельные треки: `python`, `ai`, `java`, `algorithms`.
+- Отдельные треки: `python`, `ai`, `bigdata`, `java`, `algorithms`.
 - Автогенерация sidebar и навигации по структуре файлов.
 - Подсветка кода (Shiki) + кнопка копирования.
 - Статическая сборка и деплой на GitHub Pages.
@@ -43,6 +43,7 @@ app/
 components/
 content/
   ai/
+  bigdata/
   python/
   java/
   algorithms/

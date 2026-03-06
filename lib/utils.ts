@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 
 export const SITE_NAME = "StackMIREA";
 export const SITE_DESCRIPTION =
-  "Production-grade documentation platform for Python, Java and algorithms practices.";
+  "Production-grade documentation platform for Python, AI, BigData, Java and algorithms practices.";
 export const REPO_OWNER = "MinAleDm";
 export const REPO_NAME = "StackMIREA";
 export const DEFAULT_BRANCH = "main";
