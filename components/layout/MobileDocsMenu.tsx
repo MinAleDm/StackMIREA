@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpenText, ChevronDown, ChevronRight, Tag } from "lucide-react";
+import { BookOpenText, ChevronDown, ChevronRight, ExternalLink, Tag } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { DeploymentVersion } from "@/components/layout/DeploymentVersion";
 import { type SidebarGroup } from "@/lib/navigation";
-import { cn } from "@/lib/utils";
+import { cn, DEPLOYMENTS_URL } from "@/lib/utils";
 
 interface MobileDocsMenuProps {
   groups: SidebarGroup[];
@@ -75,16 +76,21 @@ export function MobileDocsMenu({ groups, currentPath }: MobileDocsMenuProps) {
               <ChevronDown className="size-4 text-muted-foreground" />
             </div>
 
-            <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2 rounded-md border border-border/80 bg-card/80 p-2">
+            <Link
+              href={DEPLOYMENTS_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="grid grid-cols-[auto_1fr_auto] items-center gap-2 rounded-md border border-border/80 bg-card/80 p-2 transition-colors hover:bg-muted/70"
+            >
               <div className="flex h-8 w-8 items-center justify-center rounded-md border border-primary/50 bg-primary/10 text-primary">
                 <Tag className="size-4" />
               </div>
               <div className="min-w-0 text-left">
-                <p className="text-sm font-medium">Latest Version</p>
-                <p className="text-xs text-muted-foreground">Static export ready</p>
+                <p className="text-sm font-medium">Deployment version</p>
+                <DeploymentVersion />
               </div>
-              <ChevronDown className="size-4 text-muted-foreground" />
-            </div>
+              <ExternalLink className="size-4 text-muted-foreground" />
+            </Link>
           </div>
 
           <div className="relative mt-3 overflow-hidden">

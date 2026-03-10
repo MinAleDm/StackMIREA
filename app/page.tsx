@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Bot, Brain, Code2, Database, ExternalLink, GitPullRequest, ListChecks, Sigma } from "lucide-react";
+import { ArrowRight, Bot, Brain, Code2, Database, ExternalLink, GitPullRequest, ListChecks, Sigma, Users } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -204,10 +204,11 @@ export default function HomePage() {
               <ArrowRight className="size-4" />
             </Link>
             <Link
-              href="/docs/python"
+              href="/authors"
               className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full border-border/80 bg-background/70 sm:w-auto")}
             >
-              Python трек
+              <Users className="size-4" />
+              Авторы
             </Link>
           </div>
         </div>

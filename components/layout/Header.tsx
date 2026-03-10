@@ -12,30 +12,33 @@ export function Header() {
         <div className="flex min-w-0 items-center gap-4">
           <Link href="/" className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold tracking-tight text-foreground">
             <Image src={siteLogo} alt={`${SITE_NAME} logo`} width={20} height={20} className="rounded-sm" priority />
-            <span className="truncate">{SITE_NAME}</span>
+            <span className="hidden truncate sm:inline">{SITE_NAME}</span>
           </Link>
 
-          <nav className="hidden items-center gap-2 md:flex">
+          <nav className="flex items-center gap-1">
             <Link
               href="/"
-              className="inline-flex h-9 items-center gap-1.5 rounded-md px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
+              aria-label="Home"
+              className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <Home className="size-4" />
-              Home
+              <span>Home</span>
             </Link>
             <Link
               href="/docs"
-              className="inline-flex h-9 items-center gap-1.5 rounded-md px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
+              aria-label="Docs"
+              className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <BookOpenText className="size-4" />
-              Docs
+              <span>Docs</span>
             </Link>
             <Link
               href="/authors"
-              className="inline-flex h-9 items-center gap-1.5 rounded-md px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
+              aria-label="Authors"
+              className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <Users className="size-4" />
-              Authors
+              <span>Authors</span>
             </Link>
           </nav>
         </div>
