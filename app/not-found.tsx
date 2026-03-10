@@ -6,11 +6,17 @@ export default function NotFoundPage() {
       <p className="mb-3 text-sm uppercase tracking-[0.12em] text-muted-foreground">404</p>
       <h1 className="mb-4 text-3xl font-semibold tracking-tight">Page not found</h1>
       <p className="mb-8 text-muted-foreground">Запрошенная страница не найдена или была перемещена.</p>
-      <div className="flex gap-3">
-        <Link href="/" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+      <div className="flex w-full flex-wrap items-center justify-center gap-3 sm:w-auto">
+        <Link
+          href="/"
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground sm:min-w-[130px]"
+        >
           На главную
         </Link>
-        <Link href="/docs" className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground">
+        <Link
+          href="/docs"
+          className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground sm:min-w-[130px]"
+        >
           Открыть docs
         </Link>
       </div>

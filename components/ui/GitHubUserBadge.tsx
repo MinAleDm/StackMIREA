@@ -16,7 +16,7 @@ export function GitHubUserBadge({ person, description, className }: GitHubUserBa
       target="_blank"
       rel="noreferrer"
       className={cn(
-        "inline-flex items-center gap-3 rounded-xl border border-border/80 bg-card/60 px-3 py-2 transition-colors hover:border-primary/40",
+        "inline-flex max-w-full items-center gap-3 overflow-hidden rounded-xl border border-border/80 bg-card/60 px-3 py-2 transition-colors hover:border-primary/40",
         className
       )}
     >
@@ -30,7 +30,7 @@ export function GitHubUserBadge({ person, description, className }: GitHubUserBa
       />
       <span className="min-w-0">
         <span className="block truncate text-sm font-medium leading-tight text-foreground">@{person.github}</span>
-        {description ? <span className="block text-xs text-muted-foreground">{description}</span> : null}
+        {description ? <span className="block truncate text-xs text-muted-foreground">{description}</span> : null}
       </span>
     </Link>
   );

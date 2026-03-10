@@ -57,7 +57,7 @@ export default async function DocPage({ params }: DocPageProps) {
     <>
       <MobileDocsMenu groups={sidebarGroups} currentPath={doc.href} />
 
-      <div className="mx-auto grid w-full max-w-[1440px] gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)_220px] lg:px-8">
+      <div className="mx-auto grid w-full max-w-[1440px] gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:px-8 xl:grid-cols-[280px_minmax(0,1fr)_220px]">
         <Sidebar groups={sidebarGroups} currentPath={doc.href} />
 
         <article className="min-w-0 pb-16">

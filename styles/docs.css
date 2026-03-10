@@ -26,6 +26,7 @@
 
 .docs-prose p {
   @apply leading-7 text-foreground;
+  overflow-wrap: anywhere;
 }
 
 .docs-prose a {
@@ -47,6 +48,19 @@
 
 .docs-prose blockquote {
   @apply border-l-2 border-border pl-4 italic text-muted-foreground;
+  overflow-wrap: anywhere;
+}
+
+.docs-prose li {
+  overflow-wrap: anywhere;
+}
+
+.docs-prose table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
 }
 
 .docs-prose img {

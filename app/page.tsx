@@ -213,22 +213,22 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
+      <section className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {tracks.map((track, index) => {
           const Icon = track.icon;
           return (
             <Link
               key={track.title}
               href={track.href}
-              className="group rounded-2xl border border-border/70 bg-card/70 p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card"
+              className="group flex h-full flex-col rounded-2xl border border-border/70 bg-card/70 p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card sm:p-5"
               style={{ animation: "fade-up 660ms ease-out forwards", animationDelay: `${120 + index * 100}ms` }}
             >
               <div className="mb-4 inline-flex rounded-lg border border-border/70 bg-background/70 p-2 text-muted-foreground transition-colors group-hover:text-primary">
                 <Icon className="size-5" />
               </div>
-              <h2 className="text-lg font-semibold tracking-tight">{track.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{track.subtitle}</p>
-              <span className="mt-5 inline-flex items-center gap-1.5 text-sm text-primary">
+              <h2 className="text-base font-semibold leading-snug tracking-tight break-words">{track.title}</h2>
+              <p className="mt-2 break-words text-sm leading-6 text-muted-foreground">{track.subtitle}</p>
+              <span className="mt-auto pt-5 inline-flex items-center gap-1.5 text-sm text-primary">
                 Перейти
                 <ArrowRight className="size-3.5" />
               </span>

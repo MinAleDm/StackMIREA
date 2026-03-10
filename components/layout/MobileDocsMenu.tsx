@@ -69,8 +69,8 @@ export function MobileDocsMenu({ groups, currentPath }: MobileDocsMenuProps) {
                 <BookOpenText className="size-4" />
               </div>
               <div className="min-w-0 text-left">
-                <p className="truncate text-sm font-medium">{activeGroup?.title ?? "Documentation"}</p>
-                <p className="truncate text-xs text-muted-foreground">Current section</p>
+                <p className="break-words text-sm font-medium leading-5">{activeGroup?.title ?? "Documentation"}</p>
+                <p className="text-xs text-muted-foreground">Current section</p>
               </div>
               <ChevronDown className="size-4 text-muted-foreground" />
             </div>
@@ -80,8 +80,8 @@ export function MobileDocsMenu({ groups, currentPath }: MobileDocsMenuProps) {
                 <Tag className="size-4" />
               </div>
               <div className="min-w-0 text-left">
-                <p className="truncate text-sm font-medium">Latest Version</p>
-                <p className="truncate text-xs text-muted-foreground">Static export ready</p>
+                <p className="text-sm font-medium">Latest Version</p>
+                <p className="text-xs text-muted-foreground">Static export ready</p>
               </div>
               <ChevronDown className="size-4 text-muted-foreground" />
             </div>
@@ -91,7 +91,7 @@ export function MobileDocsMenu({ groups, currentPath }: MobileDocsMenuProps) {
             <div className="pointer-events-none absolute left-0 top-0 z-10 h-3 w-full bg-gradient-to-b from-background to-transparent" />
             <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-3 w-full bg-gradient-to-t from-background to-transparent" />
 
-            <nav aria-label="Mobile docs navigation" className="h-[calc(100vh-19rem)] overflow-y-auto pb-4 pr-1">
+            <nav aria-label="Mobile docs navigation" className="max-h-[65vh] overflow-y-auto pb-4 pr-1">
               <ul className="space-y-2">
                 {groups.map((group) => {
                   const containsActive = group.items.some(
@@ -111,8 +111,10 @@ export function MobileDocsMenu({ groups, currentPath }: MobileDocsMenuProps) {
                             : "text-foreground hover:bg-muted/70 hover:text-foreground"
                         )}
                       >
-                        <span className="truncate">{group.title}</span>
-                        <ChevronRight className={cn("size-4 transition-transform", expanded ? "rotate-90" : "rotate-0")} />
+                        <span className="min-w-0 break-words pr-2 leading-5">{group.title}</span>
+                        <ChevronRight
+                          className={cn("mt-0.5 size-4 shrink-0 transition-transform", expanded ? "rotate-90" : "rotate-0")}
+                        />
                       </button>
 
                       {expanded ? (
@@ -126,13 +128,13 @@ export function MobileDocsMenu({ groups, currentPath }: MobileDocsMenuProps) {
                                   href={item.href}
                                   onClick={() => setIsOpen(false)}
                                   className={cn(
-                                    "block rounded-md px-2 py-1.5 text-sm transition-colors",
+                                    "block rounded-md px-2 py-1.5 text-sm leading-5 transition-colors",
                                     isActive
                                       ? "bg-primary/12 font-medium text-primary"
                                       : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
                                   )}
                                 >
-                                  {item.title}
+                                  <span className="break-words">{item.title}</span>
                                 </Link>
                               </li>
                             );

@@ -31,10 +31,10 @@ export default function DocsIndexPage() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      className="flex items-start gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      <ArrowRight className="size-3.5" />
-                      {item.title}
+                      <ArrowRight className="mt-1 size-3.5 shrink-0" />
+                      <span className="break-words leading-6">{item.title}</span>
                     </Link>
                   </li>
                 ))}
