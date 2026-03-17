@@ -16,6 +16,7 @@ StackMIREA - образовательная платформа и докумен
 - Автосборка навигации и sidebar по структуре `content/`.
 - TOC, breadcrumbs и пагинация между материалами.
 - Подсветка кода через Shiki и клиентская кнопка копирования.
+- Семантический поиск `Спроси StackMIREA` по build-time индексу из `content/`.
 - Страница авторов с агрегацией публикаций по разделам.
 - Ссылка `Edit on GitHub` на каждой странице.
 - Статическая публикация на GitHub Pages через GitHub Actions.
@@ -71,7 +72,9 @@ Open `http://localhost:3000`.
 - `npm run dev` — локальная разработка
 - `npm run build` — production build (в production режиме экспортирует статический сайт в `out/`)
 - `npm run start` — локальный запуск собранного статического `out/` на `:3000`
+- `npm run prepare:content` — синхронизация `docs/` и сборка поискового индекса
 - `npm run content:sync` — синхронизация `docs/` -> `content/`
+- `npm run search:build` — генерация `public/search-index.json` для страницы `Спроси StackMIREA`
 - `npm run lint` — проверка ESLint
 - `npm run typecheck` — проверка TypeScript
 - `npm run export` — информационный скрипт (экспорт выполняется внутри `npm run build`)

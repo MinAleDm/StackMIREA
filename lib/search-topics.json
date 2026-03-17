@@ -1,0 +1,86 @@
+[
+  {
+    "id": "python",
+    "label": "Python",
+    "description": "Практики по Python, функциональному стилю, тестированию и OOP.",
+    "aliases": ["python", "питон", "pytest", "ast", "regex", "регекс", "комбинатор"]
+  },
+  {
+    "id": "ai",
+    "label": "AI",
+    "description": "Материалы по машинному обучению, метрикам, KNN, регрессии и нейросетям.",
+    "aliases": ["ai", "ml", "machine learning", "машинное обучение", "искусственный интеллект", "нейросеть", "нейронная сеть"]
+  },
+  {
+    "id": "knn",
+    "label": "KNN",
+    "description": "Метод k ближайших соседей, метрики расстояния и классификация.",
+    "aliases": ["knn", "k nearest neighbors", "k-nearest neighbors", "k ближайших соседей", "ближайших соседей", "метод ближайших соседей"]
+  },
+  {
+    "id": "pandas",
+    "label": "pandas",
+    "description": "DataFrame, Series, табличные данные и анализ данных в Python.",
+    "aliases": ["pandas", "dataframe", "series", "датафрейм", "таблица pandas", "табличные данные"]
+  },
+  {
+    "id": "numpy",
+    "label": "NumPy",
+    "description": "Массивы, векторизация и численные вычисления.",
+    "aliases": ["numpy", "np", "массив numpy", "векторизация"]
+  },
+  {
+    "id": "mvc",
+    "label": "MVC",
+    "description": "Паттерн Model-View-Controller и разделение ответственности.",
+    "aliases": ["mvc", "model view controller", "model-view-controller", "модель представление контроллер", "паттерн mvc"]
+  },
+  {
+    "id": "oop",
+    "label": "OOP",
+    "description": "Объектно-ориентированное программирование: классы, наследование, инкапсуляция и полиморфизм.",
+    "aliases": ["oop", "ооп", "объектно ориентированное программирование", "объектно-ориентированное программирование", "инкапсуляция", "наследование", "полиморфизм", "класс", "классы"]
+  },
+  {
+    "id": "java",
+    "label": "Java",
+    "description": "Практики по Java, GUI, коллекциям, исключениям и паттернам.",
+    "aliases": ["java", "джава", "swing", "java gui", "коллекции java"]
+  },
+  {
+    "id": "sql",
+    "label": "SQL",
+    "description": "Запросы, проектирование баз данных и работа со схемами.",
+    "aliases": ["sql", "postgres", "postgresql", "mysql", "база данных", "базы данных", "реляционная бд", "запросы sql"]
+  },
+  {
+    "id": "testing",
+    "label": "Testing",
+    "description": "Тестирование, верификация, unit и integration тесты.",
+    "aliases": ["testing", "test", "tests", "тестирование", "верификация", "unit test", "integration test", "unit", "integration"]
+  },
+  {
+    "id": "algorithms",
+    "label": "Algorithms",
+    "description": "Алгоритмы, структуры данных и анализ сложности.",
+    "aliases": ["algorithm", "algorithms", "алгоритм", "алгоритмы", "структуры данных", "data structures", "сложность", "big o", "big-o"]
+  },
+  {
+    "id": "react",
+    "label": "React",
+    "description": "Компонентная разработка и создание интерфейсов на React.",
+    "aliases": ["react", "jsx", "tsx", "компоненты react", "frontend"]
+  },
+  {
+    "id": "clustering",
+    "label": "Clustering",
+    "description": "Кластеризация, unsupervised learning и related практики.",
+    "aliases": ["clustering", "cluster", "кластеризация", "kmeans", "k-means", "иерархическая кластеризация"]
+  },
+  {
+    "id": "regression",
+    "label": "Regression",
+    "description": "Линейная и множественная регрессия, оценка и интерпретация моделей.",
+    "aliases": ["regression", "регрессия", "linear regression", "линейная регрессия", "множественная регрессия"]
+  }
+]

@@ -24,6 +24,11 @@ export function buildAbsoluteUrl(pathname = "/") {
   return `${SITE_ORIGIN}${BASE_PATH}${normalizedPath}`;
 }
 
+export function withBasePath(pathname = "/") {
+  const normalizedPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  return process.env.NODE_ENV === "production" ? `${BASE_PATH}${normalizedPath}` : normalizedPath;
+}
+
 export function toTitleCase(value: string) {
   return value
     .replace(/[-_]/g, " ")

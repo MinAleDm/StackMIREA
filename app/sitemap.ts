@@ -4,7 +4,7 @@ import { getAllDocs } from "@/lib/navigation";
 import { buildAbsoluteUrl } from "@/lib/utils";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = ["", "/docs", "/authors"];
+  const staticRoutes = ["", "/docs", "/authors", "/ask"];
   const docs = getAllDocs().map((doc) => doc.href);
   const allRoutes = [...staticRoutes, ...docs];
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Bot, Brain, Code2, Database, ExternalLink, GitPullRequest, ListChecks, Sigma, Users } from "lucide-react";
+import { ArrowRight, Bot, Brain, BrainCircuit, Code2, Database, ExternalLink, GitPullRequest, ListChecks, Sigma, Users } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -210,7 +210,35 @@ export default function HomePage() {
               <Users className="size-4" />
               Авторы
             </Link>
+            <Link
+              href="/ask"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full border-border/80 bg-background/70 sm:w-auto")}
+            >
+              <BrainCircuit className="size-4" />
+              Спроси StackMIREA
+            </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="mt-10 rounded-3xl border border-border/70 bg-card/70 p-6 sm:p-8">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-center">
+          <div>
+            <p className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/70 px-3 py-1 text-xs text-muted-foreground">
+              <BrainCircuit className="size-3.5" />
+              Semantic search beta
+            </p>
+            <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">Новая навигация по материалам</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
+              Задай вопрос естественным языком и найди нужные практики по теме, инструменту или сравнению дисциплин.
+              Например: `где есть KNN`, `покажи материалы по pandas`, `сравни MVC и OOP`.
+            </p>
+          </div>
+
+          <Link href="/ask" className={cn(buttonVariants({ size: "lg" }), "w-full rounded-2xl lg:w-auto")}>
+            Открыть Ask StackMIREA
+            <ArrowRight className="size-4" />
+          </Link>
         </div>
       </section>
 

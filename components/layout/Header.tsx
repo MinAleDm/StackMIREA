@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { BookOpenText, Github, Home, Users } from "lucide-react";
+import { BookOpenText, BrainCircuit, Github, Home, Users } from "lucide-react";
 
 import siteLogo from "@/public/favicon.png";
 import { REPO_URL, SITE_NAME } from "@/lib/utils";
@@ -31,6 +31,14 @@ export function Header() {
             >
               <BookOpenText className="size-4" />
               <span>Docs</span>
+            </Link>
+            <Link
+              href="/ask"
+              aria-label="Ask StackMIREA"
+              className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
+            >
+              <BrainCircuit className="size-4" />
+              <span>Ask</span>
             </Link>
             <Link
               href="/authors"
