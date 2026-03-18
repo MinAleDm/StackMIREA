@@ -1,0 +1,214 @@
+---
+title: ДЗ 3 — Заём, файлы и работа со строками
+sidebar_position: 4
+description: Формулы по кредитам, чтение файлов, фильтрация чисел и сортировка символов.
+slug: /procedural-programming/homework-03-files-and-strings
+---
+
+## Что внутри
+
+Третья домашняя работа совмещает два блока тем: расчётные задачи по формулам займа и базовую работу с файлами и строками.
+
+## 3.1 «Заём»
+
+**Условие.** Нужно вычислить ежемесячный платёж `m` по сумме `S`, проценту `p` и сроку `n`.
+
+**Как устроено решение.** Программа проверяет диапазоны входных данных, отдельно рассматривает случай `p = 0`, а в общем случае подставляет значения в формулу аннуитетного платежа.
+
+**Что учесть.** Это хороший пример, где сначала надо проверить корректность параметров, и только потом переходить к вычислению формулы.
+
+```cpp title="resources/procedural-programming/dz 3 zashisheno/3.1 verno.cpp"
+#include <iostream>
+#include <math.h>
+using namespace std;
+
+int main()
+{
+    double S, p, n, r;
+    double m, q, y;
+    cout << "Vvedite S: ";
+    cin >> S;
+    if (S <= pow(10, 9))
+    {
+        cout << "VVedite p: ";
+        cin >> p;
+        if (p >= -1 * pow(10, 4) && p <= pow(10, 4))
+        {
+            cout << "Vvedite n: ";
+            cin >> n;
+            if (n >= 1 && n < pow(10, 2) && n != 0)
+            {
+                if (p == 0)
+                {
+                    m = S / n / 12;
+                    cout << "Mi nashli : " << m << endl;
+                    return 0;
+                }
+                else {
+                    r = p / 100;
+                }
+                q = S * r * pow((1 + r), n);
+                y = 12 * (pow(1 + r, n) - 1);
+                m = q / y;
+                cout << "Mi nashli:  " << m << "   - Mecyachnaya viplata.";
+                return 0;
+
+            }
+            else
+            {
+                cout << "Nevenie dannie, restart";
+                return 0;
+            }
+        }
+        else
+        {
+            cout << "Dannie ne verni, perezapustite";
+            return 0;
+        }
+    }
+    else {
+        cout << "Dannie ne verni, perezapustite";
+        return 0;
+    }
+}
+```
+
+## 3.2 «Ссуда»
+
+**Условие.** По сумме `S`, месячному платежу `m` и сроку `n` нужно определить процент `p`.
+
+**Как устроено решение.** Сохранённый код не выводит процент аналитически, а перебирает его от `-100` до `100` с маленьким шагом и сравнивает расчётный платёж с заданным.
+
+**Что учесть.** Такой способ медленнее формульного, но хорошо показывает идею численного подбора.
+
+```cpp title="resources/procedural-programming/dz 3 zashisheno/3.2 verno.cpp"
+#include <iostream>
+#include <math.h>
+using namespace std;
+
+int main() {
+    setlocale(0, "");
+    float s, n, r, m, p = 0, i = -100000, m1;
+    cout << "Введите сумму займа = ";
+    if (cin >> s) {
+        cout << "Введите сумму ежемесячного платежа = ";
+        if (cin >> m) {
+            cout << "Введите количество лет займа = ";
+            if (cin >> n) {
+                while ((-100 <= p) and (p <= 100)) {
+                    i++;
+                    p = i / 1000;
+                    r = p / 100;
+                    m1 = (s * r * pow(1 + r, n)) / (12 * (pow(1 + r, n) - 1));
+                    if (m1 >= m) {
+                        cout << "Процент займа = " << p << "%" << endl;
+                        break;
+                    }
+                }
+            }
+            else {
+                cout << "Перезапустите приложение и введите числа";
+            }
+        }
+        else {
+            cout << "Перезапустите приложение и введите числа";
+        }
+    }
+    else {
+        cout << "Перезапустите приложение и введите числа";
+    }
+    return 0;
+}
+```
+
+## 3.3 «Копирование файла»
+
+**Условие.** Нужно открыть текстовый файл, проверить его существование и вывести содержимое на экран без потери форматирования.
+
+**Как устроено решение.** В ресурсе сохранён закомментированный черновик. Ниже приведён тот же вариант в читаемом виде: файл открывается через `fstream`, затем посимвольно печатается в консоль.
+
+```cpp title="resources/procedural-programming/dz 3 zashisheno/3.3 main.cpp"
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+int main()
+{
+    fstream fl;
+    fl.open("f.txt");
+    if (fl.is_open())
+    {
+        char c;
+        while (fl.get(c))
+        {
+            cout << c;
+        }
+        fl.close();
+    }
+    else
+    {
+        cout << "ne";
+    }
+}
+```
+
+## 3.4 «Фильтр»
+
+**Условие.** Нужно найти в текстовом файле числа и вывести их на экран.
+
+**Как устроено решение.** В исходнике файл читается посимвольно, а на экран попадают только символы, для которых `isdigit(c)` возвращает истину.
+
+**Что учесть.** Такой вариант извлекает именно цифры, а не полноценные целые числа как отдельные токены. Для базовой задачи на фильтрацию этого достаточно, но на защите стоит понимать разницу.
+
+```cpp title="resources/procedural-programming/dz 3 zashisheno/3.4 main.cpp"
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+int main()
+{
+    fstream fl;
+    fl.open("2.txt");
+    if (fl.is_open())
+    {
+        char c;
+        while (fl.get(c))
+        {
+            if (isdigit(c))
+            {
+                cout << c;
+            }
+        }
+        fl.close();
+    }
+    else
+    {
+        cout << "ne rabotaet";
+    }
+}
+```
+
+## 3.5 «Сортировка букв»
+
+**Условие.** Нужно взять строку из 30 букв и отсортировать её по алфавиту.
+
+**Как устроено решение.** Пользователь вводит строку, после чего вызывается стандартная `sort`, которая упорядочивает символы в диапазоне `begin()` — `end()`.
+
+**Что учесть.** Это короткая, но очень полезная задача на работу со строками и стандартными алгоритмами STL.
+
+```cpp title="resources/procedural-programming/dz 3 zashisheno/3.5 main.cpp"
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int main() {
+    system("CHCP 1251");
+    cout << "Введите: ";
+    string line;
+    cin >> line;
+    sort(line.begin(), line.end());
+    cout << line << endl;
+    return 0;
+}
+```

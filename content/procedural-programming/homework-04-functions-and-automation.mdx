@@ -1,0 +1,563 @@
+---
+title: ДЗ 4 — Функции, файлы, графика и системы счисления
+sidebar_position: 5
+description: Девять задач на подпрограммы, файлы, псевдографику, матрицы и преобразование чисел.
+slug: /procedural-programming/homework-04-functions-and-automation
+---
+
+## Что внутри
+
+Четвёртая домашняя работа самая объёмная: здесь есть файловый ввод-вывод, собственные функции, псевдографика, генератор чисел, матрицы и перевод между системами счисления.
+
+## 4.1 «Файл»
+
+**Условие.** Нужно записать 10 вещественных чисел в файл, затем открыть его снова и посчитать сумму.
+
+**Как устроено решение.** Программа сначала пишет десять введённых чисел в `1.txt`, затем вторым проходом считывает их из файла и накапливает сумму в переменной `sum`.
+
+```cpp title="resources/procedural-programming/дз 4 защищено/4.1 main.cpp"
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+int main()
+{
+    double q, a, sum = 0;
+    int i = 0;
+    ofstream file("1.txt");
+    setlocale(0, "");
+    cout << "Введите 10 чисел:" << endl;
+    while (i < 10)
+    {
+        if (cin >> q) {
+            i++;
+            file << q << endl;
+        }
+        else
+        {
+            cout << "Введите только числа";
+            return 0;
+        }
+    }
+    file.close();
+
+    ifstream fin("1.txt");
+    while (fin >> a)
+    {
+        sum += a;
+    }
+    cout << "Сумма=" << sum;
+    fin.close();
+}
+```
+
+## 4.2 «Знак числа»
+
+**Условие.** Нужно определить знак числа через отдельную подпрограмму-функцию `sign`.
+
+**Как устроено решение.** Функция `ptt` принимает число и печатает `1`, `0` или `-1` в зависимости от его значения.
+
+```cpp title="resources/procedural-programming/дз 4 защищено/4.2 main.cpp"
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+void ptt(double S){
+
+    if (S > 0)
+    {
+        cout << 1;
+    }
+    else if (S == 0)
+    {
+        cout << 0;
+    }
+    else
+    {
+        cout << -1;
+    }
+}
+
+int main()
+{
+    setlocale(0, "");
+    double S;
+    cout << "Введите число: " << endl;
+    if (cin >> S)
+    {
+        ptt(S);
+    }
+    else
+    {
+        cout << "Введите число";
+    }
+}
+```
+
+## 4.3 «Геометрические фигуры»
+
+**Условие.** Нужно вычислять площадь прямоугольника, треугольника или круга через отдельные функции.
+
+**Как устроено решение.** Для каждой фигуры выделена собственная подпрограмма: `prog1`, `prog2` и `prog3`. В `main` пользователь выбирает, какую именно фигуру считать.
+
+```cpp title="resources/procedural-programming/дз 4 защищено/4.3 main.cpp"
+#include <iostream>
+#include <cmath>
+using namespace std;
+void prog1() {
+    double a, b;
+    cout << "Введите сторону a и сторону b";
+    cin >> a;
+    cin >> b;
+    cout << "S=" << a * b;
+}
+void prog2() {
+    double a, h;
+    cout << "Введите сторону a и высоту";
+    cin >> a ;
+    cin >> h;
+    cout << "S=" << 0.5 * a * h;
+}
+void prog3() {
+    double r;
+    cout << "Введите радиус";
+    cin >> r;
+    cout << "S=" << 3.14 * r * r;
+}
+
+int main()
+{
+    setlocale(0, "");
+    string S;
+    cout << "Что ищем? Какую фигуру?" << endl << "prog1 - прямоугольник, prog2 - треугольник, prog3 - круг: " << endl;
+    cin >> S;
+    if (S == "prog1")
+    {
+        prog1();
+    }
+    else if (S == "prog2")
+    {
+        prog2();
+    }
+    else if (S == "prog3")
+    {
+        prog3();
+    }
+}
+```
+
+## 4.4 «Былая слава»
+
+**Условие.** Нужно вывести в консоль флаг в виде псевдографики, обязательно используя цикл или рекурсию.
+
+**Как устроено решение.** Программа печатает первые шесть строк с блоком звёзд и полосами, затем ещё шесть строк только из полос.
+
+```cpp title="resources/procedural-programming/дз 4 защищено/4.4 main.cpp"
+#include <iostream>
+#include <cmath>
+using namespace std;
+int main() {
+    cout << endl;
+    for (int i = 0; i < 6; i++)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            cout << "*";
+        }
+        for (int i = 0; i < 41; i++)
+        {
+            cout << "-";
+        }
+        cout << endl;
+    }
+    for (int i = 0; i < 6; i++)
+    {
+        for (int i = 0; i < 49; i++)
+        {
+            cout << "-";
+        }
+        cout << endl;
+    }
+}
+```
+
+## 4.5 «Синусоида»
+
+**Условие.** Нужно построить в консоли график функции `y = sin(x)`.
+
+**Как устроено решение.** Сначала в массив `sinx` сохраняются значения синуса по точкам, затем двумерный массив `graf` заполняется символами `*` или пробелами, после чего печатается построчно.
+
+```cpp title="resources/procedural-programming/дз 4 защищено/4.5 main ura.cpp"
+#include <iostream>
+#include <cmath>
+using namespace std;
+int main()
+{
+    const int size = 89, height = 23;
+    char graf[height][size];
+    double sinx[size];
+    for (int i = 0; i < size; i++)
+        sinx[i] = 10 * sin(i / 10.0);
+    for (int i = 0; i < height; i++)
+        for (int j = 0; j < size; j++)
+            if (-1 < 10.0 - i - round(sinx[j]) and 10.0 - i - round(sinx[j]) < 1)
+                graf[i][j] = '*';
+            else
+                graf[i][j] = ' ';
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < size; j++)
+            cout << graf[i][j];
+        cout << endl;
+    }
+}
+```
+
+## 4.6 «Автоматный распознаватель»
+
+**Условие.** Нужно перевести число из римской записи в арабскую и отследить некорректный ввод.
+
+**Как устроено решение.** Функция `cf` сопоставляет римские символы их значениям, а основной цикл проходит по строке и складывает или вычитает значения в зависимости от соседних символов.
+
+**Что учесть.** Проверка корректности здесь частичная: реализация демонстрирует общий принцип разбора, но не покрывает все правила записи римских чисел.
+
+```cpp title="resources/procedural-programming/дз 4 защищено/4.6 URA BLYAT.cpp"
+#include <iostream>
+#include <cmath>
+using namespace std;
+int cf(char x)
+{
+    if (x == 'I')
+        return(1);
+    else if (x == 'X')
+        return(10);
+    else if (x == 'V')
+        return(5);
+    else if (x == 'IV')
+        return(4);
+    else if (x == 'L')
+        return(50);
+    else if (x == 'C')
+        return(100);
+    else if (x == 'D')
+        return(500);
+    else if (x == 'M')
+        return(1000);
+    else if (x == '0')
+        return(0);
+    else return(0);
+}
+int main()
+{
+    setlocale(0, "");
+    string ch;
+    int s = 0;
+    int i = 0;
+    char v = 'I';
+    cout << "Введите число:";
+    cin >> ch;
+    if (ch.length() > 2) {
+        if (ch[0] == ch[1] and ch[0] == v and cf(ch[2]) > 1) {
+            cout << "eror";
+            return 0;
+        }
+        for (int i = 0; i < (ch.length() - 3); i++) {
+            if (ch[i] == ch[i + 1] and ch[i] == v and cf(ch[i + 2]) <= 1)
+            {
+                cout << "Eror";
+                return 0;
+            }
+        }
+    }
+
+    for (int i = 0; i < (ch.length()); i++) {
+        if (cf(ch[i]) < cf(ch[i + 1]) and cf(ch[i]) != 0) {
+            s = s + cf(ch[i + 1]) - cf(ch[i]);
+            ch[i + 1] = '0';
+        }
+        else s = s + cf(ch[i]);
+    }
+    cout << s;
+}
+```
+
+## 4.7 «Генератор случайных чисел»
+
+**Условие.** Нужно построить линейный конгруэнтный генератор по рекуррентной формуле.
+
+**Как устроено решение.** Глобальная переменная `s` хранит текущее состояние, функция `f()` пересчитывает его по формуле `(37 * s + 3) % 64`, а затем `main` несколько раз вызывает генератор.
+
+```cpp title="resources/procedural-programming/дз 4 защищено/4.7 pobeda.cpp"
+#include <iostream>
+using namespace std;
+int s = 0;
+int f()
+{
+    s = (37 * s + 3) % 64;
+    return s;
+}
+int main()
+{
+    int n;
+    cin >> n;
+    for (int i = 1; i <= n + 1; ++i) {
+        cout << f() << endl;
+    }
+    return 0;
+}
+```
+
+## 4.8 «Умножение матриц»
+
+**Условие.** Нужно задать матрицы продаж и цен, получить произведение `C = A x B` и ответить на вопросы о выручке и комиссионных.
+
+**Как устроено решение.** Код вручную задаёт две константные матрицы, перемножает их, затем проходит по строкам результата и находит максимумы, минимумы и суммарные значения.
+
+```cpp title="resources/procedural-programming/дз 4 защищено/4.8 dodel.cpp"
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+int main() {
+    double maks = -90, mensh = 9999, maksk = -90, menshk = 990, obsh, obshk, obshd, x1, x2, x3, x4, x5 = 0, x6 = 0;
+    double a[3][4] = { 5,2,0,10,3,5,2,5,20,0,0,0 }, b[4][2] = { 1.20,0.50,2.80,0.40,5,1,2,1.5 }, c[3][2] = {0};
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 4; j++) {
+            c[i][0] += a[i][j] * b[j][0];
+            c[i][1] += a[i][j] * b[j][1];
+        }
+    }
+
+    for (int i = 0; i < 3; i++) {
+        if (maks < c[i][0]) {
+            maks = c[i][0];
+            x1 = i;
+        }
+        if (mensh > c[i][0]) {
+            mensh = c[i][0];
+            x2 = i;
+        }
+        if (maksk < c[i][1]) {
+            maksk = c[i][1];
+            x3 = i;
+        }
+        if (menshk > c[i][1]) {
+            menshk = c[i][1];
+            x4 = i;
+        }
+        x5 += c[i][0];
+        x6 += c[i][1];
+
+        for (int j = 0; j < 2; j++) {
+            cout << c[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << "1) " << x1 + 1 << " " << x2 + 1 << endl;
+    cout << "2) " << x3 + 1 << " " << x4 + 1 << endl;
+    cout << "3) " << x5 << endl;
+    cout << "4) " << x6 << endl;
+    cout << "5) " << x5 + x6 << endl;
+}
+```
+
+## 4.9 «Системы счисления»
+
+**Условие.** Нужно перевести число из одной системы счисления в другую.
+
+**Как устроено решение.** Сначала символы исходной записи переводятся в десятичное значение через функцию `cf`, затем число делится на новое основание, а остатки собираются в ответ.
+
+**Что учесть.** Сама схема перевода правильная: сначала перевод в десятичную систему, потом в целевую. Это главная идея, которую стоит помнить.
+
+```cpp title="resources/procedural-programming/дз 4 защищено/4.9.cpp"
+#include <iostream>
+#include <cmath>
+#include <string>
+using namespace std;
+int cf(char x)
+{
+    if (x == '1')
+        return(1);
+    else if (x == '2')
+        return(2);
+    else if (x == '3')
+        return(3);
+    else if (x == '4')
+        return(4);
+    else if (x == '5')
+        return(5);
+    else if (x == '6')
+        return(6);
+    else if (x == '7')
+        return(7);
+    else if (x == '8')
+        return(8);
+    else if (x == '9')
+        return(9);
+    else if (x == '0')
+        return(0);
+    else if (x == 'A')
+        return(10);
+    else if (x == 'B')
+        return(11);
+    else if (x == 'C')
+        return(12);
+    else if (x == 'D')
+        return(13);
+    else if (x == 'E')
+        return(14);
+    else if (x == 'F')
+        return(15);
+    else if (x == 'G')
+        return(16);
+    else if (x == 'H')
+        return(17);
+    else if (x == 'I')
+        return(18);
+    else if (x == 'J')
+        return(19);
+    else if (x == 'K')
+        return(20);
+    else if (x == 'L')
+        return(21);
+    else if (x == 'M')
+        return(22);
+    else if (x == 'N')
+        return(23);
+    else if (x == 'O')
+        return(24);
+    else if (x == 'P')
+        return(25);
+    else if (x == 'Q')
+        return(26);
+    else if (x == 'R')
+        return(27);
+    else if (x == 'S')
+        return(28);
+    else if (x == 'T')
+        return(29);
+    else if (x == 'U')
+        return(30);
+    else if (x == 'V')
+        return(31);
+    else if (x == 'W')
+        return(32);
+    else if (x == 'X')
+        return(33);
+    else if (x == 'Y')
+        return(34);
+    else if (x == 'Z')
+        return(35);
+    return 0;
+}
+int bk(char x) {
+    if (x == 10)
+        return('A');
+    else if (x == 11)
+        return('B');
+    else if (x == 12)
+        return('C');
+    else if (x == 13)
+        return('D');
+    else if (x == 14)
+        return('E');
+    else if (x == 15)
+        return('F');
+    else if (x == 16)
+        return('G');
+    else if (x == 17)
+        return('H');
+    else if (x == 18)
+        return('I');
+    else if (x == 19)
+        return('J');
+    else if (x == 20)
+        return('K');
+    else if (x == 'L')
+        return(21);
+    else if (x == 'M')
+        return(22);
+    else if (x == 'N')
+        return(23);
+    else if (x == 'O')
+        return(24);
+    else if (x == 'P')
+        return(25);
+    else if (x == 'Q')
+        return(26);
+    else if (x == 'R')
+        return(27);
+    else if (x == 'S')
+        return(28);
+    else if (x == 'T')
+        return(29);
+    else if (x == 'U')
+        return(30);
+    else if (x == 'V')
+        return(31);
+    else if (x == 'W')
+        return(32);
+    else if (x == 'X')
+        return(33);
+    else if (x == 'Y')
+        return(34);
+    else if (x == 'Z')
+        return(35);
+    else return(0);
+}
+int main()
+{
+    setlocale(0, "");
+    string ch, otv = "";
+    string vr;
+    long int s = 0, p = 4000, o, e, n, d = 0, pr;
+    cout << "Введите базу из";
+    cin >> e;
+    cout << "Введите конечную базу";
+    cin >> n;
+    cout << "Введите число";
+    cin >> ch;
+    if (e == n) {
+        cout << ch;
+        return 0;
+    }
+    for (int i = 0; i < ch.length(); i++) {
+        if (cf(ch[i]) >= e) {
+            cout << "Error";
+            return 0;
+        }
+        d += cf(ch[i]) * pow(e, ch.length() - i - 1);
+    }
+    if (n == 10) {
+        cout << d << endl;
+    }
+    else {
+        int i = 0;
+        while (d >= n)
+        {
+            pr = d % n;
+            d /= n;
+            if (pr > 9) {
+                otv += bk(pr);
+            }
+            else
+            {
+                vr = to_string(pr);
+                otv += vr;
+            }
+            i++;
+        }
+        i++;
+        if (d > 9) {
+            otv += bk(d);
+        }
+        else {
+            vr = to_string(d);
+            otv += vr;
+        }
+    }
+    reverse(otv.begin(), otv.end());
+    cout << otv;
+}
+```

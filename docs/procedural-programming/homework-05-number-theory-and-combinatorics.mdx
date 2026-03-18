@@ -1,0 +1,230 @@
+---
+title: ДЗ 5 — НОД, простые числа, индивидуальные варианты и шарики
+sidebar_position: 6
+description: Пятое домашнее задание по теории чисел, файлам и перебору перестановок.
+slug: /procedural-programming/homework-05-number-theory-and-combinatorics
+---
+
+## Что внутри
+
+В пятом домашнем задании есть как стандартные алгоритмы, так и индивидуальные варианты. По PDF видно, что пункты `5.3`, `5.4` и `5.5` должны были быть уникальными для каждого студента, поэтому в ресурсах есть готовый код только для части задач.
+
+## 5.1 «Алгоритм Евклида»
+
+**Условие.** Нужно найти НОД двух положительных целых чисел.
+
+**Как устроено решение.** Сохранённый код идёт не через классический цикл Евклида с остатком, а через перебор делителей от `min(a, b)` вниз до `1`. Как только находится общий делитель, программа печатает его и завершает работу.
+
+```cpp title="resources/procedural-programming/dz 5/51 DONE.cpp"
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int main(){
+    int a, b;
+    cin >> a >> b;
+    for (int i = min(a, b); i >= 1; i--) {
+        if (a % i == 0 and b % i == 0) {
+            cout << i;
+            return 0;
+        }
+    }
+}
+```
+
+## 5.2 «Решето Эратосфена»
+
+**Условие.** Нужно вывести простые числа от `2` до введённого натурального числа.
+
+**Как устроено решение.** Файл из ресурсов проверяет каждое число `j` на делимость всеми меньшими числами и печатает его, если делителей нет.
+
+**Что учесть.** Это решение реализует не решето Эратосфена в чистом виде, а прямую проверку на простоту. Кроме того, `2` здесь не выводится, потому что цикл начинается с `3`.
+
+```cpp title="resources/procedural-programming/dz 5/52 DONE.cpp"
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int main() {
+    int a, b;
+    cin >> a;
+    for (int j = 3; j <= a; j++) {
+        b = 0;
+        for (int i = j - 1; i > 1; i--) {
+            if (j % i == 0) {
+                b = 1;
+            }
+        }
+        if (b == 0) {
+            cout << j << " ";
+        }
+    }
+}
+```
+
+## 5.3 «Обработка текстовых файлов»
+
+**Условие.** В PDF сказано, что это индивидуальный вариант. В ресурсах сохранён вариант, где программа читает файл и ищет наиболее часто встречающуюся согласную букву из заданного набора.
+
+**Как устроено решение.** Код открывает файл `123.txt`, считает частоты для заранее заданного массива букв, затем выбирает индекс максимального значения и печатает количество вхождений вместе с самой буквой.
+
+```cpp title="resources/procedural-programming/dz 5/5.3.cpp"
+#include <iostream>
+#include <fstream>
+#include <conio.h>
+using namespace std;
+
+ifstream ifile;
+char bukvi[20]{ 'b', 'd', 'c', 'f', 'g',
+               'h', 'j', 'k', 'l', 'm',
+               'n', 'p', 'q', 'r', 's',
+               't', 'v', 'w', 'x', 'z' };
+int kol[20]{};
+
+int main()
+{
+    int max = 0, num;
+    char c, a = 'a';
+    ifile.open("123.txt");
+    if (ifile.is_open())
+    {
+        cout << "okey...";
+        _getch();
+
+        for (int i = 0; i < 20; i++)
+        {
+            kol[i] = 0;
+        }
+
+        while (ifile.get(c))
+        {
+            if (c == 'b') { kol[0] += 1; }
+            else if (c == 'd') { kol[1] += 1; }
+            else if (c == 'c') { kol[2] += 1; }
+            else if (c == 'f') { kol[3] += 1; }
+            else if (c == 'g') { kol[4] += 1; }
+            else if (c == 'h') { kol[5] += 1; }
+            else if (c == 'j') { kol[6] += 1; }
+            else if (c == 'k') { kol[7] += 1; }
+            else if (c == 'l') { kol[8] += 1; }
+            else if (c == 'm') { kol[9] += 1; }
+            else if (c == 'n') { kol[10] += 1; }
+            else if (c == 'p') { kol[11] += 1; }
+            else if (c == 'q') { kol[12] += 1; }
+            else if (c == 'r') { kol[13] += 1; }
+            else if (c == 's') { kol[14] += 1; }
+            else if (c == 't') { kol[15] += 1; }
+            else if (c == 'v') { kol[16] += 1; }
+            else if (c == 'w') { kol[17] += 1; }
+            else if (c == 'x') { kol[18] += 1; }
+            else if (c == 'z') { kol[19] += 1; }
+        }
+
+        for (int i = 0; i < 20; i++)
+        {
+            if (max < kol[i])
+            {
+                max = kol[i];
+                num = i;
+            }
+        }
+
+        if (num == 0) { a = 'b'; }
+        else if (num == 1) { a = 'd'; }
+        else if (num == 2) { a = 'c'; }
+        else if (num == 3) { a = 'f'; }
+        else if (num == 4) { a = 'g'; }
+        else if (num == 5) { a = 'h'; }
+        else if (num == 6) { a = 'j'; }
+        else if (num == 7) { a = 'k'; }
+        else if (num == 8) { a = 'l'; }
+        else if (num == 9) { a = 'm'; }
+        else if (num == 10) { a = 'n'; }
+        else if (num == 11) { a = 'p'; }
+        else if (num == 12) { a = 'q'; }
+        else if (num == 13) { a = 'r'; }
+        else if (num == 14) { a = 's'; }
+        else if (num == 15) { a = 't'; }
+        else if (num == 16) { a = 'v'; }
+        else if (num == 17) { a = 'w'; }
+        else if (num == 18) { a = 'x'; }
+        else if (num == 19) { a = 'z'; }
+
+        cout << "\n" << max << " [" << a << "]";
+    }
+    else
+    {
+        cout << "ne okey...";
+        _getch();
+        exit(0);
+    }
+}
+```
+
+## 5.4 «Ряды»
+
+**Что известно по PDF.** В формулировке указано только то, что это индивидуальный вариант на человека.
+
+**Что учесть.** В `resources/procedural-programming` нет отдельного условия или `cpp`-файла для конкретного варианта, поэтому в вики нельзя восстановить точную постановку без исходного личного задания.
+
+## 5.5 «Файлы»
+
+**Что известно по PDF.** Здесь ситуация такая же, как и в пункте `5.4`: в PDF сказано, что вариант индивидуальный.
+
+**Что учесть.** Без отдельного листа варианта или готового исходника точную задачу восстановить нельзя.
+
+## 5.6 «Шарики»
+
+**Условие.** Из урны последовательно достают пронумерованные шарики. Нужно посчитать число перестановок, в которых номер хотя бы одного шарика совпадает с номером шага.
+
+**Как устроено решение.** Ниже приведён аккуратный эталонный вариант, который соответствует алгоритму из PDF: строятся все перестановки, а на листе рекурсии проверяется наличие хотя бы одного совпадения `balls[i] == i + 1`.
+
+**Что учесть.** Это уже полноценная рекурсивная задача на перебор перестановок. Решение сохраняет идею из формулировки и работает для произвольного `n`, хотя на больших значениях факториальный рост быстро делает перебор тяжёлым.
+
+```cpp title="resources/procedural-programming/dz 5/5.6.cpp"
+#include <iostream>
+#include <vector>
+using namespace std;
+
+bool hasFixedPoint(const vector<int>& balls) {
+    for (int i = 0; i < static_cast<int>(balls.size()); ++i) {
+        if (balls[i] == i + 1) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void generatePermutations(int position, vector<int>& balls, long long& count) {
+    if (position == static_cast<int>(balls.size())) {
+        if (hasFixedPoint(balls)) {
+            ++count;
+        }
+        return;
+    }
+
+    for (int i = position; i < static_cast<int>(balls.size()); ++i) {
+        swap(balls[position], balls[i]);
+        generatePermutations(position + 1, balls, count);
+        swap(balls[position], balls[i]);
+    }
+}
+
+int main() {
+    int n;
+    cin >> n;
+
+    if (n <= 0) {
+        cout << "Некорректное количество шариков";
+        return 0;
+    }
+
+    vector<int> balls(n);
+    for (int i = 0; i < n; ++i) {
+        balls[i] = i + 1;
+    }
+
+    long long count = 0;
+    generatePermutations(0, balls, count);
+    cout << count;
+    return 0;
+}
+```
