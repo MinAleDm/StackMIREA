@@ -15,7 +15,7 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    return <Button variant="ghost" size="icon" aria-label="Toggle theme" className="text-muted-foreground" />;
+    return <Button variant="ghost" size="icon" aria-label="Переключить тему" className="text-muted-foreground" />;
   }
 
   const isDark = resolvedTheme !== "light";
@@ -24,7 +24,7 @@ export function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      aria-label="Toggle theme"
+      aria-label="Переключить тему"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className="text-muted-foreground hover:text-foreground"
     >

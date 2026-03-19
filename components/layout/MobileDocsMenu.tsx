@@ -5,10 +5,12 @@ import { BookOpenText, ChevronDown, ChevronRight, ExternalLink, Tag } from "luci
 import { useMemo, useState } from "react";
 
 import { DeploymentVersion } from "@/components/layout/DeploymentVersion";
+import type { BuildInfo } from "@/lib/build-info";
 import { type SidebarGroup } from "@/lib/navigation";
-import { cn, DEPLOYMENTS_URL } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface MobileDocsMenuProps {
+  buildInfo: BuildInfo;
   groups: SidebarGroup[];
   currentPath: string;
 }
@@ -17,7 +19,7 @@ function normalizePath(value: string) {
   return value.replace(/\/+$/, "") || "/";
 }
 
-export function MobileDocsMenu({ groups, currentPath }: MobileDocsMenuProps) {
+export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
@@ -77,7 +79,7 @@ export function MobileDocsMenu({ groups, currentPath }: MobileDocsMenuProps) {
             </div>
 
             <Link
-              href={DEPLOYMENTS_URL}
+              href={buildInfo.href}
               target="_blank"
               rel="noreferrer"
               className="grid grid-cols-[auto_1fr_auto] items-center gap-2 rounded-md border border-border/80 bg-card/80 p-2 transition-colors hover:bg-muted/70"
@@ -86,8 +88,8 @@ export function MobileDocsMenu({ groups, currentPath }: MobileDocsMenuProps) {
                 <Tag className="size-4" />
               </div>
               <div className="min-w-0 text-left">
-                <p className="text-sm font-medium">Deployment version</p>
-                <DeploymentVersion />
+                <p className="text-sm font-medium">Версия сборки</p>
+                <DeploymentVersion buildInfo={buildInfo} />
               </div>
               <ExternalLink className="size-4 text-muted-foreground" />
             </Link>

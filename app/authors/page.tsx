@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { GitHubUserBadge } from "@/components/ui/GitHubUserBadge";
 import { getDevTeamMembers } from "@/lib/authors";
 import { getAllDocs } from "@/lib/navigation";
+import { getTrackTitle } from "@/lib/tracks";
 
 export const dynamic = "force-static";
 
@@ -19,16 +20,8 @@ interface AuthorWithSummary {
   summary: string;
 }
 
-const SECTION_TITLES: Record<string, string> = {
-  ai: "AI",
-  bigdata: "BigData",
-  java: "Java",
-  python: "Python",
-  algorithms: "Algorithms"
-};
-
 function formatSectionName(section: string) {
-  return SECTION_TITLES[section.toLowerCase()] ?? section;
+  return getTrackTitle(section.toLowerCase());
 }
 
 function buildSummary(sectionStats: Array<{ section: string; count: number }>) {
@@ -51,7 +44,7 @@ function buildSummary(sectionStats: Array<{ section: string; count: number }>) {
 }
 
 function getAuthorsWithSummary() {
-  const docs = getAllDocs();
+  const docs = getAllDocs().filter((doc) => !doc.isSectionIndex);
   const authorsMap = new Map<
     string,
     {
@@ -122,7 +115,7 @@ export default function AuthorsPage() {
       </header>
 
       <section className="mb-10">
-        <h2 className="mb-4 text-xl font-semibold tracking-tight">Authors</h2>
+        <h2 className="mb-4 text-xl font-semibold tracking-tight">Авторы публикаций</h2>
         <div className="grid gap-4 lg:grid-cols-2">
           {authors.map((author) => (
             <article key={author.github} className="rounded-xl border border-border/80 bg-card/70 p-4">
@@ -134,7 +127,7 @@ export default function AuthorsPage() {
       </section>
 
       <section>
-        <h2 className="mb-4 text-xl font-semibold tracking-tight">devTeam</h2>
+        <h2 className="mb-4 text-xl font-semibold tracking-tight">Команда разработки</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {devTeam.map((member) => (
             <GitHubUserBadge key={member.github} person={member} description={member.role} />
@@ -143,7 +136,7 @@ export default function AuthorsPage() {
       </section>
 
       <section className="mt-10 rounded-xl border border-border/80 bg-card/70 p-5">
-        <h2 className="text-xl font-semibold tracking-tight">Контакты devTeam</h2>
+        <h2 className="text-xl font-semibold tracking-tight">Контакты команды</h2>
         <p className="mt-3 text-sm text-muted-foreground">
           Для связи с командой разработки:{" "}
           <a href="mailto:petrushenko184@mail.ru" className="text-primary transition-opacity hover:opacity-80">

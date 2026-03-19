@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PenSquare } from "lucide-react";
 import { notFound } from "next/navigation";
 
+import { getBuildInfo } from "@/lib/build-info";
 import { MobileDocsMenu } from "@/components/layout/MobileDocsMenu";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Toc } from "@/components/layout/Toc";
@@ -47,18 +48,19 @@ export default async function DocPage({ params }: DocPageProps) {
     notFound();
   }
 
+  const buildInfo = getBuildInfo();
   const sidebarGroups = getSidebarGroups();
   const toc = extractTableOfContents(doc.body);
   const pagination = getDocPagination(params.slug);
   const content = await compileDocMdx(doc.body);
-  const editUrl = `${GITHUB_EDIT_ROOT}/${doc.sourcePath}`;
+  const editUrl = doc.editPath ? `${GITHUB_EDIT_ROOT}/${doc.editPath}` : null;
 
   return (
     <>
-      <MobileDocsMenu groups={sidebarGroups} currentPath={doc.href} />
+      <MobileDocsMenu buildInfo={buildInfo} groups={sidebarGroups} currentPath={doc.href} />
 
       <div className="mx-auto grid w-full max-w-[1440px] gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:px-8 xl:grid-cols-[280px_minmax(0,1fr)_220px]">
-        <Sidebar groups={sidebarGroups} currentPath={doc.href} />
+        <Sidebar buildInfo={buildInfo} groups={sidebarGroups} currentPath={doc.href} />
 
         <article className="min-w-0 pb-16">
           <Breadcrumbs slug={params.slug} currentTitle={doc.title} />
@@ -69,15 +71,21 @@ export default async function DocPage({ params }: DocPageProps) {
             <div className="mt-5">
               <GitHubUserBadge person={doc.author} description="Автор публикации" />
             </div>
-            <Link
-              href={editUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-5 inline-flex items-center gap-2 text-sm text-primary transition-opacity hover:opacity-80"
-            >
-              <PenSquare className="size-4" />
-              Edit on GitHub
-            </Link>
+            {editUrl ? (
+              <Link
+                href={editUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-5 inline-flex items-center gap-2 text-sm text-primary transition-opacity hover:opacity-80"
+              >
+                <PenSquare className="size-4" />
+                Редактировать источник
+              </Link>
+            ) : (
+              <p className="mt-5 text-sm text-muted-foreground">
+                Эта страница собрана автоматически, поэтому редактирование доступно через исходные материалы раздела.
+              </p>
+            )}
           </header>
 
           <div className="docs-prose">{content}</div>

@@ -8,7 +8,7 @@ import { BASE_PATH, SITE_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from "@/lib/utils
 
 import "./globals.css";
 
-const socialImage = `${SITE_ORIGIN}${BASE_PATH}/social-card.svg`;
+const socialImage = `${SITE_ORIGIN}${BASE_PATH}/preview.png`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${SITE_ORIGIN}${BASE_PATH}/`),
@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ru" suppressHydrationWarning>
       <body className="site-background font-sans antialiased">
-        <ThemeProvider attribute="class" forcedTheme="light" disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">{children}</main>

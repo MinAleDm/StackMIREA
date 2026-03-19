@@ -5,10 +5,12 @@ import { BookOpenText, ChevronRight, ExternalLink, Tag } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { DeploymentVersion } from "@/components/layout/DeploymentVersion";
+import type { BuildInfo } from "@/lib/build-info";
 import { type SidebarGroup } from "@/lib/navigation";
-import { cn, DEPLOYMENTS_URL } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface SidebarProps {
+  buildInfo: BuildInfo;
   groups: SidebarGroup[];
   currentPath: string;
 }
@@ -17,7 +19,7 @@ function normalizePath(value: string) {
   return value.replace(/\/+$/, "") || "/";
 }
 
-export function Sidebar({ groups, currentPath }: SidebarProps) {
+export function Sidebar({ buildInfo, groups, currentPath }: SidebarProps) {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const normalizedCurrentPath = normalizePath(currentPath);
 
@@ -59,7 +61,7 @@ export function Sidebar({ groups, currentPath }: SidebarProps) {
           </div>
 
           <Link
-            href={DEPLOYMENTS_URL}
+            href={buildInfo.href}
             target="_blank"
             rel="noreferrer"
             className="grid grid-cols-[auto_1fr_auto] items-center gap-2 rounded-md border border-border/80 bg-card/80 p-2 transition-colors hover:bg-muted/70"
@@ -68,8 +70,8 @@ export function Sidebar({ groups, currentPath }: SidebarProps) {
               <Tag className="size-4" />
             </div>
             <div className="min-w-0 text-left">
-              <p className="text-sm font-medium">Deployment version</p>
-              <DeploymentVersion />
+              <p className="text-sm font-medium">Версия сборки</p>
+              <DeploymentVersion buildInfo={buildInfo} />
             </div>
             <ExternalLink className="size-4 text-muted-foreground" />
           </Link>

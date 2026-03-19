@@ -3,126 +3,25 @@ import { ArrowRight, Bot, Brain, BrainCircuit, Code2, Database, ExternalLink, Gi
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { getTrackDefinitions, type TrackIconKey } from "@/lib/tracks";
 
 export const dynamic = "force-static";
 
-const tracks = [
-  // Keep cards in the same order as sidebar section ordering for predictable navigation.
-  {
-    title: "Python",
-    subtitle: "Практики по OOP, тестированию и функциональному стилю",
-    href: "/docs/python",
-    icon: Code2
-  },
-  {
-    title: "AI",
-    subtitle: "Ноутбуки Notebook1..Notebook8 по курсу ИИ",
-    href: "/docs/ai",
-    icon: Bot
-  },
-  {
-    title: "BigData",
-    subtitle: "Практики по анализу данных, классификации и кластеризации",
-    href: "/docs/bigdata",
-    icon: Database
-  },
-  {
-    title: "Java",
-    subtitle: "24 практики по ООП, коллекциям, MVC и паттернам",
-    href: "/docs/java",
-    icon: Brain
-  },
-  {
-    title: "Algorithms",
-    subtitle: "Методические материалы и структурированные разборы",
-    href: "/docs/algorithms",
-    icon: Sigma
-  },
-  {
-    title: "Процедурное программирование",
-    subtitle: "Базовые конструкции, декомпозиция и процедурный стиль",
-    href: "/docs/procedural-programming",
-    icon: Code2
-  },
-  {
-    title: "Объектно ориентированное программирование",
-    subtitle: "Классы, инкапсуляция, наследование и полиморфизм",
-    href: "/docs/object-oriented-programming",
-    icon: Brain
-  },
-  {
-    title: "Структуры и алгоритмы обработки данных (часть 1)",
-    subtitle: "Введение в структуры данных и базовые алгоритмы",
-    href: "/docs/data-structures-and-algorithms-part-1",
-    icon: Sigma
-  },
-  {
-    title: "React",
-    subtitle: "Компонентная разработка и построение интерфейсов",
-    href: "/docs/react",
-    icon: Bot
-  },
-  {
-    title: "Структуры и алгоритмы обработки данных (часть 2)",
-    subtitle: "Продвинутые алгоритмы и анализ производительности",
-    href: "/docs/data-structures-and-algorithms-part-2",
-    icon: Sigma
-  },
-  {
-    title: "Конфигурационное управление",
-    subtitle: "Версионирование, окружения и управление изменениями",
-    href: "/docs/configuration-management",
-    icon: GitPullRequest
-  },
-  {
-    title: "Анализ и концептуальное моделирование систем (часть 1)",
-    subtitle: "Системный анализ, требования и концептуальные модели",
-    href: "/docs/systems-analysis-and-conceptual-modeling-part-1",
-    icon: Database
-  },
-  {
-    title: "Технология разработки программных приложений (часть 1)",
-    subtitle: "Процессы, паттерны и практики разработки приложений",
-    href: "/docs/software-application-development-part-1",
-    icon: Code2
-  },
-  {
-    title: "Интернет вещей",
-    subtitle: "IoT-архитектуры, обмен данными и интеграции устройств",
-    href: "/docs/internet-of-things",
-    icon: Bot
-  },
-  {
-    title: "Моделирование бизнес процессов",
-    subtitle: "Модели процессов, роли, события и оптимизация",
-    href: "/docs/business-process-modeling",
-    icon: Database
-  },
-  {
-    title: "Разработка баз данных",
-    subtitle: "Проектирование схем, SQL и практика работы с БД",
-    href: "/docs/database-development",
-    icon: Database
-  },
-  {
-    title: "Тестирование и верификация ПО",
-    subtitle: "Unit/Integration тестирование и контроль качества",
-    href: "/docs/software-testing-and-verification",
-    icon: ListChecks
-  },
-  {
-    title: "Системное администрирование",
-    subtitle: "Серверы, сервисы, сети и эксплуатация инфраструктуры",
-    href: "/docs/system-administration",
-    icon: Brain
-  },
-  {
-    title: "Управление проектами",
-    subtitle: "Планирование, сроки, риски и командные процессы",
-    href: "/docs/project-management",
-    icon: GitPullRequest
-  }
-];
+const iconByKey: Record<TrackIconKey, typeof Bot> = {
+  bot: Bot,
+  brain: Brain,
+  code2: Code2,
+  database: Database,
+  gitPullRequest: GitPullRequest,
+  listChecks: ListChecks,
+  sigma: Sigma
+};
+
+const tracks = getTrackDefinitions().map((track) => ({
+  ...track,
+  href: `/docs/${track.id}`,
+  icon: iconByKey[track.iconKey]
+}));
 
 const publicationRules = [
   {
@@ -255,8 +154,8 @@ export default function HomePage() {
               <div className="mb-4 inline-flex rounded-lg border border-border/70 bg-background/70 p-2 text-muted-foreground transition-colors group-hover:text-primary">
                 <Icon className="size-5" />
               </div>
-              <h2 className="text-base font-semibold leading-snug tracking-tight break-words">{track.title}</h2>
-              <p className="mt-2 break-words text-sm leading-6 text-muted-foreground">{track.subtitle}</p>
+              <h2 className="break-words text-base font-semibold leading-snug tracking-tight">{track.title}</h2>
+              <p className="mt-2 break-words text-sm leading-6 text-muted-foreground">{track.homeSubtitle}</p>
               <span className="mt-auto pt-5 inline-flex items-center gap-1.5 text-sm text-primary">
                 Перейти
                 <ArrowRight className="size-3.5" />

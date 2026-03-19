@@ -4,6 +4,7 @@ import matter from "gray-matter";
 
 import type { GitHubPerson } from "@/lib/authors";
 import { getDefaultDocAuthor, toGitHubPerson } from "@/lib/authors";
+import { getTrackOrder, getTrackTitle } from "@/lib/tracks";
 import { toTitleCase } from "@/lib/utils";
 
 export interface DocFrontmatter {
@@ -21,11 +22,12 @@ export interface DocEntry {
   title: string;
   description: string;
   order: number;
-  sourcePath: string;
+  editPath: string | null;
   section: string;
   body: string;
   author: GitHubPerson;
   isSectionIndex: boolean;
+  isGenerated: boolean;
 }
 
 export interface SidebarGroup {
@@ -46,28 +48,7 @@ interface DocsIndex {
 }
 
 const CONTENT_ROOT = path.join(process.cwd(), "content");
-const SECTION_ORDER: Record<string, number> = {
-  // Keep explicit section order so new tracks appear consistently in sidebar/docs index.
-  python: 1,
-  ai: 2,
-  bigdata: 3,
-  java: 4,
-  algorithms: 5,
-  "procedural-programming": 6,
-  "object-oriented-programming": 7,
-  "data-structures-and-algorithms-part-1": 8,
-  react: 9,
-  "data-structures-and-algorithms-part-2": 10,
-  "configuration-management": 11,
-  "systems-analysis-and-conceptual-modeling-part-1": 12,
-  "software-application-development-part-1": 13,
-  "internet-of-things": 14,
-  "business-process-modeling": 15,
-  "database-development": 16,
-  "software-testing-and-verification": 17,
-  "system-administration": 18,
-  "project-management": 19
-};
+const DOCS_SOURCE_ROOT = path.join(process.cwd(), "docs");
 
 let cachedDocsIndex: DocsIndex | null = null;
 
@@ -113,7 +94,7 @@ function normalizeSlug(relativePath: string) {
 }
 
 function getSectionOrder(section: string) {
-  return SECTION_ORDER[section] ?? 999;
+  return getTrackOrder(section);
 }
 
 function getSlugKey(slug: string[]) {
@@ -141,6 +122,23 @@ function compareDocs(left: DocEntry, right: DocEntry) {
   return left.title.localeCompare(right.title);
 }
 
+function resolveEditPath(relativePath: string) {
+  const candidates =
+    relativePath === path.join("algorithms", "getting-started.mdx")
+      ? ["intro.mdx", "intro.md"]
+      : [relativePath, relativePath.replace(/\.mdx$/i, ".md")];
+
+  for (const candidate of candidates) {
+    const absoluteCandidatePath = path.join(DOCS_SOURCE_ROOT, candidate);
+
+    if (fs.existsSync(absoluteCandidatePath)) {
+      return candidate.replace(/\\/g, "/");
+    }
+  }
+
+  return null;
+}
+
 function createDocEntry(filePath: string): DocEntry {
   const source = fs.readFileSync(filePath, "utf-8");
   const parsed = matter(source);
@@ -155,6 +153,7 @@ function createDocEntry(filePath: string): DocEntry {
   const description = parsed.data.description?.toString().trim() || "";
   const rawAuthor = parsed.data.author?.toString().trim();
   const author = rawAuthor ? toGitHubPerson(rawAuthor) : getDefaultDocAuthor();
+  const editPath = resolveEditPath(relativePath);
 
   return {
     slug,
@@ -163,11 +162,12 @@ function createDocEntry(filePath: string): DocEntry {
     title,
     description,
     order: safeOrder,
-    sourcePath: relativePath,
+    editPath,
     section,
     body: parsed.content,
     author,
-    isSectionIndex
+    isSectionIndex,
+    isGenerated: editPath === null
   };
 }
 
@@ -178,7 +178,7 @@ function createSidebarGroups(docs: DocEntry[]) {
     const section = doc.section;
     const group = groupsMap.get(section) ?? {
       id: section,
-      title: toTitleCase(section),
+      title: getTrackTitle(section),
       items: []
     };
 

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { BookOpenText, BrainCircuit, Github, Home, Users } from "lucide-react";
 
 import siteLogo from "@/public/favicon.png";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { REPO_URL, SITE_NAME } from "@/lib/utils";
 
 export function Header() {
@@ -52,6 +53,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-1">
+          <ThemeToggle />
           <Link
             href={REPO_URL}
             target="_blank"

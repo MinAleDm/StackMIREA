@@ -1,0 +1,135 @@
+[
+  {
+    "id": "python",
+    "title": "Python",
+    "order": 1,
+    "homeSubtitle": "Практики по OOP, тестированию и функциональному стилю",
+    "iconKey": "code2"
+  },
+  {
+    "id": "ai",
+    "title": "AI",
+    "order": 2,
+    "homeSubtitle": "Ноутбуки Notebook1..Notebook8 по курсу ИИ",
+    "iconKey": "bot"
+  },
+  {
+    "id": "bigdata",
+    "title": "BigData",
+    "order": 3,
+    "homeSubtitle": "Практики по анализу данных, классификации и кластеризации",
+    "iconKey": "database"
+  },
+  {
+    "id": "java",
+    "title": "Java",
+    "order": 4,
+    "homeSubtitle": "24 практики по ООП, коллекциям, MVC и паттернам",
+    "iconKey": "brain"
+  },
+  {
+    "id": "algorithms",
+    "title": "Algorithms",
+    "order": 5,
+    "homeSubtitle": "Методические материалы и структурированные разборы",
+    "iconKey": "sigma"
+  },
+  {
+    "id": "procedural-programming",
+    "title": "Процедурное программирование",
+    "order": 6,
+    "homeSubtitle": "Базовые конструкции, декомпозиция и процедурный стиль",
+    "iconKey": "code2"
+  },
+  {
+    "id": "object-oriented-programming",
+    "title": "Объектно ориентированное программирование",
+    "order": 7,
+    "homeSubtitle": "Классы, инкапсуляция, наследование и полиморфизм",
+    "iconKey": "brain"
+  },
+  {
+    "id": "data-structures-and-algorithms-part-1",
+    "title": "Структуры и алгоритмы обработки данных (часть 1)",
+    "order": 8,
+    "homeSubtitle": "Введение в структуры данных и базовые алгоритмы",
+    "iconKey": "sigma"
+  },
+  {
+    "id": "react",
+    "title": "React",
+    "order": 9,
+    "homeSubtitle": "Компонентная разработка и построение интерфейсов",
+    "iconKey": "bot"
+  },
+  {
+    "id": "data-structures-and-algorithms-part-2",
+    "title": "Структуры и алгоритмы обработки данных (часть 2)",
+    "order": 10,
+    "homeSubtitle": "Продвинутые алгоритмы и анализ производительности",
+    "iconKey": "sigma"
+  },
+  {
+    "id": "configuration-management",
+    "title": "Конфигурационное управление",
+    "order": 11,
+    "homeSubtitle": "Версионирование, окружения и управление изменениями",
+    "iconKey": "gitPullRequest"
+  },
+  {
+    "id": "systems-analysis-and-conceptual-modeling-part-1",
+    "title": "Анализ и концептуальное моделирование систем (часть 1)",
+    "order": 12,
+    "homeSubtitle": "Системный анализ, требования и концептуальные модели",
+    "iconKey": "database"
+  },
+  {
+    "id": "software-application-development-part-1",
+    "title": "Технология разработки программных приложений (часть 1)",
+    "order": 13,
+    "homeSubtitle": "Процессы, паттерны и практики разработки приложений",
+    "iconKey": "code2"
+  },
+  {
+    "id": "internet-of-things",
+    "title": "Интернет вещей",
+    "order": 14,
+    "homeSubtitle": "IoT-архитектуры, обмен данными и интеграции устройств",
+    "iconKey": "bot"
+  },
+  {
+    "id": "business-process-modeling",
+    "title": "Моделирование бизнес процессов",
+    "order": 15,
+    "homeSubtitle": "Модели процессов, роли, события и оптимизация",
+    "iconKey": "database"
+  },
+  {
+    "id": "database-development",
+    "title": "Разработка баз данных",
+    "order": 16,
+    "homeSubtitle": "Проектирование схем, SQL и практика работы с БД",
+    "iconKey": "database"
+  },
+  {
+    "id": "software-testing-and-verification",
+    "title": "Тестирование и верификация ПО",
+    "order": 17,
+    "homeSubtitle": "Unit/Integration тестирование и контроль качества",
+    "iconKey": "listChecks"
+  },
+  {
+    "id": "system-administration",
+    "title": "Системное администрирование",
+    "order": 18,
+    "homeSubtitle": "Серверы, сервисы, сети и эксплуатация инфраструктуры",
+    "iconKey": "brain"
+  },
+  {
+    "id": "project-management",
+    "title": "Управление проектами",
+    "order": 19,
+    "homeSubtitle": "Планирование, сроки, риски и командные процессы",
+    "iconKey": "gitPullRequest"
+  }
+]

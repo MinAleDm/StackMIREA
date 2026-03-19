@@ -2,20 +2,22 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { MobileDocsMenu } from "@/components/layout/MobileDocsMenu";
+import { getBuildInfo } from "@/lib/build-info";
 import { getSidebarGroups } from "@/lib/navigation";
 
 export const dynamic = "force-static";
 
 export default function DocsIndexPage() {
+  const buildInfo = getBuildInfo();
   const groups = getSidebarGroups();
 
   return (
     <>
-      <MobileDocsMenu groups={groups} currentPath="/docs" />
+      <MobileDocsMenu buildInfo={buildInfo} groups={groups} currentPath="/docs" />
 
       <div className="mx-auto w-full max-w-[1440px] px-4 py-12 sm:px-6 lg:px-8">
         <header className="mb-10">
-          <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">StackMIREA Doc - Актуальные треки</h1>
+          <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">StackMIREA Docs - актуальные треки</h1>
           <p className="mt-3 max-w-2xl text-base text-muted-foreground">
             Структурированные треки по основным ИТ-дисциплинам с масштабируемой архитектурой статической документации.
           </p>

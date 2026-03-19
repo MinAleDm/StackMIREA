@@ -10,10 +10,8 @@ export const DEFAULT_BRANCH = "main";
 export const SITE_ORIGIN = "https://minaledm.github.io";
 export const BASE_PATH = "/StackMIREA";
 export const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
-export const DEPLOYMENTS_URL = `${REPO_URL}/deployments`;
-export const DEPLOYMENTS_API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/deployments?per_page=1`;
 export const DOCS_ROOT = "/docs";
-export const GITHUB_EDIT_ROOT = `${REPO_URL}/edit/${DEFAULT_BRANCH}/content`;
+export const GITHUB_EDIT_ROOT = `${REPO_URL}/edit/${DEFAULT_BRANCH}`;
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

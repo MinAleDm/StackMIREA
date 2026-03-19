@@ -6,8 +6,11 @@ const CONTENT_ROOT = path.join(process.cwd(), "content");
 const PUBLIC_ROOT = path.join(process.cwd(), "public");
 const SEARCH_INDEX_PATH = path.join(PUBLIC_ROOT, "search-index.json");
 const TOPICS_PATH = path.join(process.cwd(), "lib", "search-topics.json");
+const TRACKS_PATH = path.join(process.cwd(), "lib", "tracks.json");
 
 const topicDefinitions = JSON.parse(fs.readFileSync(TOPICS_PATH, "utf8"));
+const trackDefinitions = JSON.parse(fs.readFileSync(TRACKS_PATH, "utf8"));
+const trackTitles = new Map(trackDefinitions.map((track) => [track.id, track.title]));
 const stopWords = new Set([
   "a",
   "an",
@@ -100,6 +103,10 @@ function toTitleCase(value) {
   return value
     .replace(/[-_]/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getTrackTitle(trackId) {
+  return trackTitles.get(trackId) ?? toTitleCase(trackId);
 }
 
 function normalizeSearchValue(value) {
@@ -259,7 +266,7 @@ function createDoc(filePath) {
   const relativePath = path.relative(CONTENT_ROOT, filePath);
   const slug = normalizeSlug(relativePath);
   const section = slug[0] ?? "docs";
-  const sectionTitle = toTitleCase(section);
+  const sectionTitle = getTrackTitle(section);
   const title = parsed.data.title?.toString().trim() || toTitleCase(slug.at(-1) ?? section);
   const description = parsed.data.description?.toString().trim() || "";
   const previewSource = stripMarkdown(parsed.content);

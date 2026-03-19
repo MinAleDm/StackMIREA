@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, BookOpenText, BrainCircuit, Loader2, Search, Sparkles } from "lucide-react";
-import { startTransition, useDeferredValue, useEffect, useState } from "react";
+import { type FormEvent, startTransition, useDeferredValue, useEffect, useState } from "react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { buildAskSummary, getSuggestedQueries, getTopicDefinitions, prepareSearchIndex, runSemanticSearch } from "@/lib/search";
@@ -85,6 +85,11 @@ export function AskStackMirea() {
     });
   }
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    applyQuery(query.trim());
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <section className="rounded-3xl border border-border/70 bg-card/70 p-6 sm:p-7">
@@ -111,7 +116,7 @@ export function AskStackMirea() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-3xl border border-border/70 bg-background/80 p-3 shadow-sm">
+        <form className="mt-6 rounded-3xl border border-border/70 bg-background/80 p-3 shadow-sm" onSubmit={handleSubmit}>
           <label htmlFor="ask-stackmirea" className="sr-only">
             Поиск по материалам StackMIREA
           </label>
@@ -120,19 +125,21 @@ export function AskStackMirea() {
               <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 id="ask-stackmirea"
+                type="search"
                 value={query}
                 onChange={(event) => applyQuery(event.target.value)}
                 placeholder="Например: где в материалах есть про KNN?"
+                autoComplete="off"
                 className="h-12 w-full rounded-2xl border border-border bg-card pl-11 pr-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
               />
             </div>
 
-            <Button size="lg" className="h-12 rounded-2xl px-6" onClick={() => applyQuery(query.trim())}>
+            <Button type="submit" size="lg" className="h-12 rounded-2xl px-6">
               <BrainCircuit className="size-4" />
               Найти ответ
             </Button>
           </div>
-        </div>
+        </form>
 
         <div className="mt-4 flex flex-wrap gap-2">
           {suggestedQueries.map((suggestion) => (

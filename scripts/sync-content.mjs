@@ -143,7 +143,7 @@ function main() {
   for (const [section, config] of Object.entries(SECTION_INDEX)) {
     const sectionDir = path.join(contentRoot, section);
     ensureDirectory(sectionDir);
-    writeFileIfChanged(path.join(sectionDir, config.file), config.body);
+    writeFileIfMissing(path.join(sectionDir, config.file), config.body);
   }
 
   writeFileIfMissing(path.join(contentRoot, "algorithms", "getting-started.mdx"), ALGORITHMS_GETTING_STARTED);
