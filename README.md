@@ -87,6 +87,7 @@ npm run dev
 - `npm run prepare:content` - синхронизация контента и сборка поискового индекса.
 - `npm run content:sync` - синхронизация `docs/` -> `content/`.
 - `npm run search:build` - генерация локального поискового индекса.
+- `npm run validate:content` - проверка внутренних markdown-ссылок, якорей и репозиторных ссылок в code fence.
 - `npm run export` - информационный скрипт о static export.
 
 ## Структура проекта
@@ -128,8 +129,9 @@ Production URL: `https://minkinad.github.io/StackMIREA/`
 
 1. Добавьте или обновите материал в `docs/<track>/...`.
 2. Запустите `npm run content:sync`.
-3. Проверьте проект командами `npm run lint` и `npm run typecheck`.
-4. Откройте Pull Request.
+3. Проверьте контент командой `npm run validate:content`.
+4. Проверьте проект командами `npm run lint` и `npm run typecheck`.
+5. Откройте Pull Request.
 
 Для автора материала можно указать поле `author` во frontmatter: GitHub login или ссылку на профиль.
 
