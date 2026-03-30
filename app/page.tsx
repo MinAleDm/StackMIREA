@@ -135,7 +135,7 @@ export default function HomePage() {
           </div>
 
           <Link href="/ask" className={cn(buttonVariants({ size: "lg" }), "w-full rounded-2xl lg:w-auto")}>
-            Открыть "Спроси StackMIREA"
+            Открыть &quot;Спроси StackMIREA&quot;
             <ArrowRight className="size-4" />
           </Link>
         </div>
