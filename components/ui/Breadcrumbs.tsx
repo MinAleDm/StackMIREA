@@ -15,11 +15,11 @@ export function Breadcrumbs({ slug, currentTitle }: BreadcrumbsProps) {
   });
 
   return (
-    <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
+    <nav aria-label="Хлебные крошки" className="mb-6 text-sm text-muted-foreground">
       <ol className="flex flex-wrap items-center gap-1.5">
         <li>
           <Link href="/docs" className="rounded px-1 py-0.5 transition-colors hover:bg-muted/70 hover:text-foreground">
-            Docs
+            Документация
           </Link>
         </li>
         {breadcrumbs.map((item) => (

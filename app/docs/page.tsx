@@ -17,7 +17,7 @@ export default function DocsIndexPage() {
 
       <div className="mx-auto w-full max-w-[1440px] px-4 py-12 sm:px-6 lg:px-8">
         <header className="mb-10">
-          <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">StackMIREA Docs - актуальные треки</h1>
+          <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">Документация StackMIREA: актуальные треки</h1>
           <p className="mt-3 max-w-2xl text-base text-muted-foreground">
             Структурированные треки по основным ИТ-дисциплинам с масштабируемой архитектурой статической документации.
           </p>

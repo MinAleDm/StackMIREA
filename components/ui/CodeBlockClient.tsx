@@ -28,10 +28,10 @@ export function CodeBlockClient({ code, html, filename, language }: CodeBlockCli
   return (
     <figure className="my-8 overflow-hidden rounded-xl border border-border/80 bg-card">
       <figcaption className="flex items-center justify-between border-b border-border/80 bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-        <span className="truncate font-medium">{filename ?? language ?? "snippet"}</span>
+        <span className="truncate font-medium">{filename ?? language ?? "фрагмент"}</span>
         <Button variant="ghost" size="sm" onClick={handleCopy} className="h-7 px-2 text-xs">
           {copied ? <Check className="mr-1 size-3" /> : <Copy className="mr-1 size-3" />}
-          {copied ? "Copied" : "Copy"}
+          {copied ? "Скопировано" : "Копировать"}
         </Button>
       </figcaption>
       <div className="overflow-x-auto p-4 text-sm leading-6" dangerouslySetInnerHTML={{ __html: html }} />

@@ -12,42 +12,42 @@ export function Header() {
       <div className="mx-auto flex h-14 w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-4">
           <Link href="/" className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold tracking-tight text-foreground">
-            <Image src={siteLogo} alt={`${SITE_NAME} logo`} width={20} height={20} className="rounded-sm" priority />
+            <Image src={siteLogo} alt={`Логотип ${SITE_NAME}`} width={20} height={20} className="rounded-sm" priority />
             <span className="hidden truncate sm:inline">{SITE_NAME}</span>
           </Link>
 
           <nav className="flex items-center gap-1">
             <Link
               href="/"
-              aria-label="Home"
+              aria-label="Главная"
               className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <Home className="size-4" />
-              <span>Home</span>
+              <span>Главная</span>
             </Link>
             <Link
               href="/docs"
-              aria-label="Docs"
+              aria-label="Документация"
               className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <BookOpenText className="size-4" />
-              <span>Docs</span>
+              <span>Документация</span>
             </Link>
             <Link
               href="/ask"
-              aria-label="Ask StackMIREA"
+              aria-label="Спроси StackMIREA"
               className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <BrainCircuit className="size-4" />
-              <span>Ask</span>
+              <span>Спросить</span>
             </Link>
             <Link
               href="/authors"
-              aria-label="Authors"
+              aria-label="Авторы"
               className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <Users className="size-4" />
-              <span>Authors</span>
+              <span>Авторы</span>
             </Link>
           </nav>
         </div>

@@ -55,7 +55,7 @@ export function Toc({ items }: TocProps) {
   return (
     <aside className="hidden xl:block xl:sticky xl:top-[4.5rem] xl:max-h-[calc(100vh-5rem)] xl:overflow-y-auto">
       <div className="rounded-lg border border-border/80 bg-card/60 p-4">
-        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">On this page</h2>
+        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">На этой странице</h2>
         <ul className="space-y-2">
           {items.map((item) => (
             <li key={item.id} className={item.depth === 3 ? "pl-4" : ""}>

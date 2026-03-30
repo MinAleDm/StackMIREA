@@ -1,70 +1,80 @@
-[![Deploy Docs to GitHub Pages](https://github.com/minkinad/StackMIREA/actions/workflows/deploy-gh-pages.yml/badge.svg)](https://github.com/minkinad/StackMIREA/actions/workflows/deploy-gh-pages.yml)
-[![Node.js >= 20](https://img.shields.io/badge/Node.js-%3E%3D20-000000?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![GitHub Pages Deploy](https://github.com/minkinad/StackMIREA/actions/workflows/deploy-gh-pages.yml/badge.svg)](https://github.com/minkinad/StackMIREA/actions/workflows/deploy-gh-pages.yml)
+[![PR Checks](https://github.com/minkinad/StackMIREA/actions/workflows/pr-check.yml/badge.svg)](https://github.com/minkinad/StackMIREA/actions/workflows/pr-check.yml)
+[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
 [![TypeScript 5](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
 # StackMIREA
 
-StackMIREA - статическая образовательная docs-платформа для IT-дисциплин МИРЭА. Проект объединяет учебные треки, практики, ноутбуки и методические материалы в единый интерфейс с навигацией, поиском, страницами авторов и публикацией через GitHub Pages.
+StackMIREA - русскоязычная статическая документационная платформа для IT-дисциплин МИРЭА. Проект собирает учебные треки, практики, ноутбуки и методические материалы в единый интерфейс с документацией, семантическим поиском, страницей авторов и публикацией через GitHub Pages.
 
-## Что сейчас есть в проекте
+Production URL: https://minkinad.github.io/StackMIREA/
 
-- 19 учебных треков в единой структуре.
-- 72 MD/MDX-страницы в `content/`.
-- 53 отдельных учебных материала помимо индексных страниц.
-- Крупнейшие треки: `java` (26 страниц), `ai` (10), `bigdata` (9), `python` (6).
-- Статическая публикация на GitHub Pages через GitHub Actions.
+## Актуальное состояние проекта
 
-## Ключевые возможности
+Актуально на 30 марта 2026 года.
 
-- Docs-интерфейс на Next.js App Router со статическим экспортом в production.
-- Автосборка навигации, sidebar, breadcrumbs и пагинации по структуре `content/`.
-- Рендеринг MDX-материалов с поддержкой callout-блоков и подсветкой кода через Shiki.
-- Страница `Спроси StackMIREA` с локальным семантическим поиском по build-time индексу.
-- Страница авторов с агрегированием публикаций по разделам.
-- Ссылки `Edit on GitHub` для быстрого перехода к редактированию материалов.
-- Разделение между исходным слоем `docs/` и runtime-слоем `content/`.
+- 19 учебных треков в `content/`.
+- 71 синхронизированная Markdown/MDX-страница.
+- 52 отдельных учебных материала без учёта индексных страниц разделов.
+- Крупнейшие треки: `java` (26 страниц), `ai` (9), `bigdata` (9), `python` (6), `procedural-programming` (6).
+- Два workflow в CI/CD: `PR Checks` и `Deploy Docs to GitHub Pages`.
+
+## Что есть?
+
+- Главная страница с обзором треков, правил публикации и быстрыми переходами.
+- Раздел документации `/docs` с sidebar, breadcrumbs, оглавлением страницы и пагинацией.
+- Страница `/ask` с локальным семантическим поиском по `public/search-index.json`.
+- Страница `/authors` с агрегированием публикаций по авторам и отдельным списком команды разработки.
+- MDX-рендеринг с подсветкой кода через Shiki и пользовательскими UI-компонентами.
+- Ссылка `Редактировать источник` для перехода к редактированию материала в GitHub.
+- Статическая публикация в GitHub Pages через GitHub Actions.
 
 ## Технологии
 
-- Next.js 14
+- Next.js 14 App Router
 - React 18
-- TypeScript
+- TypeScript 5
 - Tailwind CSS
-- MDX через `next-mdx-remote`, `remark-gfm`, `rehype-slug`
-- Shiki для подсветки кода
+- `next-mdx-remote`, `remark-gfm`, `rehype-slug`
+- Shiki
 
-## Структура контента
+## Как устроен контент
 
 - `docs/` - исходные материалы, которые редактируются вручную.
 - `content/` - синхронизированный слой, который использует приложение.
-- `npm run content:sync` - переносит материалы из `docs/` в `content/`.
-- `npm run search:build` - собирает `public/search-index.json` для страницы поиска.
-- `npm run prepare:content` - выполняет синхронизацию и сборку поискового индекса.
-- `npm run build` автоматически запускает `prepare:content` через `prebuild`.
-- `npm run dev` автоматически запускает `prepare:content` через `predev`.
+- `resources/` - дополнительные файлы, датасеты и артефакты практик.
+- `scripts/` - генерация контента, поискового индекса и валидация ссылок.
+
+Основной pipeline:
+
+1. Материалы редактируются в `docs/`.
+2. `npm run content:sync` переносит их в `content/`.
+3. `npm run search:build` собирает поисковый индекс.
+4. `npm run prepare:content` объединяет оба шага.
+5. `npm run build` запускает `prepare:content` автоматически через `prebuild`.
 
 ## Учебные треки
 
-- `python`
+- `algorithms`
 - `ai`
 - `bigdata`
-- `java`
-- `algorithms`
-- `procedural-programming`
-- `object-oriented-programming`
-- `data-structures-and-algorithms-part-1`
-- `react`
-- `data-structures-and-algorithms-part-2`
-- `configuration-management`
-- `systems-analysis-and-conceptual-modeling-part-1`
-- `software-application-development-part-1`
-- `internet-of-things`
 - `business-process-modeling`
+- `configuration-management`
+- `data-structures-and-algorithms-part-1`
+- `data-structures-and-algorithms-part-2`
 - `database-development`
+- `internet-of-things`
+- `java`
+- `object-oriented-programming`
+- `procedural-programming`
+- `project-management`
+- `python`
+- `react`
+- `software-application-development-part-1`
 - `software-testing-and-verification`
 - `system-administration`
-- `project-management`
+- `systems-analysis-and-conceptual-modeling-part-1`
 
 ## Быстрый старт
 
@@ -75,20 +85,20 @@ npm ci
 npm run dev
 ```
 
-Локально проект будет доступен на `http://localhost:3000`.
+Локальный dev-сервер будет доступен на `http://localhost:3000`.
 
 ## Скрипты
 
-- `npm run dev` - локальная разработка.
+- `npm run dev` - локальная разработка; перед запуском автоматически выполняется `prepare:content`.
 - `npm run build` - production build со статическим экспортом в `out/`.
 - `npm run start` - локальный запуск собранной статической версии на `:3000`.
 - `npm run lint` - проверка ESLint.
 - `npm run typecheck` - проверка TypeScript.
 - `npm run prepare:content` - синхронизация контента и сборка поискового индекса.
-- `npm run content:sync` - синхронизация `docs/` -> `content/`.
-- `npm run search:build` - генерация локального поискового индекса.
-- `npm run validate:content` - проверка внутренних markdown-ссылок, якорей и репозиторных ссылок в code fence.
-- `npm run export` - информационный скрипт о static export.
+- `npm run content:sync` - перенос `docs/` -> `content/`.
+- `npm run search:build` - генерация `public/search-index.json`.
+- `npm run validate:content` - проверка markdown-ссылок, якорей и репозиторных ссылок в code fence.
+- `npm run export` - информационный скрипт: static export выполняется внутри `next build`.
 
 ## Структура проекта
 
@@ -105,30 +115,16 @@ styles/
 .github/workflows/
 ```
 
-Ключевые директории:
+## CI/CD и деплой
 
-- `app/` - маршруты и страницы приложения.
-- `components/` - layout и UI-компоненты.
-- `docs/` - редактируемые исходные материалы.
-- `content/` - контент, который читает приложение во время сборки и рантайма.
-- `resources/` - дополнительные файлы, датасеты и артефакты практик.
-- `scripts/` - служебные скрипты синхронизации и индексации.
-
-## Деплой
-
-Сайт публикуется в GitHub Pages workflow [`deploy-gh-pages.yml`](./.github/workflows/deploy-gh-pages.yml).
-
-Что нужно в репозитории:
-
-1. В `Settings -> Pages` выбрать `Source: GitHub Actions`.
-2. Пушить изменения в ветку `main` или запускать workflow вручную.
-
-Production URL: `https://minkinad.github.io/StackMIREA/`
+- [`.github/workflows/pr-check.yml`](./.github/workflows/pr-check.yml) проверяет `prepare:content`, `validate:content`, `lint`, `typecheck` и `build` для Pull Request.
+- [`.github/workflows/deploy-gh-pages.yml`](./.github/workflows/deploy-gh-pages.yml) публикует сайт в GitHub Pages при пуше в `main` и при ручном запуске.
+- В `Settings -> Pages` должен быть выбран `Source: GitHub Actions`.
 
 ## Как вносить изменения
 
 1. Добавьте или обновите материал в `docs/<track>/...`.
-2. Запустите `npm run content:sync`.
+2. Запустите `npm run content:sync` или сразу `npm run prepare:content`.
 3. Проверьте контент командой `npm run validate:content`.
 4. Проверьте проект командами `npm run lint` и `npm run typecheck`.
 5. Откройте Pull Request.
@@ -138,4 +134,4 @@ Production URL: `https://minkinad.github.io/StackMIREA/`
 ## Лицензии
 
 - Код проекта распространяется по лицензии MIT. См. [LICENSE](./LICENSE).
-- Контент сайта, статьи и учебные материалы распространяются по лицензии CC BY-NC-SA 4.0. См. [CC-BY-NC-SA-4.0](./CC-BY-NC-SA-4.0).
+- Контент сайта, статьи и учебные материалы - CC BY-NC-SA 4.0. См. [CC-BY-NC-SA-4.0](./CC-BY-NC-SA-4.0).

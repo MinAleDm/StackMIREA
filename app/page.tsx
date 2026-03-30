@@ -74,7 +74,7 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-4xl">
           <p className="inline-flex animate-fade-up items-center gap-2 rounded-full border border-border/80 bg-background/70 px-3 py-1 text-xs text-muted-foreground">
             <Brain className="size-3.5" />
-            StackMIREA documentation hub
+            Центр документации StackMIREA
           </p>
 
           <h1
@@ -125,7 +125,7 @@ export default function HomePage() {
           <div>
             <p className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/70 px-3 py-1 text-xs text-muted-foreground">
               <BrainCircuit className="size-3.5" />
-              Semantic search beta
+              Бета семантического поиска
             </p>
             <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">Новая навигация по материалам</h2>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
@@ -135,7 +135,7 @@ export default function HomePage() {
           </div>
 
           <Link href="/ask" className={cn(buttonVariants({ size: "lg" }), "w-full rounded-2xl lg:w-auto")}>
-            Открыть Ask StackMIREA
+            Открыть "Спроси StackMIREA"
             <ArrowRight className="size-4" />
           </Link>
         </div>

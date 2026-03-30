@@ -13,7 +13,7 @@ const socialImage = `${SITE_ORIGIN}${BASE_PATH}/preview.png`;
 export const metadata: Metadata = {
   metadataBase: new URL(`${SITE_ORIGIN}${BASE_PATH}/`),
   title: {
-    default: `${SITE_NAME} Docs`,
+    default: `${SITE_NAME} Документация`,
     template: `%s | ${SITE_NAME}`
   },
   description: SITE_DESCRIPTION,
@@ -25,20 +25,20 @@ export const metadata: Metadata = {
   keywords: ["Next.js docs", "documentation platform", "python", "ai", "bigdata", "java", "algorithms", "mdx", "shiki"],
   openGraph: {
     type: "website",
-    title: `${SITE_NAME} Docs`,
+    title: `${SITE_NAME} Документация`,
     description: SITE_DESCRIPTION,
     images: [
       {
         url: socialImage,
         width: 1200,
         height: 630,
-        alt: `${SITE_NAME} social card`
+        alt: `Превью ${SITE_NAME}`
       }
     ]
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} Docs`,
+    title: `${SITE_NAME} Документация`,
     description: SITE_DESCRIPTION,
     images: [socialImage]
   }
