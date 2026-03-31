@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Brain, BrainCircuit, ExternalLink, GitPullRequest, ListChecks } from "lucide-react";
 
 import { ContributorsSection } from "@/components/contributors/ContributorsSection";
+import { WhatsNewSection } from "@/components/home/WhatsNewSection";
 import { buttonVariants } from "@/components/ui/button";
 import { cn, REPO_URL } from "@/lib/utils";
 import { getContributorsOverview } from "@/lib/contributors";
@@ -120,6 +121,8 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      <WhatsNewSection />
 
       <ContributorsSection
         authors={authors}
