@@ -1,27 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, Bot, Brain, BrainCircuit, Code2, Database, ExternalLink, GitPullRequest, ListChecks, Sigma, Users } from "lucide-react";
+import { ArrowRight, Brain, BrainCircuit, ExternalLink, GitPullRequest, ListChecks } from "lucide-react";
 
+import { ContributorsSection } from "@/components/contributors/ContributorsSection";
 import { buttonVariants } from "@/components/ui/button";
 import { cn, REPO_URL } from "@/lib/utils";
-import { getTrackDefinitions, type TrackIconKey } from "@/lib/tracks";
+import { getContributorsOverview } from "@/lib/contributors";
 
 export const dynamic = "force-static";
-
-const iconByKey: Record<TrackIconKey, typeof Bot> = {
-  bot: Bot,
-  brain: Brain,
-  code2: Code2,
-  database: Database,
-  gitPullRequest: GitPullRequest,
-  listChecks: ListChecks,
-  sigma: Sigma
-};
-
-const tracks = getTrackDefinitions().map((track) => ({
-  ...track,
-  href: `/docs/${track.id}`,
-  icon: iconByKey[track.iconKey]
-}));
 
 const publicationRules = [
   {
@@ -65,6 +50,8 @@ const pullRequestLinks = [
 ];
 
 export default function HomePage() {
+  const { authors, devTeam } = getContributorsOverview();
+
   return (
     <div className="mx-auto w-full max-w-[1440px] px-4 pb-20 pt-14 sm:px-6 lg:px-8">
       <section className="relative overflow-hidden rounded-3xl border border-border/70 bg-card/65 px-6 py-14 sm:px-10">
@@ -103,13 +90,6 @@ export default function HomePage() {
               <ArrowRight className="size-4" />
             </Link>
             <Link
-              href="/authors"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full border-border/80 bg-background/70 sm:w-auto")}
-            >
-              <Users className="size-4" />
-              Авторы
-            </Link>
-            <Link
               href="/ask"
               className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full border-border/80 bg-background/70 sm:w-auto")}
             >
@@ -141,29 +121,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {tracks.map((track, index) => {
-          const Icon = track.icon;
-          return (
-            <Link
-              key={track.title}
-              href={track.href}
-              className="group flex h-full flex-col rounded-2xl border border-border/70 bg-card/70 p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card sm:p-5"
-              style={{ animation: "fade-up 660ms ease-out forwards", animationDelay: `${120 + index * 100}ms` }}
-            >
-              <div className="mb-4 inline-flex rounded-lg border border-border/70 bg-background/70 p-2 text-muted-foreground transition-colors group-hover:text-primary">
-                <Icon className="size-5" />
-              </div>
-              <h2 className="break-words text-base font-semibold leading-snug tracking-tight">{track.title}</h2>
-              <p className="mt-2 break-words text-sm leading-6 text-muted-foreground">{track.homeSubtitle}</p>
-              <span className="mt-auto pt-5 inline-flex items-center gap-1.5 text-sm text-primary">
-                Перейти
-                <ArrowRight className="size-3.5" />
-              </span>
-            </Link>
-          );
-        })}
-      </section>
+      <ContributorsSection
+        authors={authors}
+        devTeam={devTeam}
+        title="Авторы и разработчики"
+        description="Под блоком поиска собрали тех, кто наполняет StackMIREA материалами и поддерживает саму платформу."
+        className="mt-10 rounded-3xl border border-border/70 bg-card/70 p-6 sm:p-8"
+        sectionId="contributors"
+        compact
+      />
 
       <section className="mt-10 grid gap-4 lg:grid-cols-2">
         <article className="rounded-2xl border border-border/70 bg-card/70 p-6">

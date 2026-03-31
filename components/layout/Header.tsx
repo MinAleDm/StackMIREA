@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { BookOpenText, BrainCircuit, Github, Home, Users } from "lucide-react";
+import { BookOpenText, BrainCircuit, Github, Home } from "lucide-react";
 
 import siteLogo from "@/public/favicon.png";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -40,14 +40,6 @@ export function Header() {
             >
               <BrainCircuit className="size-4" />
               <span>Спросить</span>
-            </Link>
-            <Link
-              href="/authors"
-              aria-label="Авторы"
-              className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
-            >
-              <Users className="size-4" />
-              <span>Авторы</span>
             </Link>
           </nav>
         </div>
