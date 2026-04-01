@@ -51,7 +51,7 @@ const pullRequestLinks = [
 ];
 
 export default function HomePage() {
-  const { authors, devTeam } = getContributorsOverview();
+  const { authors, productTeam, contentManagers, devTeam } = getContributorsOverview();
 
   return (
     <div className="mx-auto w-full max-w-[1440px] px-4 pb-20 pt-14 sm:px-6 lg:px-8">
@@ -126,12 +126,13 @@ export default function HomePage() {
 
       <ContributorsSection
         authors={authors}
+        productTeam={productTeam}
+        contentManagers={contentManagers}
         devTeam={devTeam}
-        title="Авторы и разработчики"
-        description="Под блоком поиска собрали тех, кто наполняет StackMIREA материалами и поддерживает саму платформу."
+        title="Авторы и команды"
+        description="Здесь собрали авторов публикаций и команды, которые развивают StackMIREA как продукт, контентную платформу и инженерный проект."
         className="mt-10 rounded-3xl border border-border/70 bg-card/70 p-6 sm:p-8"
         sectionId="contributors"
-        compact
       />
 
       <section className="mt-10 grid gap-4 lg:grid-cols-2">

@@ -6,15 +6,19 @@ export interface GitHubPerson {
   avatarUrl: string;
 }
 
-export interface DevTeamMember extends GitHubPerson {
+export interface TeamMember extends GitHubPerson {
   role: string;
 }
 
 const DEFAULT_DOC_AUTHOR = REPO_OWNER;
-const DEV_TEAM_MEMBERS: Array<{ github: string; role: string }> = [
-  { github: REPO_OWNER, role: "CEO" },
+const PRODUCT_TEAM_MEMBERS: Array<{ github: string; role: string }> = [
+  { github: REPO_OWNER, role: "CPO" }
+];
+const CONTENT_TEAM_MEMBERS: Array<{ github: string; role: string }> = [
+  { github: REPO_OWNER, role: "Head of Content" },
   { github: "g10bus", role: "Media Team Lead" }
 ];
+const DEV_TEAM_MEMBERS: Array<{ github: string; role: string }> = [{ github: REPO_OWNER, role: "Dashboard Team Lead" }];
 
 function normalizeGitHubLogin(rawValue: string) {
   const trimmed = rawValue.trim();
@@ -42,13 +46,25 @@ export function getDefaultDocAuthor() {
   return toGitHubPerson(DEFAULT_DOC_AUTHOR);
 }
 
-export function getDevTeamMembers() {
-  const uniqueMembers = new Map<string, DevTeamMember>();
+function toUniqueTeamMembers(members: Array<{ github: string; role: string }>) {
+  const uniqueMembers = new Map<string, TeamMember>();
 
-  for (const member of DEV_TEAM_MEMBERS) {
+  for (const member of members) {
     const person = toGitHubPerson(member.github);
     uniqueMembers.set(person.github.toLowerCase(), { ...person, role: member.role });
   }
 
   return [...uniqueMembers.values()];
+}
+
+export function getProductTeamMembers() {
+  return toUniqueTeamMembers(PRODUCT_TEAM_MEMBERS);
+}
+
+export function getContentTeamMembers() {
+  return toUniqueTeamMembers(CONTENT_TEAM_MEMBERS);
+}
+
+export function getDevTeamMembers() {
+  return toUniqueTeamMembers(DEV_TEAM_MEMBERS);
 }

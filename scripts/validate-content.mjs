@@ -16,7 +16,7 @@ const publicRoot = path.join(projectRoot, "public");
 
 const allowedSchemes = ["http://", "https://", "mailto:", "tel:", "data:"];
 const knownRepoRoots = ["resources/", "public/", "docs/", "content/"];
-const knownAppRoutes = new Set(["/", "/ask", "/authors", "/docs", "/robots.txt", "/sitemap.xml"]);
+const knownAppRoutes = new Set(["/", "/ask", "/docs", "/robots.txt", "/sitemap.xml"]);
 
 function walkFiles(rootDirectory, predicate) {
   const files = [];

@@ -1,86 +1,114 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+
 import { GitHubUserBadge } from "@/components/ui/GitHubUserBadge";
+import type { TeamMember } from "@/lib/authors";
 import type { AuthorWithSummary } from "@/lib/contributors";
-import type { DevTeamMember } from "@/lib/authors";
+import { cn } from "@/lib/utils";
 
 interface ContributorsSectionProps {
   authors: AuthorWithSummary[];
-  devTeam: DevTeamMember[];
+  productTeam: TeamMember[];
+  contentManagers: TeamMember[];
+  devTeam: TeamMember[];
   title: string;
   description: string;
-  authorsTitle?: string;
-  developersTitle?: string;
   className?: string;
   sectionId?: string;
-  compact?: boolean;
-  showContacts?: boolean;
 }
 
 export function ContributorsSection({
   authors,
+  productTeam,
+  contentManagers,
   devTeam,
   title,
   description,
-  authorsTitle = "Авторы публикаций",
-  developersTitle = "Команда разработки",
   className,
-  sectionId,
-  compact = false,
-  showContacts = false
+  sectionId
 }: ContributorsSectionProps) {
-  const visibleAuthors = compact ? authors.slice(0, 6) : authors;
-
   return (
-    <section id={sectionId} className={className}>
-      <header className="mb-8">
+    <section id={sectionId} className={cn("space-y-8", className)}>
+      <header>
         <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>
         <p className="mt-3 max-w-3xl text-base text-muted-foreground">{description}</p>
       </header>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(280px,0.8fr)]">
-        <div>
-          <h3 className="mb-4 text-xl font-semibold tracking-tight">{authorsTitle}</h3>
-          <div className="grid gap-4 lg:grid-cols-2">
-            {visibleAuthors.map((author) => (
-              <article key={author.github} className="rounded-xl border border-border/80 bg-card/70 p-4">
-                <GitHubUserBadge person={author} description={`Публикаций: ${author.docsCount}`} />
-                <p className="mt-3 text-sm text-muted-foreground">{author.summary}</p>
-              </article>
-            ))}
-          </div>
-        </div>
+      <div>
+        <h3 className="mb-4 text-xl font-semibold tracking-tight">Авторы</h3>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {authors.map((author) => (
+            <Link
+              key={author.github}
+              href={author.profileUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="group flex h-full flex-col rounded-2xl border border-border/80 bg-card/70 p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <img
+                    src={author.avatarUrl}
+                    alt={`Avatar of ${author.github}`}
+                    width={48}
+                    height={48}
+                    loading="lazy"
+                    className="size-12 rounded-full border border-border/70 bg-muted object-cover"
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-base font-semibold tracking-tight text-foreground">@{author.github}</p>
+                    <p className="text-sm text-muted-foreground">{author.docsCount} публикаций</p>
+                  </div>
+                </div>
+                <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+              </div>
 
-        <div>
-          <h3 className="mb-4 text-xl font-semibold tracking-tight">{developersTitle}</h3>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            {devTeam.map((member) => (
-              <GitHubUserBadge key={member.github} person={member} description={member.role} />
-            ))}
-          </div>
+              <p className="mt-4 text-sm leading-6 text-muted-foreground">{author.summary}</p>
 
-          {compact && authors.length > visibleAuthors.length ? (
-            <p className="mt-4 text-sm text-muted-foreground">
-              На главной показаны самые активные авторы. Остальные участники автоматически подтягиваются из материалов
-              документации.
-            </p>
-          ) : null}
+              <span className="mt-auto inline-flex items-center gap-1.5 pt-6 text-sm text-primary">
+                Открыть профиль
+                <ArrowRight className="size-3.5" />
+              </span>
+            </Link>
+          ))}
         </div>
       </div>
 
-      {showContacts ? (
-        <div className="mt-10 rounded-xl border border-border/80 bg-card/70 p-5">
-          <h3 className="text-xl font-semibold tracking-tight">Контакты команды</h3>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Для связи с командой разработки:{" "}
-            <a href="mailto:petrushenko184@mail.ru" className="text-primary transition-opacity hover:opacity-80">
-              petrushenko184@mail.ru
-            </a>
-            .
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Чтобы письмо обработали быстрее, укажите в теме: <span className="text-foreground">StackMIREA - ваш вопрос</span>.
-          </p>
+      <div className="rounded-3xl border border-border/70 bg-card/70 p-6 sm:p-8">
+        <div className="grid gap-8 xl:grid-cols-3">
+          <div>
+            <h3 className="mb-4 text-xl font-semibold tracking-tight">StackMirea Product</h3>
+            <div className="grid gap-3">
+              {productTeam.map((member) => (
+                <GitHubUserBadge key={`product-${member.github}`} person={member} description={member.role} className="w-full justify-start" />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="mb-4 text-xl font-semibold tracking-tight">Content Managers</h3>
+            <div className="grid gap-3">
+              {contentManagers.map((member) => (
+                <GitHubUserBadge
+                  key={`content-${member.github}`}
+                  person={member}
+                  description={member.role}
+                  className="w-full justify-start"
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="mb-4 text-xl font-semibold tracking-tight">Developers Group</h3>
+            <div className="grid gap-3">
+              {devTeam.map((member) => (
+                <GitHubUserBadge key={`dev-${member.github}`} person={member} description={member.role} className="w-full justify-start" />
+              ))}
+            </div>
+          </div>
         </div>
-      ) : null}
+      </div>
     </section>
   );
 }

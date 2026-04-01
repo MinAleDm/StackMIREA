@@ -1,10 +1,17 @@
-import { getDevTeamMembers, type GitHubPerson } from "@/lib/authors";
+import { getContentTeamMembers, getDevTeamMembers, getProductTeamMembers, type GitHubPerson, type TeamMember } from "@/lib/authors";
 import { getAllDocs } from "@/lib/navigation";
 import { getTrackTitle } from "@/lib/tracks";
 
 export interface AuthorWithSummary extends GitHubPerson {
   docsCount: number;
   summary: string;
+}
+
+export interface ContributorsOverview {
+  authors: AuthorWithSummary[];
+  productTeam: TeamMember[];
+  contentManagers: TeamMember[];
+  devTeam: TeamMember[];
 }
 
 function formatSectionName(section: string) {
@@ -93,6 +100,8 @@ export function getAuthorsWithSummary() {
 export function getContributorsOverview() {
   return {
     authors: getAuthorsWithSummary(),
+    productTeam: getProductTeamMembers(),
+    contentManagers: getContentTeamMembers(),
     devTeam: getDevTeamMembers()
-  };
+  } satisfies ContributorsOverview;
 }
