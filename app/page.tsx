@@ -110,7 +110,7 @@ export default function HomePage() {
             </p>
             <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">Новая навигация по материалам</h2>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
-              Задай вопрос естественным языком и найди нужные практики по теме, инструменту или сравнению дисциплин.
+              Есть вопрос? Можешь найти ответы на него в ИИ-поиске. 
               Например: `где есть KNN`, `покажи материалы по pandas`, `сравни MVC и OOP`.
             </p>
           </div>
