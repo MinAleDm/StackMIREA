@@ -50,6 +50,10 @@ html {
   scroll-behavior: smooth;
 }
 
+html[data-theme-transition="wave"] {
+  view-transition-name: root;
+}
+
 body {
   @apply bg-background text-foreground antialiased;
   min-height: 100vh;
@@ -62,4 +66,30 @@ body {
     radial-gradient(1100px 640px at 88% -12%, rgb(15 23 42 / 0.12), transparent 58%),
     radial-gradient(900px 520px at -8% 18%, rgb(115 115 115 / 0.12), transparent 56%),
     hsl(var(--background));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-theme-transition="wave"]::view-transition-old(root),
+  html[data-theme-transition="wave"]::view-transition-new(root) {
+    animation-duration: 0.7s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  html[data-theme-transition="wave"]::view-transition-old(root) {
+    animation: none;
+  }
+
+  html[data-theme-transition="wave"]::view-transition-new(root) {
+    animation-name: theme-wave-reveal;
+  }
+}
+
+@keyframes theme-wave-reveal {
+  from {
+    clip-path: circle(0 at var(--theme-transition-x) var(--theme-transition-y));
+  }
+
+  to {
+    clip-path: circle(var(--theme-transition-radius) at var(--theme-transition-x) var(--theme-transition-y));
+  }
 }
