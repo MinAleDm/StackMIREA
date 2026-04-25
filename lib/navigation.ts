@@ -1,11 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
-import matter from "gray-matter";
-
 import type { GitHubPerson } from "@/lib/authors";
-import { getDefaultDocAuthor, toGitHubPerson } from "@/lib/authors";
+import { getContentManifest } from "@/lib/content-manifest";
+import type { TocItem } from "@/lib/markdown";
 import { getTrackOrder, getTrackTitle } from "@/lib/tracks";
-import { toTitleCase } from "@/lib/utils";
 
 export interface DocFrontmatter {
   title?: string;
@@ -25,6 +21,10 @@ export interface DocEntry {
   editPath: string | null;
   section: string;
   body: string;
+  toc: TocItem[];
+  preview: string;
+  topics: string[];
+  hash: string;
   author: GitHubPerson;
   isSectionIndex: boolean;
   isGenerated: boolean;
@@ -47,51 +47,7 @@ interface DocsIndex {
   sidebarGroups: SidebarGroup[];
 }
 
-const CONTENT_ROOT = path.join(process.cwd(), "content");
-const DOCS_SOURCE_ROOT = path.join(process.cwd(), "docs");
-
 let cachedDocsIndex: DocsIndex | null = null;
-
-function walkMarkdownFiles(rootDirectory: string) {
-  const files: string[] = [];
-  const stack = [rootDirectory];
-
-  while (stack.length > 0) {
-    const currentDirectory = stack.pop();
-
-    if (!currentDirectory) {
-      break;
-    }
-
-    const entries = fs.readdirSync(currentDirectory, { withFileTypes: true });
-
-    for (const entry of entries) {
-      const fullPath = path.join(currentDirectory, entry.name);
-
-      if (entry.isDirectory()) {
-        stack.push(fullPath);
-        continue;
-      }
-
-      if (entry.isFile() && /\.(md|mdx)$/i.test(entry.name)) {
-        files.push(fullPath);
-      }
-    }
-  }
-
-  return files;
-}
-
-function normalizeSlug(relativePath: string) {
-  const withoutExtension = relativePath.replace(/\.(md|mdx)$/i, "");
-  const parts = withoutExtension.split(path.sep);
-
-  if (parts.at(-1) === "index") {
-    return parts.slice(0, -1);
-  }
-
-  return parts;
-}
 
 function getSectionOrder(section: string) {
   return getTrackOrder(section);
@@ -120,55 +76,6 @@ function compareDocs(left: DocEntry, right: DocEntry) {
   }
 
   return left.title.localeCompare(right.title);
-}
-
-function resolveEditPath(relativePath: string) {
-  const candidates =
-    relativePath === path.join("algorithms", "getting-started.mdx")
-      ? ["intro.mdx", "intro.md"]
-      : [relativePath, relativePath.replace(/\.mdx$/i, ".md")];
-
-  for (const candidate of candidates) {
-    const absoluteCandidatePath = path.join(DOCS_SOURCE_ROOT, candidate);
-
-    if (fs.existsSync(absoluteCandidatePath)) {
-      return candidate.replace(/\\/g, "/");
-    }
-  }
-
-  return null;
-}
-
-function createDocEntry(filePath: string): DocEntry {
-  const source = fs.readFileSync(filePath, "utf-8");
-  const parsed = matter(source);
-  const relativePath = path.relative(CONTENT_ROOT, filePath);
-  const slug = normalizeSlug(relativePath);
-  const slugKey = getSlugKey(slug);
-  const section = slug[0] ?? "docs";
-  const isSectionIndex = slug.length === 1;
-  const parsedOrder = Number(parsed.data.order ?? parsed.data.sidebar_position);
-  const safeOrder = Number.isFinite(parsedOrder) ? parsedOrder : isSectionIndex ? 0 : 9999;
-  const title = parsed.data.title?.toString().trim() || toTitleCase(slug.at(-1) ?? section);
-  const description = parsed.data.description?.toString().trim() || "";
-  const rawAuthor = parsed.data.author?.toString().trim();
-  const author = rawAuthor ? toGitHubPerson(rawAuthor) : getDefaultDocAuthor();
-  const editPath = resolveEditPath(relativePath);
-
-  return {
-    slug,
-    slugKey,
-    href: `/docs/${slug.join("/")}`,
-    title,
-    description,
-    order: safeOrder,
-    editPath,
-    section,
-    body: parsed.content,
-    author,
-    isSectionIndex,
-    isGenerated: editPath === null
-  };
 }
 
 function createSidebarGroups(docs: DocEntry[]) {
@@ -215,16 +122,7 @@ function createSidebarGroups(docs: DocEntry[]) {
 }
 
 function buildDocsIndex(): DocsIndex {
-  if (!fs.existsSync(CONTENT_ROOT)) {
-    return {
-      docs: [],
-      docsBySlug: new Map(),
-      docOrderBySlug: new Map(),
-      sidebarGroups: []
-    };
-  }
-
-  const docs = walkMarkdownFiles(CONTENT_ROOT).map(createDocEntry).sort(compareDocs);
+  const docs = [...getContentManifest().docs].sort(compareDocs);
   const docsBySlug = new Map<string, DocEntry>();
   const docOrderBySlug = new Map<string, number>();
 

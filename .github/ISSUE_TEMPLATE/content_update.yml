@@ -44,6 +44,6 @@ body:
     attributes:
       label: Чеклист Контрибьютора
       options:
-        - label: Я буду редактировать контент в docs/, а не в сгенерированном content/
+        - label: Я буду редактировать контент в docs/ и пересоберу content manifest
         - label: Я запущу prepare:content и validate:content перед открытием PR
         - label: Я добавлю author metadata, если это уместно

@@ -10,9 +10,9 @@ Production URL: https://minkinad.github.io/StackMIREA/
 
 Актуально на 4 апреля 2026 года.
 
-- 19 учебных треков в `content/`.
+- 19 учебных треков в едином content manifest.
 - 68 исходных Markdown/MDX-файлов в `docs/`.
-- 71 синхронизированная Markdown/MDX-страница.
+- 71 Markdown/MDX-страница в `.cache/content-manifest.json`.
 - 52 отдельных учебных материала без учёта индексных страниц разделов.
 - Крупнейшие треки: `java` (26 страниц), `ai` (9), `bigdata` (9), `python` (6), `procedural-programming` (6).
 - Два workflow в CI/CD: `PR Checks` и `Deploy Docs to GitHub Pages`.
@@ -39,16 +39,16 @@ Production URL: https://minkinad.github.io/StackMIREA/
 ## Как устроен контент
 
 - `docs/` - исходные материалы, которые редактируются вручную.
-- `content/` - синхронизированный слой, который использует приложение.
+- `.cache/content-manifest.json` - единый build-time manifest, который используют приложение, поиск и валидатор.
 - `resources/` - дополнительные файлы, датасеты и артефакты практик.
-- `scripts/` - генерация контента, поискового индекса и валидация ссылок.
+- `scripts/` - сборка content manifest, поискового индекса и валидация ссылок.
 - `public/search-index.json` - локальный поисковый индекс для страницы `/ask`.
 
 Основной pipeline:
 
 1. Материалы редактируются в `docs/`.
-2. `npm run content:sync` переносит их в `content/`.
-3. `npm run search:build` собирает поисковый индекс.
+2. `npm run content:manifest` собирает `.cache/content-manifest.json` с slug, frontmatter, author, toc, preview, topics и hash.
+3. `npm run search:build` собирает поисковый индекс из manifest.
 4. `npm run prepare:content` объединяет оба шага.
 5. `npm run build` запускает `prepare:content` автоматически через `prebuild`.
 
@@ -92,8 +92,9 @@ npm run dev
 - `npm run start` - локальный запуск собранной статической версии на `:3000`.
 - `npm run lint` - проверка ESLint.
 - `npm run typecheck` - проверка TypeScript.
-- `npm run prepare:content` - синхронизация контента и сборка поискового индекса.
-- `npm run content:sync` - перенос `docs/` -> `content/`.
+- `npm run prepare:content` - сборка content manifest и поискового индекса.
+- `npm run content:manifest` - генерация `.cache/content-manifest.json` из `docs/`.
+- `npm run content:sync` - compatibility alias для `content:manifest`.
 - `npm run search:build` - генерация `public/search-index.json`.
 - `npm run validate:content` - проверка markdown-ссылок, якорей и репозиторных ссылок в code fence.
 - `npm run export` - информационный скрипт: static export выполняется внутри `next build`.
@@ -103,7 +104,6 @@ npm run dev
 ```text
 app/
 components/
-content/
 docs/
 lib/
 public/
@@ -136,7 +136,7 @@ SUPPORT.md
 ## Как вносить изменения
 
 1. Добавьте или обновите материал в `docs/<track>/...`.
-2. Запустите `npm run content:sync` или сразу `npm run prepare:content`.
+2. Запустите `npm run content:manifest` или сразу `npm run prepare:content`.
 3. Проверьте контент командой `npm run validate:content`.
 4. Проверьте проект командами `npm run lint` и `npm run typecheck`.
 5. Откройте Pull Request.
@@ -149,4 +149,3 @@ SUPPORT.md
 
 - Код проекта распространяется по лицензии MIT. См. [LICENSE](./LICENSE).
 - Контент сайта, статьи и учебные материалы - CC BY-NC-SA 4.0. См. [CC-BY-NC-SA-4.0](./CC-BY-NC-SA-4.0).
-

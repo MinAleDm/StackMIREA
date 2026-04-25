@@ -38,5 +38,5 @@ slug: /intro
 ## Исходники
 
 - Python: `pr_Python/`
-- Java: `docs/java/` и `content/java/`
+- Java: `docs/java/`
 - GitHub: [minkinad/StackMIREA](https://github.com/minkinad/StackMIREA)
