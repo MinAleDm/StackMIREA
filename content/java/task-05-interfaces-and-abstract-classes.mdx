@@ -1,0 +1,501 @@
+---
+title: Task 5 — Интерфейсы и абстрактные классы
+sidebar_position: 6
+description: Контракты поведения и разделение абстракций от реализации.
+slug: /java/task-05-interfaces-and-abstract-classes
+---
+
+## Задание
+
+Контракты поведения и разделение абстракций от реализации. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task5/Circle.java`
+- `Task5/Movable.java`
+- `Task5/MovableCircle.java`
+- `Task5/MovablePoint.java`
+- `Task5/MovableRectangle.java`
+- `Task5/Rectangle.java`
+- `Task5/Shape.java`
+- `Task5/Square.java`
+- `Task5/TestMovable.java`
+- `Task5/TestShape.java`
+
+#### `Task5/Circle.java`
+
+```java title="Task5/Circle.java"
+package Task5;
+import java.math.*;
+
+public class Circle extends Shape {
+    protected double radius;
+    public Circle(){
+        this.filled = false;
+        this.color = "blue";
+        this.radius = 1;
+    }
+    public Circle(double radius){
+        this.filled = false;
+        this.color = "blue";
+        this.radius = radius;
+    }
+    public Circle(double radius, String color, boolean filled){
+        this.radius = radius;
+        this.color = color;
+        this.filled = filled;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+    public void setRadius(double radius){
+        this.radius = radius;
+    }
+    @Override
+    public double getArea() {
+        return Math.PI*radius*radius;
+    }
+    @Override
+    public double getPerimeter() {
+        return 2*Math.PI*radius;
+    }
+    @Override
+    public String toString() {
+        return "Shape: circle radius: "+this.radius+", color: "+this.color+" Plosh "+getArea();
+    }
+}
+
+
+```
+
+#### `Task5/Movable.java`
+
+```java title="Task5/Movable.java"
+package Task5;
+
+public interface Movable {
+    void moveUp();
+    void moveDown();
+    void moveLeft();
+    void moveRight();
+}
+
+```
+
+#### `Task5/MovableCircle.java`
+
+```java title="Task5/MovableCircle.java"
+package Task5;
+
+public class MovableCircle implements Movable{
+    private int radius;
+    MovablePoint center;
+    public  MovableCircle(int x, int y, int xSpeed, int ySpeed, int radius){
+        this.center = new MovablePoint(x, y, xSpeed, ySpeed);
+        this.radius = radius;
+    }
+    @Override
+    public String toString() {
+        return "MovableCircle{" +
+                "radius=" + this.radius +
+                ", center=" + this.center.y + " "+this.center.ySpeed+" "+ this.center.xSpeed+" "+ this.center.x+
+                '}';
+    }
+    @Override
+    public void moveUp() {
+        MovablePoint ret = this.center;
+        ret.y += this.center.ySpeed;
+    }
+    @Override
+    public void moveDown() {
+        MovablePoint ret = this.center;
+        ret.y -= this.center.ySpeed;
+    }
+    @Override
+    public void moveLeft() {
+        MovablePoint ret = this.center;
+        ret.x += this.center.xSpeed;
+    }
+    @Override
+    public void moveRight() {
+        MovablePoint ret = this.center;
+        ret.x -= this.center.xSpeed;
+    }
+}
+
+```
+
+#### `Task5/MovablePoint.java`
+
+```java title="Task5/MovablePoint.java"
+package Task5;
+
+public class MovablePoint implements Movable {
+    int x;
+    int y;
+    int xSpeed;
+    int ySpeed;
+    public  MovablePoint(int x, int y, int xSpeed, int ySpeed){
+        this.x=x;
+        this.y=y;
+        this.xSpeed=xSpeed;
+        this.ySpeed=ySpeed;
+    }
+
+    @Override
+    public String toString() {
+        return "MovablePoint{" +
+                "x=" + this.x +
+                ", y=" + this.y +
+                ", xSpeed=" + this.xSpeed +
+                ", ySpeed=" + this.ySpeed +
+                '}';
+    }
+
+    @Override
+    public void moveUp() {
+        this.y +=ySpeed;
+    }
+
+    @Override
+    public void moveDown() {
+        this.y -= ySpeed;
+    }
+
+    @Override
+    public void moveLeft() {
+        this.x -= xSpeed;
+    }
+
+    @Override
+    public void moveRight() {
+        this.x +=xSpeed;
+    }
+}
+
+```
+
+#### `Task5/MovableRectangle.java`
+
+```java title="Task5/MovableRectangle.java"
+package Task5;
+
+public class MovableRectangle implements Movable{
+    MovablePoint topLeft;
+    MovablePoint bottomRight;
+    public MovableRectangle(int x1, int y1, int x2, int y2, int xSpeed, int ySpeed){
+        this.topLeft = new MovablePoint(x1, y1, xSpeed, ySpeed);
+        this.bottomRight = new MovablePoint(x2, y2, xSpeed, ySpeed);
+    }
+    public void proverkX(){
+        if (this.topLeft.xSpeed != this.bottomRight.xSpeed){
+            MovablePoint terx;
+            if(this.topLeft.xSpeed > this.bottomRight.xSpeed){
+                terx = this.topLeft;
+                terx.xSpeed -= this.bottomRight.xSpeed;
+                this.topLeft.xSpeed = this.bottomRight.xSpeed;
+            }else{
+                terx = this.bottomRight;
+                terx.xSpeed -= this.topLeft.xSpeed;
+                this.bottomRight.xSpeed = this.topLeft.xSpeed;
+            }
+        }
+    }
+    public void proverkY(){
+        if (this.topLeft.ySpeed != this.bottomRight.ySpeed){
+            MovablePoint tery;
+            if(this.topLeft.ySpeed > this.bottomRight.ySpeed){
+                tery = this.topLeft;
+                tery.ySpeed -= this.bottomRight.ySpeed;
+                this.topLeft.ySpeed = this.bottomRight.ySpeed;
+            }else{
+                tery = this.bottomRight;
+                tery.ySpeed -= this.topLeft.ySpeed;
+                this.bottomRight.ySpeed = this.topLeft.ySpeed;
+            }
+        }
+    }
+    @Override
+    public String toString() {
+        return "MovableRectangle{" +
+                "topLeft=" + topLeft +
+                ", bottomRight=" + bottomRight +
+                '}';
+    }
+    @Override
+    public void moveUp() {
+        this.proverkY();
+        MovablePoint rety = this.topLeft;
+        rety.y += this.topLeft.ySpeed;
+        rety = this.bottomRight;
+        rety.y += this.bottomRight.ySpeed;
+    }
+    @Override
+    public void moveDown() {
+        this.proverkY();
+        MovablePoint rety = this.topLeft;
+        rety.y -= this.topLeft.ySpeed;
+        rety = this.bottomRight;
+        rety.y -= this.bottomRight.ySpeed;
+    }
+    @Override
+    public void moveLeft() {
+        this.proverkX();
+        MovablePoint retX = this.topLeft;
+        retX.x -= this.topLeft.xSpeed;
+        retX = this.bottomRight;
+        retX.x -= this.bottomRight.xSpeed;
+    }
+
+    @Override
+    public void moveRight() {
+        this.proverkX();
+        MovablePoint retX = this.topLeft;
+        retX.x += this.topLeft.xSpeed;
+        retX = this.bottomRight;
+        retX.x += this.bottomRight.xSpeed;
+    }
+}
+
+```
+
+#### `Task5/Rectangle.java`
+
+```java title="Task5/Rectangle.java"
+package Task5;
+public class Rectangle extends Shape{
+    protected double width;
+    protected double length;
+    public Rectangle(){
+        this.width = 6;
+        this.length = 5;
+        this.color = "red";
+        this.filled = false;
+    }
+    public Rectangle(double width, double length){
+        this.width = width;
+        this.length = length;
+        this.color = "red";
+        this.filled = false;
+    }
+    public Rectangle(double width, double length, String color, boolean filled){
+        this.width = width;
+        this.length = length;
+        this.color = color;
+        this.filled = filled;
+    }
+    public double getWidth(){
+        return width;
+    }
+    public double getLength(){
+        return length;
+    }
+    public void setWidth(double width){
+        this.width = width;
+    }
+    public void setLength(double length){
+        this.length = length;
+    }
+    @Override
+    public double getArea() {
+        return width*length;
+    }
+    @Override
+    public double getPerimeter() {
+        return 2*(width+length);
+    }
+    @Override
+    public String toString() {
+        return "Shape: rectangle width: "+this.width+", color: "+this.color+" Plosh "+getArea();
+    }
+}
+
+```
+
+#### `Task5/Shape.java`
+
+```java title="Task5/Shape.java"
+package Task5;
+public abstract class Shape {
+    protected String color;
+    protected boolean filled;
+    public Shape(){
+
+    }
+    public Shape(String c, boolean f){
+        this.color = c;
+        this.filled = f;
+    }
+    public String getColor(){
+        return color;
+    }
+    public void setColor(String color){
+        this.color = color;
+    }
+    public  boolean isFilled(){
+        return filled;
+    }
+    public void setFilled(boolean filled){
+        this.filled = filled;
+    }
+    public abstract double getArea();
+    public abstract double getPerimeter();
+    public abstract String toString();
+}
+
+
+```
+
+#### `Task5/Square.java`
+
+```java title="Task5/Square.java"
+package Task5;
+public class Square extends Rectangle {
+    public Square(){
+        this.filled = false;
+        this.color = "red";
+        this.width = 1;
+    }
+    public Square(double side){
+        this.filled = false;
+        this.color = "red";
+        this.width = side;
+    }
+    public Square(double side, String color, boolean filled){
+        this.width = side;
+        this.filled = filled;
+        this.color = color;
+    }
+    public double getSide(){
+        return width;
+    }
+    public void setSide(double side){
+        this.width = side;
+    }
+    @Override
+    public double getArea() {
+        return width*width;
+    }
+    @Override
+    public double getPerimeter() {
+        return 4*width;
+    }
+    @Override
+    public String toString() {
+        return "Shape: rectangle width: "+this.width+", color: "+this.color+" Plosh "+getArea();
+    }
+}
+
+```
+
+#### `Task5/TestMovable.java`
+
+```java title="Task5/TestMovable.java"
+package Task5;
+
+public class TestMovable {
+    public static void main(String[] args){
+        MovablePoint m1 = new MovablePoint(3, 4, 6, 7);
+        MovableRectangle r1 = new MovableRectangle(5,0,5, 0,9, 8);
+
+        MovableCircle c1 = new MovableCircle(4, 6, 8, 9, 10);
+        //System.out.println(((MovableCircle)c1).toString());
+        System.out.println(r1);
+        c1.moveDown();
+        r1.moveUp();
+        m1.moveLeft();
+        //System.out.println(((MovableCircle)c1).toString());
+        System.out.println(r1);
+        //System.out.println(m1);
+    }
+}
+
+```
+
+#### `Task5/TestShape.java`
+
+```java title="Task5/TestShape.java"
+package Task5;
+import java.util.Scanner;
+public class TestShape {
+    public static void main(String[] args) {
+/*      Scanner scanner = new Scanner(System.in);
+        String color = scanner.nextLine();
+        boolean filled = scanner.nextBoolean();
+        double radius = scanner.nextDouble();
+
+
+        Circle c1 = new Circle(34, "red", false);
+        Square s1 = new Square(32, "red", false);
+        Rectangle r1 = new Rectangle(12, 11, "red", false);
+        System.out.println(c1.toString());
+        System.out.println(s1.toString());
+        System.out.println(r1.toString());
+    }
+}
+
+ */
+
+        Shape s1 = new Circle(5.5, "RED", false); // Upcast Circle toShape
+        System.out.println(s1); // which version?
+        System.out.println(s1.getArea()); // which version?
+        System.out.println(s1.getPerimeter()); // which version?
+        System.out.println(s1.getColor());
+        System.out.println(s1.isFilled());
+        System.out.println(((Circle)s1).getRadius());
+        Circle c1 = (Circle)s1; // downcast back to Circle
+        System.out.println(c1);
+        System.out.println(c1.getArea());
+        System.out.println(c1.getPerimeter());
+        System.out.println(c1.getColor());
+        System.out.println(c1.isFilled());
+        System.out.println(c1.getRadius());
+        Shape s3 = new Rectangle(1.0, 2.0, "RED", false); // upcast
+        System.out.println(s3);
+        System.out.println(s3.getArea());
+        System.out.println(s3.getPerimeter());
+        System.out.println(s3.getColor());
+        System.out.println(((Rectangle)s3).getLength());
+        Rectangle r1 = (Rectangle)s3; // downcast
+        System.out.println(r1);
+        System.out.println(r1.getArea());
+        System.out.println(r1.getColor());
+        System.out.println(r1.getLength());
+        Shape s4 = new Square(6.6); // Upcast
+        System.out.println(s4);
+        System.out.println(s4.getArea());
+        System.out.println(s4.getColor());
+        System.out.println(((Square) s4).getSide());
+        Rectangle r2 = (Rectangle)s4;
+        System.out.println(r2);
+        System.out.println(r2.getArea());
+        System.out.println(r2.getColor());
+        System.out.println(((Square)r2).getSide());
+        System.out.println(r2.getLength());
+        Square sq1 = (Square)r2;
+        System.out.println(sq1);
+        System.out.println(sq1.getArea());
+        System.out.println(sq1.getColor());
+        System.out.println(sq1.getSide());
+        System.out.println(sq1.getLength());
+    }
+}
+```
+
+
+## Описание
+
+В этом модуле используется 10 Java-файлов. Ключевые сущности: Circle, Movable, MovableCircle, MovablePoint, MovableRectangle, Rectangle.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 5 — Интерфейсы и абстрактные классы документирует реальное решение из исходного кода.

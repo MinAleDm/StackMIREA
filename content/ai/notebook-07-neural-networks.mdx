@@ -1,0 +1,892 @@
+---
+title: "AI Notebook 7 — Нейронные сети"
+sidebar_position: 8
+description: "Персептрон, MLP и базовый цикл обучения нейросети."
+slug: "/ai/notebook-07-neural-networks"
+---
+
+**1.1. Теоретический материал – Нейронные сети**
+
+**Обучение персептрона**
+
+Персептрон представляет собой элементарную часть нейронной сети.
+Одиночный персептрон является линейным бинарным классификатором. В
+этой лекции мы рассмотрим процедуру обучения персептрона для
+классификации данных. Поскольку персептрон представляет собой
+бинарный классификатор, то мы будем рассматривать лишь два класса.
+Пусть мы рассматриваем некоторое множество (конечное или
+бесконечное) n-мерных векторов, которые будем обозначать 𝑥 =
+(𝑥1, 𝑥2, . . . , 𝑥𝑛)
+
+Будем считать, что это множество разбивается на два класса, которые
+мы будем обозначать +1 и -1. Поэтому возникает задача построения
+функции, которая задана на нашем множестве векторов, и принимает
+значения в множестве \{+1, −1\}. В качестве такой функции может выступать
+персептрон. С алгебраической точки зрения персептрон состоит из вектора
+весов 𝑤 = (𝑤0, 𝑤1, 𝑤2, . . . , 𝑤𝑛).
+
+При этом персептрон работает по формуле
+
+>𝑦 = 𝑠𝑖𝑔𝑛(𝑤0 + 𝑥1𝑤1 + 𝑥2𝑤2 + . . . + 𝑥𝑛𝑤𝑛),
+
+где функция 𝑠𝑖𝑔𝑛(𝑡) равна +1, если 𝑡 ≥ 0, и равна −1, если 𝑡 < 0.
+
+Приведем алгоритм обучения персептрона. Пусть у нас есть набор
+обучающих данных \{(𝑥, 𝑑)\}, где 𝑥 - это различные вектора, а 𝑑 из множества
+\{+1, −1\} указывает к какому классу относится наш вектор.
+1. Положим вектор весов 𝑤 равным нулю.
+2. Повторять 𝑁 раз следующие шаги:
+3. Для каждого тестового набора (𝑥, 𝑑):
+4. Вычислить 𝑦 = 𝑠𝑖𝑔𝑛[(𝑥, 𝑤)].
+5. Если 𝑦𝑑 < 0, то скорректировать веса 𝑤0 = 𝑤0 + 𝑎𝑑, 𝑤𝑖 =
+𝑤𝑖 + 𝑎𝑑𝑥𝑖
+, 𝑖 = 1,2, . . . , 𝑛.
+
+Описанный алгоритм довольно легко программировать.
+
+**1.1.1 Пример**
+
+Задача
+
+Рассмотрим программу обучения персептрона на языке Python. Сначала
+рассмотрим основной класс персептрона, который умеет учиться по
+тестовым данным.
+
+````python
+#класс который реализует персептрон и его обучение
+class Perceptron:
+  def __init__(self, N):
+    #создать нулевые веса
+    self.w = list()
+    for i in range(N):
+      self.w.append(0)
+  #метод для вычисления значения персептрона
+  def calc(self, x):
+    res = 0
+    for i in range(len(self.w)):
+      res = res + self.w[i] * x[i]
+    return res
+  #пороговая функция активации персептрона
+  def sign(self, x):
+    if self.calc(x) > 0:
+      return 1
+    else:
+      return -1
+  #обучение на одном примере
+  def learn(self, la, x, y):
+    #обучаем только, когда результат неверный
+    if y * self.calc(x) <= 0:
+      for i in range(len(self.w)):
+        self.w[i] = self.w[i] + la * y * x[i]
+  #обучение по всем данным  Т - кортеж примеров
+  def learning(self, la, T):
+    #цикл обучения
+    for n in range(100):
+      #обучение по всему набору примеров
+      for t in T:
+        self.learn(la, t[0], t[1])
+````
+
+В строке 25 мы осуществляем корректировку весов. Посмотрим, как учится
+и работает наш персептрон.
+
+````python
+#создаем класс двумерного персептрона
+perceptron = Perceptron(2)
+la = 0.1 #константа обучения
+#создаем примеры
+T = list()
+T.append([[2,1], 1])
+T.append([[3,2], 1])
+T.append([[4,1], 1])
+T.append([[1,2], -1])
+T.append([[2,3], -1])
+T.append([[5,7], -1])
+perceptron.learning(la, T) # обучение персептрона
+print(perceptron.w) #печатаем веса
+#проверим работу на тестовых примерах
+print(perceptron.sign([1.5, 2]))
+print(perceptron.sign([3, 1.5]))
+print(perceptron.sign([5, 1]))
+print(perceptron.sign([5, 10]))
+````
+
+Вывод:
+
+````code
+[0.1, -0.1]
+-1
+1
+1
+-1
+````
+
+Видим, что что наш персептрон отлично научился распознавать образы,
+относя к классу 1 те вектора, у которых первая компонента больше второй,
+и к классу -1 в противном случае. Хотя устройство персептронов довольно
+простое эти конструкции могут решать и практические задачи. Кроме того,
+из таких персептронов состоят нейронные сети.
+
+**Теоретический материал – Реализация нейронной сети на Python**
+
+Нейронная сеть — это функциональная единица машинного или
+глубокого обучения. Она имитирует поведение человеческого мозга,
+поскольку основана на концепции биологических нейронных сетей.
+
+Наиболее распространенный тип нейронной сети, называемый
+многослойным персептроном (MLP), представляет собой функцию, которая
+отображает входные данные в выходные данные. MLP имеет один входной
+слой и один выходной слой. Между ними может быть один или несколько
+скрытых слоев. Входной слой имеет тот же набор нейронов, что и признаки.
+Скрытые слои также могут иметь более одного нейрона. Каждый нейрон
+представляет собой линейную функцию, к которой применяется функция
+активации для решения сложных задач. Выход каждого слоя подается в
+качестве входных данных для всех нейронов следующих слоев.
+
+Нейронные сети способны решать множество задач. В основном они
+состоят из таких компонентов:
+
+− входной слой (получение и передача данных);
+
+− скрытый слой (вычисление);
+
+− выходной слой.
+
+Чтобы реализовать нейросеть, необходимо
+понимать, как ведут себя нейроны. Нейрон одновременно
+принимает несколько входов, обрабатывает эти данные и выдает
+один выход. Нейронная сеть представляет собой блоки ввода и
+вывода, где каждое соединение имеет соответствующие веса (это
+сила связи нейронов; чем вес больше, тем один нейрон сильнее
+влияет на другой). Данные всех входов умножаются на веса:
+
+− 𝑥 → 𝑥 ∗ 𝑤1;
+− 𝑦 → 𝑦 ∗ 𝑤2.
+
+Входы после взвешивания суммируются с прибавлением значения
+порога «c»:
+
+𝑥𝑤1 + 𝑦𝑤2 + 𝑐
+
+Полученное значение пропускается через функцию активации
+(сигмоиду), которая преобразует входы в один выход:
+
+𝑧 = 𝑓(𝑥𝑤1 + 𝑦𝑤2 + 𝑐).
+
+Так выглядит сигмоида:
+
+Интервал результатов сигмоиды — от 0 до 1. Отрицательные числа
+стремятся к нулю, а положительные — к единице.
+
+Например. Пусть нейрон имеет следующие значения: 𝑤 = [0,1] 𝑐 = 4.
+
+Входной слой: 𝑥 = 2, 𝑦 = 3.
+
+((𝑥𝑤1) + (𝑦𝑤2)) + 𝑐 = 20 + 31 + 4 = 7.
+𝑧 = 𝑓(7) = 0.99.
+
+**1.1.2 Пример**
+
+Решение
+
+Для написания кода нейрона будем использовать библиотеку Pytnon
+— NumPy:
+
+````python
+import numpy as np
+def sigmoid(x):
+  #функция активации: f(x) = 1/(1+e^(-x))
+  return 1 / (1 + np.exp(-x))
+class Neuron:
+  def __init__(self, weights, bias):
+    self.weights = weights
+    self.bias = bias
+  def feedforward(self, inputs):
+    total = np.dot(self.weights, inputs) + self.bias
+    return sigmoid(total)
+
+weights = np.array([0, 1]) #w1=0, w2=1
+bias = 4  #c=4
+n = Neuron(weights, bias)
+x = np.array([2, 3])#x=2, y =3
+print(n.feedforward(x))#0.9990889488055994
+````
+
+Вывод:
+
+````code
+0.9990889488055994
+````
+
+Нейросеть состоит из множества соединенных между собой нейронов.
+Пример несложной нейронной сети
+где:
+
+𝑥1, 𝑥2 — входной слой;
+
+ℎ1, ℎ2 — скрытый слой с двумя нейронами;
+
+𝑜1 — выходной слой.
+
+Например.
+
+Представим, что нейроны из графика выше имеют веса
+[0, 1]. Пороговое значение (𝑏) у обоих нейронов равно 0 и они имеют
+идентичную сигмоиду.
+
+При входных данных 𝑥 = [2, 3] получим:
+
+ℎ1 = ℎ2 = 𝑓(𝑤𝑥 + 𝑏) = 𝑓((02) + (1 ∗ 3) + 0) = 𝑓(3) = 0.95.
+
+𝑜1 = 𝑓(𝑤 ∗ [ℎ1, ℎ2] + 𝑏) = 𝑓((0ℎ1) + (1ℎ2) + 0) = 𝑓(0.95) = 0.72.
+
+Входные данные по нейронам передаются до тех пор, пока не
+получатся выходные значения.
+
+````python
+import numpy as np
+class OurNeuralNetwork:
+  #Данные нейросети:
+  #два входа
+  #два нейрона в скрыттых слоях(h1,h2)
+  #выход(о1)
+  #Нейроны имеют идентичные веса и пороги:
+  #w=[0,1]
+  #b=0
+  def __init__(self):
+    weights = np.array ([0, 1])
+    bias = 0
+    #Класс  Neuron из предыдущего раздела
+    self.h1 = Neuron(weights, bias)
+    self.h2 = Neuron(weights, bias)
+    self.o1 = Neuron(weights, bias)
+  def feedforward(self, x):
+    out_h1 = self.h1.feedforward(x)
+    out_h2 = self.h2.feedforward(x)
+    #входы для о1 - это выходы для h1 и h2
+    out_o1 = self.o1.feedforward(np.array([out_h1, out_h2]))
+    return out_o1
+
+network = OurNeuralNetwork()
+x = np.array([2, 3])
+print(network.feedforward(x))#0.7216325609518421
+````
+
+Вывод:
+
+````code
+0.7216325609518421
+````
+
+**Теоретический материал – Обучение нейронной сети**
+
+Обучение нейросети — это подбор весов, которые соответствуют всем
+входам для решения поставленных задач.
+Класс нейронной сети:
+
+```
+class NeuralNetwork:
+  def __init__(self, x, y):
+    self.input = x
+    self.weights1 = np.random.rand(self.input.shape[1], 4)
+    self.weights2 = np.random.rand(4,1)
+    self.y = y
+    self.output = np.zeros(y.shape)
+```
+Каждый этап процесса обучения состоит из:
+* прямого распространения (прогнозируемый выход);
+* обратного распространения (обновление весов и смещений).
+
+Например:
+
+Дана двуслойная нейросеть:
+
+> ŷ = 𝜎(𝑤2𝜎(𝑤1𝑥 + 𝑏1
+) + 𝑏2
+).
+
+В данном случае на выход ŷ влияют только две переменные — 𝑤 (веса) и 𝑏
+(смещение). Настройку весов и смещений из данных входа или процесс
+обучения нейросети можно изобразить так:
+
+**Прямое распространение.**
+
+Как видно, формула прямого распространения представляет собой
+несложное вычисление:
+
+> ŷ = 𝜎(𝑤2𝜎(𝑤1𝑥 + 𝑏1) + 𝑏2)
+
+Далее необходимо добавить в код функцию прямого распространения.
+
+Предположим, что смещения в этом случае будут равны 0.
+
+```
+class NeuralNetwork:
+  def __init__(self, x, y):
+    self.input = x
+    self.weights1 = np.random.rand(self.input.shape[1], 4)
+    self.weights2 = np.random.rand(4,1)
+    self.y = y
+    self.output = np.zeros(self.y.shape)
+  
+  def feedforward(self):
+    self.layer1 = sigmoid(np.dot(self.input, self.weights1))
+    self.output = sigmoid(np.dot(self.layer1, self.weights2))
+  ```
+Чтобы вычислить ошибку прогноза, необходимо использовать функцию
+потери. В примере уместно воспользоваться формулой суммы квадратов
+ошибок — средним значением между прогнозируемым и фактическим
+результатами:
+
+> 𝐸𝑟𝑟𝑜𝑟 = ∑(𝑦 − 𝑦̂)2
+
+**Обратное распространение**
+
+Обратное распространение позволяет измерить производные в
+обратном порядке — от конца к началу, и скорректировать веса и смещения.
+Для этого необходимо узнать производную функции потери — тангенс угла
+наклона.
+
+Производная функции по отношению к весам и смещениям позволяет
+узнать градиентный спуск. Производная функции потери не содержит весов
+и смещений, для ее вычисления необходимо добавить правило цепи:
+
+> 𝐿𝑜𝑠𝑠 (𝑦, 𝑦̂) = ∑(𝑦 − 𝑦̂)2𝑛𝑖=1𝜕𝐿𝑜𝑠𝑠 (𝑦, 𝑦̂)𝜕𝑊=𝜕𝐿𝑜𝑠𝑠 (𝑦, 𝑦̂)𝜕𝑦̂∙𝜕𝑦̂𝜕𝑧∙𝜕𝑧𝜕𝑊 == 2(𝑦 − 𝑦̂)∙ производную сигмоиды ∙ 𝑥 == 2(𝑦 − 𝑦̂) ∙ 𝑧(1 − 𝑧) ∙ 𝑥,
+
+где 𝑧 = 𝑊𝑥 + 𝑏.
+
+Благодаря этому правилу можно регулировать веса. Добавляем в код
+Python функцию обратного распространения:
+
+```
+class NeuralNetwork:
+  def __init__(self, x, y):
+    self.input = x
+    self.weights1 = np.random.rand(self.input.shape[1], 4)
+    self.weights2 = np.random.rand(4,1)
+    self.y = y
+    self.output = np.zeros(self.y.shape)
+
+  def feedforward(self):
+    self.layer1 = sigmoid(np.dot(self.input, self.weights1))
+    self.output = sigmoid(np.dot(self.layer1, self.weights2))
+  
+  def backprop(self):
+    d_weights2 = np.dot(self.layer1.T, (2 * (self.y - self.output) * sigmoid_derevative(self.output)))
+    d_weights1 = np.dot(self.input.T, (np.dot(2 * (self.y - self.output) * sigmoid_derivative(self.output), self.weights2.T) * sigmoid_derivative(self.layer1)))
+
+    self.weights1 += d_weights1
+    self.weights2 += d_weights2
+
+```
+Нейронные сети базируются на определенных алгоритмах и
+математических функциях. Сначала может казаться, что разобраться в них
+довольно сложно. Но существуют готовые библиотеки машинного обучения
+для построения и тренировки нейросетей, позволяющие не углубляться в их
+устройство.
+
+**Задание**
+
+Реализовать классы нейросетей по аналогии с классом OurNeuralNetwork.
+Данные нейросети:
+
+− три входа (𝑥1, 𝑥2, 𝑥3);
+
+− три нейрона в скрытых слоях (ℎ1, ℎ2, ℎ3);
+
+− выход (𝑜1).
+
+Нейроны имеют идентичные веса и пороги:
+
+− 𝑤 = [0.5, 0.5, 0.5]
+
+− 𝑏 = 0
+
+Данные нейросети:
+
+− два входа (𝑥1, 𝑥2);
+
+− два нейрона в скрытых слоях (ℎ1, ℎ2);
+
+− два выхода (𝑜1, 𝑜2).
+
+Нейроны имеют идентичные веса и пороги:
+
+− 𝑤 = [1, 0];
+
+− 𝑏 = 1.
+
+Решение:
+
+````python
+import numpy as np
+class NeuralNetwork:
+  def __init__(self):
+    weights = np.array ([0.5, 0.5, 0.5])
+    bias = 0
+    self.h1 = Neuron(weights, bias)
+    self.h2 = Neuron(weights, bias)
+    self.h3 = Neuron(weights, bias)
+    self.o1 = Neuron(weights, bias)
+  def feedforward(self, x):
+    out_h1 = self.h1.feedforward(x)
+    out_h2 = self.h2.feedforward(x)
+    out_h3 = self.h3.feedforward(x)
+    out_o1 = self.o1.feedforward(np.array([out_h1, out_h2, out_h3]))
+    return out_o1
+
+network = NeuralNetwork()
+x = np.array([2, 3, 4])
+print(network.feedforward(x))
+````
+
+Вывод:
+
+````code
+0.8151036049051821
+````
+
+````python
+import numpy as np
+class NeuralNetwork:
+  def __init__(self):
+    weights = np.array ([1, 0])
+    bias = 1
+    self.h1 = Neuron(weights, bias)
+    self.h2 = Neuron(weights, bias)
+    self.o1 = Neuron(weights, bias)
+    self.o2 = Neuron(weights, bias)
+  def feedforward(self, x):
+    out_h1 = self.h1.feedforward(x)
+    out_h2 = self.h2.feedforward(x)
+    out_o1 = self.o1.feedforward(np.array([out_h1, out_h2]))
+    out_o2 = self.o2.feedforward(np.array([out_h2, out_h1]))
+    return np.array([out_o1, out_o2])
+
+network = NeuralNetwork()
+x = np.array([2, 3])
+print(network.feedforward(x))
+````
+
+Вывод:
+
+````code
+[0.87572705 0.87572705]
+````
+
+**Задание**
+
+Реализуйте классы нейронных сетей с использованием других функций
+активации
+
+````python
+import numpy as np
+class NeuralNetwork:
+  def __init__(self):
+    weights = np.array ([1, 0])
+    bias = 1
+    self.h1 = Neuron(weights, bias)
+    self.h2 = Neuron(weights, bias)
+    self.o1 = Neuron(weights, bias)
+
+  def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+  def feedforward(self, x):
+    out_h1 = self.h1.feedforward(x)
+    out_h2 = self.h2.feedforward(x)
+    out_o1 = self.o1.feedforward(np.array([out_h1, out_h2]))
+    return sigmoid(out_o1)
+
+network = NeuralNetwork()
+x = np.array([2, 3])
+print(network.feedforward(x))
+````
+
+Вывод:
+
+````code
+0.7059359796302747
+````
+
+````python
+import numpy as np
+class NeuralNetwork:
+  def __init__(self):
+    weights = np.array ([1, 0])
+    bias = 1
+    self.h1 = Neuron(weights, bias)
+    self.h2 = Neuron(weights, bias)
+    self.o1 = Neuron(weights, bias)
+
+  def feedforward(self, x):
+    out_h1 = self.h1.feedforward(x)
+    out_h2 = self.h2.feedforward(x)
+    out_o1 = self.o1.feedforward(np.array([out_h1, out_h2]))
+    return np.tanh(out_o1)
+
+network = NeuralNetwork()
+x = np.array([2, 3])
+print(network.feedforward(x))
+````
+
+Вывод:
+
+````code
+0.7042722267583229
+````
+
+````python
+import numpy as np
+class NeuralNetwork:
+  def __init__(self):
+    weights = np.array ([1, 0])
+    bias = 1
+    self.h1 = Neuron(weights, bias)
+    self.h2 = Neuron(weights, bias)
+    self.o1 = Neuron(weights, bias)
+
+  def feedforward(self, x):
+    out_h1 = self.h1.feedforward(x)
+    out_h2 = self.h2.feedforward(x)
+    out_o1 = self.o1.feedforward(np.array([out_h1, out_h2]))
+    return max(0, out_o1)
+
+network = NeuralNetwork()
+x = np.array([2, 3])
+print(network.feedforward(x))
+````
+
+Вывод:
+
+````code
+0.8757270529783324
+````
+
+**1.2. Введение в нейронные сети с помощью Scikit-Learn в Python**
+
+Теперь мы знаем, что такое нейронные сети и какие шаги необходимо
+выполнить, чтобы построить простую нейронную сеть с плотными связями.
+В этом разделе мы попытаемся построить простую нейронную сеть, которая
+предсказывает класс, к которому принадлежит данное растение ириса. Мы
+будем использовать библиотеку Python Scikit-Learn для создания нашей
+нейронной сети.
+
+Sklearn предоставляет 2 оценщика для задач классификации и
+регрессии соответственно:
+
+− MLPClassifier;
+
+− MLPRegressor
+
+Начнем с импорта необходимых библиотек.
+
+```
+import numpy as np
+import pandas as pd
+import matplotlip.pyplot as plt
+import sklearn
+```
+
+**MLPClassifier**
+
+Загрузка данных
+
+Мы будем загружать два набора данных.
+
+Набор данных цифр: мы будем использовать набор данных цифр,
+который имеет изображения размером 8x8 для цифр 0-9. Ниже мы будем
+использовать цифровые данные для задач классификации.
+
+Набор данных о жилье в Бостоне: мы будем использовать набор
+данных о жилье в Бостоне, который содержит информацию о различных
+свойствах дома, таких как среднее количество комнат, уровень преступности
+на душу населения в городе и т. д. Мы будем использовать его для задач
+регрессии.
+
+Sklearn предоставляет оба этих набора данных. Мы можем загрузить
+их, вызвав методы load_digits() и load_boston().
+
+````python
+from sklearn.datasets
+import load_digits, load_boston
+
+digits = load_digits()
+X_digits, Y_digits = digits.data, digits.target
+print('Dataset Sizes : ' , X_digits.shape, Y_digits.shape)
+````
+
+````python
+boston = load_boston()
+X_boston, Y_boston = digits.data, digits.target
+print('Dataset Sizes : ', X_boston.shape, Y_boston.shape)
+````
+
+Классификация
+
+MLPClassifier — это класс, доступный как часть модуля neuro_network
+sklearn для выполнения задач классификации с использованием
+многослойного персептрона.
+
+Как обычно разделим набор данных на две части:
+
+− данные обучения, которые будут использоваться для модели
+обучения;
+
+− тестовые данные, по которым будет проверяться точность
+обученной модели.
+
+Функция train_test_split модуля model_selection sklearn поможет нам
+разделить данные на два набора: 80% для обучения и 20% для тестирования.
+
+Мы также используем seed(random_state=123) с train_test_split, чтобы мы всегда получали одно и то же разделение и могли сравнивать и воспроизволить результаты в будущем.
+
+````python
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, Y_train, Y_test = train_test_split(X_digits, Y_digits, train_size= 0.80, test_size= 0.20,
+                                                    stratify=Y_digits, random_state=123)
+print('Train/Test Sizes : ', X_train.shape, X_test.shape, Y_train.shape, Y_test.shape)
+````
+
+Для начала натренируем модель MLPClassifier с параметрами по умолчанию
+для тренировочных данных.
+
+````python
+from sklearn.neural_network import MLPClassifier
+
+mlp_classifier = MLPClassifier(random_state=123)
+mlp_classifier.fit(X_train, Y_train)
+MLPClassifier(activation='relu', alpha=0.0001,
+              batch_size='auto', beta_1=0.9, beta_2=0.999,
+              early_stopping=False, epsilon=1e-08, hidden_layer_sizes= (100,),
+              learning_rate='constant', learning_rate_init=0.001,
+              max_iter=200, momentum=0.9, n_iter_no_change=10, nesterovs_momentum=True,
+              power_t=0.5, random_state=123, shuffle=True, solver='adam' ,
+              tol=0.0001, validation_fraction=0.1, verbose=False, warm_start=False)
+````
+
+````python
+Y_preds = mlp_classifier.predict(X_test)
+
+print(Y_preds[:15])
+print(Y_test[:15])
+#Метод Score для оценки точностей моделей классификации
+print('Test Accuracy : %.3f'%mlp_classifier.score(X_test, Y_test))
+
+print('Training Accuracy : %.3f'%mlp_classifier.score(X_train, Y_train))
+````
+
+Cоздадим метод plot_confusion_matrix(), который принимает исходные и предсказанные метки данных по модели. Затем он строит матрицу путаницы,
+используя matplotlib.
+
+````python
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
+
+def plot_confusion_matrix(Y_test, Y_preds):
+  conf_mat = confusion_matrix(Y_test, Y_preds)
+  fig = plt.figure(figsize=(6,6))
+  plt.matshow(conf_mat, cmap=plt.cm.Blues, fignum=1)
+  plt.yticks(range(10), range(10))
+  plt.xticks(range(10), range(10))
+  plt.colorbar();
+  for i in range(10):
+    for j in range(10):
+      plt.text(i -0.2, j+0.1, str(conf_mat[j, i]), color ='tab:red')
+
+plot_confusion_matrix(Y_test, mlp_classifier.predict(X_test))
+````
+
+Ниже приведен список важных атрибутов, доступных с MLPClassifier,
+которые могут предоставить значимую информацию после обучения
+модели.
+
+− loss_ — возвращает убыток после завершения процесса обучения.
+
+− coefs_ — возвращает массив длины n_layers-1, где каждый элемент
+представляет веса, связанные с уровнем i.
+
+− intercepts_ — возвращает массив длины n_layers-1, где каждый
+элемент представляет собой перехват, связанный с персептронами
+слоя i.
+
+− n_iter_ — количество итераций, для которых выполнялась оценка.
+
+− out_activation_ — возвращает имя функции активации выходного
+слоя.
+
+````python
+print('Loss : ', mlp_classifier.loss_)
+print('Number of Coefs : ',len(mlp_classifier.coefs_))
+print('Number of Intercepts : ',len(mlp_classifier.intercepts_))
+print('Number of Intercepts for which Estimator Ran : ', mlp_classifier.n_iter_)
+print('Name of Output layer Activation Function : ', mlp_classifier.out_activation_)
+````
+
+**MLPRegressor**
+
+MLPRegressor — это класс, доступный как часть библиотеки
+neuro_network sklearn для выполнения задач регрессии с использованием
+многослойного персептрона. Также разделим набор данных на две части:
+
+− данные обучения (80%), которые будут использоваться для
+модели обучения;
+
+− тестовые данные (20%), по которым будет проверяться точность
+обученной модели.
+
+````python
+X_train, X_test, Y_train, Y_test = train_test_split(X_boston, Y_boston,
+                                                    train_size= 0.80, test_size= 0.20,
+                                                    stratify=Y_digits, random_state=123)
+print('Train/Test Sizes : ', X_train.shape, X_test.shape, Y_train.shape, Y_test.shape)
+````
+
+````python
+from sklearn.neural_network import MLPRegressor
+
+mlp_regressor = MLPRegressor(random_state=123)
+mlp_regressor.fit(X_train, Y_train)
+MLPClassifier(activation='relu', alpha=0.0001,
+              batch_size='auto', beta_1=0.9, beta_2=0.999,
+              early_stopping=False, epsilon=1e-08, hidden_layer_sizes= (100,),
+              learning_rate='constant', learning_rate_init=0.001,
+              max_iter=200, momentum=0.9, n_iter_no_change=10, nesterovs_momentum=True,
+              power_t=0.5, random_state=123, shuffle=True, solver='adam' ,
+              tol=0.0001, validation_fraction=0.1, verbose=False, warm_start=False)
+````
+
+````python
+Y_preds = mlp_regressor.predict(X_test)
+
+print(Y_preds[:10])
+print(Y_test[:10])
+#Метод Score оценивает точность модели классификации
+print('Test R^2 Score : %.3f'%mlp_regressor.score(X_test, Y_test))
+print('Training R^2 Score : %.3f'%mlp_regressor.score(X_train, Y_train))
+````
+
+MLPRegressor имеет все атрибуты такие же, как и у MLPClassifier:
+
+````python
+print('Loss : ', mlp_regressor.loss_)
+````
+
+````python
+print('Number of Coefs : ', len(mlp_regressor.coefs_))
+[weights.shape for weights in mlp_regressor.coefs_]
+````
+
+````python
+print('Number of Iterations for which estimator Ran : ', mlp_regressor.n_iter_)
+````
+
+````python
+print('Name of Output Layer Activation Function : ', mlp_regressor.out_activation_)
+````
+
+**Задание**
+
+Используйте классы MLPClassified и MLPRegressor для классификации и
+регрессии произвольных данных из интернета. Проведите анализ
+атрибуты, полученных моделей.
+
+Для классификации можете взять набор данных Ирисов:
+
+https://gist.githubusercontent.com/netj/8836201/raw/6f9306ad21398ea43cba4f7d537619d0e07d5ae3/iris.csv
+
+а для регрессии датасет зависимости заработной платы от опыта работы:
+
+https://raw.githubusercontent.com/AnnaShestova/salary-years-simple-linearregression/master/Salary_Data.csv
+
+````python
+from sklearn.datasets import load_iris
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split
+
+iris = load_iris()
+X_iris, Y_iris = iris.data, iris.target
+print('Dataset Sizes: ', X_iris, Y_iris)
+````
+
+````python
+X_train, X_test, Y_train, Y_test = train_test_split(X_iris, Y_iris, train_size= 0.80, test_size= 0.20, stratify=Y_iris, random_state=123)
+print('Train/Test Sizes : ', X_train.shape, X_test.shape, Y_train.shape, Y_test.shape)
+````
+
+````python
+mlp_classifier = MLPClassifier(random_state=123)
+mlp_classifier.fit(X_train, Y_train)
+MLPClassifier(activation='relu', alpha=0.0001,
+              batch_size='auto', beta_1=0.9, beta_2=0.999,
+              early_stopping=False, epsilon=1e-08, hidden_layer_sizes= (100,),
+              learning_rate='constant', learning_rate_init=0.001,
+              max_iter=200, momentum=0.9, n_iter_no_change=10, nesterovs_momentum=True,
+              power_t=0.5, random_state=123, shuffle=True, solver='adam' ,
+              tol=0.0001, validation_fraction=0.1, verbose=False, warm_start=False)
+````
+
+````python
+Y_preds = mlp_classifier.predict(X_test)
+
+print(Y_preds[:15])
+print(Y_test[:15])
+print('Test Accuracy : %.3f'%mlp_classifier.score(X_test, Y_test))
+print('Training Accuracy : %.3f'%mlp_classifier.score(X_train, Y_train))
+````
+
+````python
+import pandas as pd
+from sklearn.neural_network import MLPRegressor
+from sklearn.model_selection import train_test_split
+
+dataframe = pd.read_csv('https://raw.githubusercontent.com/AnnaShestova/salary-years-simple-linear-regression/master/Salary_Data.csv')
+
+X_salary = dataframe.iloc[:, :1].values
+Y_salary = dataframe.iloc[:, :1].values
+
+print('Dataset Sizes: ', X_salary, Y_salary)
+````
+
+````python
+X_train, X_test, Y_train, Y_test = train_test_split(X_salary, Y_salary, train_size = 0.8, test_size=0.2, random_state = 123)
+print('Train/Test Sizes : ', X_train.shape, X_test.shape, Y_train.shape, Y_test.shape)
+````
+
+````python
+mlp_regressor = MLPRegressor(random_state=123)
+mlp_regressor.fit(X_train, Y_train)
+MLPClassifier(activation='relu', alpha=0.0001,
+              batch_size='auto', beta_1=0.9, beta_2=0.999,
+              early_stopping=False, epsilon=1e-08, hidden_layer_sizes= (100,),
+              learning_rate='constant', learning_rate_init=0.001,
+              max_iter=200, momentum=0.9, n_iter_no_change=10, nesterovs_momentum=True,
+              power_t=0.5, random_state=123, shuffle=True, solver='adam' ,
+              tol=0.0001, validation_fraction=0.1, verbose=False, warm_start=False)
+````
+
+````python
+Y_preds = mlp_regressor.predict(X_test)
+print(Y_preds[:10])
+print(Y_test[:10])
+print('Test R^2 Score : %.3f'%mlp_regressor.score(X_test, Y_test))
+print('Training R^2 Score : %.3f'%mlp_regressor.score(X_train, Y_train))
+````
+
+````python
+print('\nLoss : ', mlp_regressor.loss_)
+````
+
+````python
+print('Number of Coefs : ', len(mlp_regressor.coefs_))
+[weights.shape for weights in mlp_regressor.coefs_]
+````
+
+````python
+print('Number of Iterations for which estimator Ran : ', mlp_regressor.n_iter_)
+````
+
+````python
+print('Name of Output Layer Activation Function : ', mlp_regressor.out_activation_)
+````

@@ -1,0 +1,568 @@
+---
+title: Task 6 — Иерархии классов
+sidebar_position: 7
+description: Построение связанных сущностей в единой иерархии.
+slug: /java/task-06-class-hierarchies
+---
+
+## Задание
+
+Построение связанных сущностей в единой иерархии. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task6/Bed.java`
+- `Task6/Bylidog.java`
+- `Task6/Chair.java`
+- `Task6/Cup.java`
+- `Task6/Dish.java`
+- `Task6/Dog.java`
+- `Task6/Furniture.java`
+- `Task6/FurnitureShop.java`
+- `Task6/Haski.java`
+- `Task6/Pan.java`
+- `Task6/Plate.java`
+- `Task6/TestDish.java`
+- `Task6/TestDog.java`
+- `Task6/TestFurnitureShop.java`
+
+#### `Task6/Bed.java`
+
+```java title="Task6/Bed.java"
+package Task6;
+
+public class Bed extends Furniture{
+    private int count, maxw;
+    private String NameMatras;
+    public Bed(double h, double w, double l, String Name, String material, int count, int maxw, String NameMatras) {
+        super(h, w, l, Name, material);
+        this.count = count;
+        this.maxw = maxw;
+        this.NameMatras = NameMatras;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public int getMaxw() {
+        return maxw;
+    }
+
+    public void setMaxw(int maxw) {
+        this.maxw = maxw;
+    }
+
+    public String getNameMatras() {
+        return NameMatras;
+    }
+
+    public void setNameMatras(String nameMatras) {
+        NameMatras = nameMatras;
+    }
+
+    @Override
+    public String toString() {
+        return "Bed{" +
+                "count=" + count +
+                ", maxw=" + maxw +
+                ", NameMatras='" + NameMatras + '\'' +
+                ", h=" + h +
+                ", w=" + w +
+                ", l=" + l +
+                ", Name='" + Name + '\'' +
+                ", material='" + material + '\'' +
+                '}';
+    }
+}
+
+```
+
+#### `Task6/Bylidog.java`
+
+```java title="Task6/Bylidog.java"
+package Task6;
+
+public class Bylidog extends Dog {
+    public Bylidog(String name, int year) {
+        super(name, year);
+    }
+
+    @Override
+    public String toString() {
+        return "Bylidog{" +
+                "name='" + name + '\'' +
+                ", year=" + year +
+                '}';
+    }
+}
+
+```
+
+#### `Task6/Chair.java`
+
+```java title="Task6/Chair.java"
+package Task6;
+
+public class Chair extends Furniture{
+    public String nameMaterial;
+    public Chair(double h, double w, double l, String Name, String material, String nameMaterial) {
+        super(h, w, l, Name, material);
+        this.nameMaterial = nameMaterial;
+    }
+
+    public String getNameMaterial() {
+        return nameMaterial;
+    }
+
+    public void setNameMaterial(String nameMaterial) {
+        this.nameMaterial = nameMaterial;
+    }
+
+    @Override
+    public String toString() {
+        return "Chair{" +
+                "nameMaterial='" + nameMaterial + '\'' +
+                ", h=" + h +
+                ", w=" + w +
+                ", l=" + l +
+                ", Name='" + Name + '\'' +
+                ", material='" + material + '\'' +
+                '}';
+    }
+}
+
+```
+
+#### `Task6/Cup.java`
+
+```java title="Task6/Cup.java"
+package Task6;
+
+public class Cup extends Dish{
+    protected double h;
+    protected double r;
+    public Cup(String color, boolean filled, double h, double r) {
+        super(color, filled);
+        this.r = r;
+        this.h = h;
+    }
+    public double getH() {
+        return h;
+    }
+    public void setH(double h) {
+        this.h = h;
+    }
+    public double getR() {
+        return r;
+    }
+    public void setR(double r) {
+        this.r = r;
+    }
+
+    @Override
+    public String toString() {
+        return "Chahca{" +
+                "h=" + h +
+                ", r=" + r +
+                ", color='" + color + '\'' +
+                ", filled=" + filled +
+                '}';
+    }
+    /*
+    @Override
+    public double Radus() {
+        return 2*r;
+    }
+    @Override
+    public double Diametr() {
+        return 0;
+    }
+
+    @Override
+    public double Scovoroda() {
+        return 0;
+    }
+
+ */
+}
+
+```
+
+#### `Task6/Dish.java`
+
+```java title="Task6/Dish.java"
+package Task6;
+
+public class Dish {
+    String color;
+    boolean filled;
+    public Dish(String c, boolean f) {
+        this.color = c;
+        this.filled = f;
+    }
+    public String getC() {
+        return color;
+    }
+    public void setC(String c) {
+        this.color = c;
+    }
+    public boolean getFilled() {
+        return filled;
+    }
+    public void setFilled(boolean f) {
+        this.filled = f;
+    }
+    @Override
+    public String toString() {
+        return "Dish{" + "color = " + color + ", r=" + filled + '}';
+    }
+}
+
+```
+
+#### `Task6/Dog.java`
+
+```java title="Task6/Dog.java"
+package Task6;
+
+public class Dog {
+    public String name;
+    public int year;
+    public Dog(String name, int year) {
+        this.name = name;
+        this.year = year;
+    }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    @Override
+    public String toString() {
+        return "Dog{" + "name='" + name + '\'' + ", year=" + year + '}';
+    }
+}
+
+```
+
+#### `Task6/Furniture.java`
+
+```java title="Task6/Furniture.java"
+package Task6;
+
+public abstract class Furniture {
+    public double h, w, l;
+    public String Name, material;
+
+    public Furniture(double h, double w, double l, String Name, String material) {
+        this.h = h;
+        this.w = w;
+        this.l = l;
+        this.Name = Name;
+        this.material = material;
+    }
+    public double getH() {
+        return h;
+    }
+    public void setH(double h) {
+        this.h = h;
+    }
+    public double getW() {
+        return w;
+    }
+    public void setW(double w) {
+        this.w = w;
+    }
+    public double getL() {
+        return l;
+    }
+    public void setL(double l) {
+        this.l = l;
+    }
+    public String getName() {
+        return Name;
+    }
+    public void setName(String Name) {
+        this.Name = Name;
+    }
+    public String getMaterial() {
+        return material;
+    }
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+    @Override
+    public String toString() {
+        return "Furniture{" + "h=" + h + ", w=" + w + ", l=" + l + ", name='" + Name + '\'' + ", material='" + material + '\'' + '}';
+    }
+}
+
+```
+
+#### `Task6/FurnitureShop.java`
+
+```java title="Task6/FurnitureShop.java"
+package Task6;
+
+public class FurnitureShop {
+    private Furniture[] goods;
+    public FurnitureShop(int count){
+        goods = new Furniture[count];
+        for(int i=0; i<count;){
+            goods[i++] = new Bed(43, 23, 45, "lol", "metal", 2, 45, "pux");
+            if (i>=count) break;
+            goods[i++] = new Bed(43, 23, 45, "lul", "derevo", 2, 45, "len");
+            if (i>=count) break;
+            goods[i++] = new Chair(43, 23, 45, "lyl", "derevo",  "derevo12");
+        }
+    }
+    public Furniture[] getGoods() {
+        return goods;
+    }
+    public Furniture buy(int number){
+        Furniture f = goods[number];
+        Furniture[] prod = new Furniture[goods.length -1];
+        for (int i=0; i<goods.length;i++){
+            if (i<number) prod[i] = goods[i];
+            if (i>number) prod[i-1] = goods[i];
+        }
+        goods=prod;
+        return f;
+    }
+    public String Asortiment(){
+        String vr = "Асортимент магазина: \n";
+        for (Furniture f : goods){
+            vr += f.toString()+"\n";
+        }
+        return vr;
+    }
+}
+
+```
+
+#### `Task6/Haski.java`
+
+```java title="Task6/Haski.java"
+package Task6;
+
+public class Haski extends Dog{
+    public Haski(String name, int year) {
+        super(name, year);
+    }
+
+    @Override
+    public String toString() {
+        return "Haski{" +
+                "name='" + name + '\'' +
+                ", year=" + year +
+                '}';
+    }
+}
+
+```
+
+#### `Task6/Pan.java`
+
+```java title="Task6/Pan.java"
+package Task6;
+
+public class Pan extends Dish{
+    protected double r;
+    protected double h;
+    public Pan (String color, boolean filled, double r, double h) {
+        super(color, filled);
+        this.r = r;
+        this.h = h;
+    }
+
+    public double getR() {
+        return r;
+    }
+
+    public void setR(double r) {
+        this.r = r;
+    }
+
+    public double getH() {
+        return h;
+    }
+
+    public void setH(double h) {
+        this.h = h;
+    }
+
+    @Override
+    public String toString() {
+        return "Pan{" +
+                "r=" + r +
+                ", h=" + h +
+                ", color='" + color + '\'' +
+                ", filled=" + filled +
+                '}';
+    }
+    /*
+    @Override
+    public double Radus() {
+        return 2;
+    }
+
+    @Override
+    public double Diametr() {
+        return 0;
+    }
+
+    @Override
+    public double Scovoroda() {
+        return 0;
+    }
+
+ */
+}
+
+```
+
+#### `Task6/Plate.java`
+
+```java title="Task6/Plate.java"
+package Task6;
+
+public class Plate extends Dish{
+    protected String name;
+    protected double r;
+    public Plate(String color, boolean filled, String name, double r) {
+        super(color, filled);
+        this.name = name;
+        this.r = r;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getR() {
+        return r;
+    }
+
+    public void setR(double r) {
+        this.r = r;
+    }
+
+    @Override
+    public String toString() {
+        return "Plate{" +
+                "name='" + name + '\'' +
+                ", r=" + r +
+                ", color='" + color + '\'' +
+                ", filled=" + filled +
+                '}';
+    }
+    /*
+    @Override
+    public double Radus() {
+        return 0;
+    }
+    @Override
+    public double Diametr() {
+        return 0;
+    }
+    @Override
+    public double Scovoroda() {
+        return 0;
+    }
+
+    */
+}
+
+```
+
+#### `Task6/TestDish.java`
+
+```java title="Task6/TestDish.java"
+package Task6;
+
+public class TestDish {
+    public static void main(String[] args) {
+        Dish d = new Cup("red", true, 4, 5);
+        Dish d1 = new Dish("black", false);
+        Dish d2 = new Pan("white", false, 78, 56);
+        Dish d3 = new Plate("blue", true, "Boorg", 32);
+        System.out.println(d);
+        System.out.println(d1);
+        System.out.println(d2);
+        System.out.println(d3);
+    }
+}
+
+```
+
+#### `Task6/TestDog.java`
+
+```java title="Task6/TestDog.java"
+package Task6;
+
+public class TestDog {
+    public static void main(String[] args){
+        Dog d1 = new Dog("kol", 4);
+        Dog d2 = new Bylidog("ser", 5);
+        Dog d3 = new Haski("pol", 6);
+        System.out.println(d1);
+        System.out.println(d2);
+        System.out.println(d3);
+    }
+}
+
+```
+
+#### `Task6/TestFurnitureShop.java`
+
+```java title="Task6/TestFurnitureShop.java"
+package Task6;
+
+public class TestFurnitureShop {
+    public static void main(String[] args){
+        FurnitureShop f = new FurnitureShop(4);
+        System.out.println(f.Asortiment());
+        //f.buy(3);
+        System.out.println("Куплено: "+"\n"+f.buy(2));
+
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 14 Java-файлов. Ключевые сущности: Bed, Bylidog, Chair, Cup, Dish, Dog.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 6 — Иерархии классов документирует реальное решение из исходного кода.

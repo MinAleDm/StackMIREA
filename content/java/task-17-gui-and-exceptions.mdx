@@ -1,0 +1,367 @@
+---
+title: Task 17 — GUI + исключения
+sidebar_position: 18
+description: Связка UI-слоя, доменной логики и пользовательских ошибок.
+slug: /java/task-17-gui-and-exceptions
+---
+
+## Задание
+
+Связка UI-слоя, доменной логики и пользовательских ошибок. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task17/EmptyStringException.java`
+- `Task17/FIOINN.java`
+- `Task17/LabClass.java`
+- `Task17/LabClassDriver.java`
+- `Task17/LabClassUI.java`
+- `Task17/Proverka.java`
+- `Task17/Student.java`
+- `Task17/StudentNotFoundException.java`
+
+#### `Task17/EmptyStringException.java`
+
+```java title="Task17/EmptyStringException.java"
+package Task17;
+
+import javax.swing.*;
+
+public class EmptyStringException extends IllegalArgumentException {
+    public EmptyStringException(LabClassUI t) {
+        JOptionPane.showMessageDialog(t, "Введите необходимые данные в поле ввода!");
+    }
+}
+
+
+
+```
+
+#### `Task17/FIOINN.java`
+
+```java title="Task17/FIOINN.java"
+package Task17;
+
+import java.util.Scanner;
+
+public class FIOINN {
+    public void red() {
+        System.out.println("Введите ФИО");
+        Scanner fi = new Scanner(System.in);
+        String fio = fi.nextLine();
+        System.out.println("Введите ИНН");
+        Scanner in = new Scanner(System.in);
+        String[] inn = in.nextLine().split("");
+        try {
+            if (inn.length == 12) {
+                System.out.println("ИНН " + fio + " верный!");
+            } else {
+                throw new Proverka(fio);
+            }
+        }catch (Proverka e){
+            System.out.println(e.getMessage());
+        }
+    }
+    public static void main(String[] args){
+        FIOINN n = new FIOINN();
+        n.red();
+    }
+}
+
+```
+
+#### `Task17/LabClass.java`
+
+```java title="Task17/LabClass.java"
+package Task17;
+
+import java.util.ArrayList;
+
+public class LabClass {
+    public static void main(String[] args) {
+        ArrayList<Student> new_stud = new ArrayList<>();
+        new_stud.add(new Student("Иванов Иван Иванович", 123456, 4.0));
+        new LabClassUI(new_stud);
+    }
+}
+
+
+```
+
+#### `Task17/LabClassDriver.java`
+
+```java title="Task17/LabClassDriver.java"
+package Task17;
+
+import java.util.ArrayList;
+
+public class LabClassDriver {
+    public int compare(Student stud1, Student stud2) {
+        return Double.compare(stud1.getGPA(),stud2.getGPA());
+    }
+    public void quick_sort(ArrayList<Student> arr, int begin, int end) {
+        if (begin < end) {
+            int partIndex = part(arr, begin, end);
+            quick_sort(arr, begin, partIndex-1);
+            quick_sort(arr, partIndex+1, end);
+        }
+    }
+    public int part(ArrayList<Student> arr, int begin, int end) {
+        Student pt = arr.get(end);
+        int i = (begin - 1);
+        for (int j = begin; j < end; j++) {
+            if (compare(arr.get(j), pt) >= 0) {
+                i++;
+                Student swapTemp = arr.get(i);
+                arr.set(i, arr.get(j));
+                arr.set(j, swapTemp);
+            }
+        }
+        Student swapt = arr.get(i + 1);
+        arr.set(i + 1, arr.get(end));
+        arr.set(end, swapt);
+        return i + 1;
+    }
+}
+
+
+
+```
+
+#### `Task17/LabClassUI.java`
+
+```java title="Task17/LabClassUI.java"
+package Task17;
+
+import javax.swing.*;
+import javax.swing.event.MouseInputListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+
+public class LabClassUI extends JFrame {
+
+    private ArrayList<Student> students_arr;
+    private JTable table;
+
+    public LabClassUI(ArrayList<Student> students_arr){
+        super("Сведения о студентах");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(520, 330);
+        setResizable(false);
+        this.students_arr = students_arr;
+        JPanel panel = new JPanel(new FlowLayout());
+        JButton add_btn = new JButton("Добавить");
+        JButton sort_btn = new JButton("Отсортировать по GPA");
+        JButton search_btn = new JButton("Поиск");
+        panel.add(add_btn);
+        panel.add(search_btn);
+        panel.add(sort_btn);
+
+        Object [][] exist_stud = new String[students_arr.size()][3];
+        for(int i = 0; i < students_arr.size(); i++){
+            exist_stud[i][0] = students_arr.get(i).getFio();
+            exist_stud[i][1] = ((Integer)(students_arr.get(i).getiDNumber())).toString();
+            exist_stud[i][2] = ((Double)(students_arr.get(i).getGPA())).toString();
+        }
+        table = new JTable( new DefaultTableModel(exist_stud, new String[] {"ФИО", "Номер", "GPA"})){
+            @Override
+            public boolean isCellEditable(int x, int y) {return false; }
+        };
+        JTableHeader header = table.getTableHeader();
+        header.setReorderingAllowed(false);
+        header.setResizingAllowed(false);
+        add_btn.addActionListener(e -> {
+            try {
+                add();
+            }catch (IllegalArgumentException ex){
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+            }
+        });
+        search_btn.addActionListener(e->{
+            try{
+                find();
+            } catch (StudentNotFoundException ex){
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+            }
+        });
+        sort_btn.addMouseListener(new MouseInputListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                LabClassDriver ms = new LabClassDriver();
+                ms.quick_sort(students_arr,0,students_arr.size()-1);
+                DefaultTableModel table_mod = (DefaultTableModel) table.getModel();
+                for(int i = 0; i<students_arr.size();i++) {
+                    table_mod.removeRow(i);
+                    Student st = students_arr.get(i);
+                    table_mod.insertRow(i, new Object[]{st.getFio(), st.getiDNumber(), st.getGPA()});
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {}
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseExited(MouseEvent e) {}
+            @Override
+            public void mouseDragged(MouseEvent e) {}
+            @Override
+            public void mouseMoved(MouseEvent e) {}
+        });
+
+
+        getContentPane().add(panel, BorderLayout.SOUTH);
+        getContentPane().add(new JScrollPane(table), BorderLayout.CENTER);
+        setVisible(true);
+    }
+
+    private void add() {
+        String fio = JOptionPane.showInputDialog("ФИО студента: ");
+        if(fio.isEmpty()) try {
+            throw new EmptyStringException(this);
+        } catch (EmptyStringException e) {
+            throw new RuntimeException(e);
+        }
+        String number = JOptionPane.showInputDialog("Номер дела:");
+
+
+        if(number.isEmpty()) try {
+            throw new EmptyStringException(this);
+        } catch (EmptyStringException e) {
+            throw new RuntimeException(e);
+        }
+
+        String GPA = JOptionPane.showInputDialog("GPA:");
+        if(GPA.isEmpty()) try {
+            throw new EmptyStringException(this);
+        } catch (EmptyStringException e) {
+            throw new RuntimeException(e);
+        }
+        students_arr.add(new Student(fio, Integer.parseInt(number), Double.parseDouble(GPA)));
+        DefaultTableModel table_mod = (DefaultTableModel) table.getModel();
+        table_mod.addRow(new Object[]{fio, number,GPA});
+    }
+
+    private void find() throws StudentNotFoundException {
+        String search_val = JOptionPane.showInputDialog("Введите ФИО для поиска:");
+        for(int i = 0; i < students_arr.size(); i++){
+            if(students_arr.get(i).getFio().equals(search_val)){
+                JOptionPane.showMessageDialog(this, "Результат: "+
+                        students_arr.get(i).toString());
+                return;
+            }
+        }
+        throw new StudentNotFoundException(search_val, this);
+    }
+
+    private void remove() {
+        int cnt = table.getSelectedRowCount();
+        if(cnt != 1) {
+            JOptionPane.showMessageDialog(this, "Необходимо выбрать строку для удаления");
+            return;
+        }
+        cnt = table.getSelectedRow();
+        students_arr.remove(cnt);
+        DefaultTableModel table_mod = (DefaultTableModel) table.getModel();
+        table_mod.removeRow(cnt);
+
+    }
+}
+
+
+```
+
+#### `Task17/Proverka.java`
+
+```java title="Task17/Proverka.java"
+package Task17;
+
+public class Proverka extends Exception{
+    public Proverka(String fio){
+        super("ИНН "+fio+" не верный");
+    }
+}
+
+```
+
+#### `Task17/Student.java`
+
+```java title="Task17/Student.java"
+package Task17;
+
+public class Student {
+    private int iDNumber;
+    private String fio;
+    private double GPA;
+    public Student(String fio,int iDNumber, double GPA) {
+        this.iDNumber = iDNumber;
+        this.fio = fio;
+        this.GPA = GPA;
+    }
+    @Override
+    public String toString() {
+        return fio +
+                " (iDNumber: " + iDNumber +
+                ", GPA: " + GPA + ")" ;
+    }
+    public int getiDNumber() {
+        return iDNumber;
+    }
+    public void setiDNumber(int iDNumber) {
+        this.iDNumber = iDNumber;
+    }
+    public String getFio() {
+        return fio;
+    }
+    public void setFio(String fio) {
+        this.fio = fio;
+    }
+    public double getGPA() {
+        return GPA;
+    }
+    public void setGPA(double GPA) {
+        this.GPA = GPA;
+    }
+}
+
+
+
+```
+
+#### `Task17/StudentNotFoundException.java`
+
+```java title="Task17/StudentNotFoundException.java"
+package Task17;
+
+import javax.swing.*;
+
+public class StudentNotFoundException extends Throwable {
+    public StudentNotFoundException(String fio, LabClassUI t) {
+        JOptionPane.showMessageDialog(t, "Студент " + fio + " не найден");
+    }
+}
+
+
+
+```
+
+
+## Описание
+
+В этом модуле используется 8 Java-файлов. Ключевые сущности: EmptyStringException, FIOINN, LabClass, LabClassDriver, LabClassUI, Proverka.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 17 — GUI + исключения документирует реальное решение из исходного кода.

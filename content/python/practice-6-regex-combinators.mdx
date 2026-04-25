@@ -1,0 +1,301 @@
+---
+title: "Практика 6 — Комбинаторы и функциональный стиль"
+sidebar_position: 4
+description: "Функции высшего порядка, декораторы и функциональные структуры данных."
+slug: "/python/practice-6-regex-combinators"
+---
+
+> Источник: `pr_Python/pr_Python/pract6.ipynb`
+
+1.1. (уровень сложности: низкий)
+
+Напишите функцию deriv для приближенного вычисления производной в заданной точке.
+
+Пример работы:
+
+>>> deriv(lambda x: x ** 3)(5)
+75.00014999664018
+
+````python
+def deriv(f, h=0.0001):
+    def fprime(x):
+        return (f(x + h) - f(x)) / h
+    return fprime
+
+result = deriv(lambda x: x ** 3)(5)
+print(result)
+````
+
+Вывод:
+
+````text
+75.00150000979033
+````
+
+1.2. (уровень сложности: средний)
+
+Создайте вариант именованного кортежа с помощью ФВП. Классы и готовые структуры данных (словари, кортежи и так далее) использовать нельзя.
+
+Примеры работы:
+
+>>> p1 = person(name='Иван', age=20)
+>>> p2 = replace(replace(p1, 'name', 'Алексей'), 'age', 21)
+>>> get(p1, 'name'), get(p1, 'age')
+('Иван', 20)
+>>> get(p2, 'name'), get(p2, 'age')
+('Алексей', 21)
+
+````python
+def person(**kwargs):
+    def get(obj, key):
+        return obj["data"][key] if key in obj["data"] else None
+
+    def replace(obj, name, new_value):
+        obj[name] = new_value
+        return obj
+
+    return {
+        "data": kwargs,
+        "get": get,
+        "replace": replace,
+    }
+
+# Примеры использования
+p1 = person(name="Иван", age=20)
+p2 = person(replace(p1, 'name', 'Алексей'), 'age', 21)
+
+print(person.get(p1, "name"), person.get(p1, "age"))
+print(person.get(p2, "name"), person.get(p2, "age"))
+````
+
+1.3. (уровень сложности: низкий)
+
+Реализуйте рекурсивное вычисление факториала в виде выражения. Необходимо это сделать без использования именованных функций, переменных (в том числе без имени факториала) и присваиваний.
+
+````python
+(lambda f: (lambda x: f(lambda k: x(x)(k)))(lambda x: f(lambda k: x(x)(k)))(lambda f: lambda n: 1 if n == 0 else n * f(f)(n - 1))(10)
+````
+
+1.4. (уровень сложности: низкий)
+
+Создайте декоратор io, который задает функции для получения входных аргументов и вовращения результата.
+
+Примеры:
+
+@io(input, input, input, print)
+def f1(x, y, z):
+    return x + y + z
+
+>>> f1()
+one
+two
+three
+onetwothree
+@io(lambda: random.random(), lambda: random.random(), lambda x: x)
+def f2(x, y):
+    return x * y
+
+>>> f2()
+0.19896827110422532
+
+````python
+import random
+
+def io(*inputs_and_output):
+    def decorator(func):
+        def wrapper(*args):
+            input_values = [input_func() for input_func in inputs_and_output[:-1]]
+            result = func(*input_values)
+            output_func = inputs_and_output[-1]
+            output_func(result)
+        return wrapper
+    return decorator
+
+@io(input, input, input, print)
+def f1(x, y, z):
+    return x + y + z
+
+@io(lambda: random.random(), lambda: random.random(), lambda x: x)
+def f2(x, y):
+    return x * y
+````
+
+1.5. (уровень сложности: низкий)
+
+Создайте декоратор класса @collect, который собирает все создаваемые объекты класса в единый список. К классу добавляется метод get_objects, который выдает этот список.
+
+Пример:
+
+@collect
+class C1:
+    pass
+
+a = C1()
+b = C1()
+c = C1()
+
+>>> C1.get_objects()
+[, , ]
+
+````python
+def collect(cls):
+    cls._objects = []
+
+    def wrapper(*args, **kwargs):
+        obj = cls.__new__(cls)
+        obj.__init__(*args, **kwargs)
+        cls._objects.append(obj)
+        return obj
+
+    cls.__new__ = wrapper
+
+    def get_objects():
+        return cls._objects
+
+    cls.get_objects = get_objects
+
+    return cls
+
+@collect
+class MyClass:
+    pass
+````
+
+2. Работа со списками в функциональном стиле
+Создайте тип данных односвязный список с помощью ФВП. При создании списка нельзя использовать классы, готовые списки, кортежи и так далее.
+
+Добавьте ряд операций в функциональном стиле.
+
+````python
+def create_node(value):
+    return {"value": value, "next": None}
+
+def prepend(node, value):
+    new_node = create_node(value)
+    new_node["next"] = node
+    return new_node
+
+def append(node, value):
+    if node is None:
+        return create_node(value)
+
+    current = node
+    while current["next"] is not None:
+        current = current["next"]
+
+    current["next"] = create_node(value)
+    return node
+
+def find(node, value):
+    current = node
+    while current is not None:
+        if current["value"] == value:
+            return current
+        current = current["next"]
+    return None
+
+def print_list(node):
+    current = node
+    while current is not None:
+        print(current["value"], end=" ")
+        current = current["next"]
+    print()
+
+# Пример использования
+my_list = None
+my_list = prepend(my_list, 3)
+my_list = prepend(my_list, 2)
+my_list = append(my_list, 4)
+my_list = append(my_list, 5)
+print_list(my_list)
+
+# Поиск элемента
+element = find(my_list, 4)
+if element:
+    print("Found:", element["value"])
+else:
+    print("Not Found")
+````
+
+Вывод:
+
+````text
+2 3 4 5 
+Found: 4
+````
+
+2.1. (уровень сложности: высокий)
+
+Создайте функцию pair(head, tail), которая порождает элемент списка. Не используйте ветвления. Создайте также функции head(lst) (возвращает значение головы списка) и tail(lst) (возвращает хвост списка).
+
+````python
+# Функция pair создает элемент списка
+def pair(value, next_node=None):
+    return lambda selector: value if selector == "value" else next_node
+
+# Функция head возвращает значение головы списка
+def head(lst):
+    return lst("value")
+
+# Функция tail возвращает хвост списка
+def tail(lst):
+    return lst("tail")
+
+# Пример использования
+list_node = pair(1, pair(2, pair(3, pair(4))))
+print("Head node value:", head(list_node))
+
+tail_node = tail(list_node)
+print("Tail node value:", head(tail_node))
+````
+
+Вывод:
+
+````text
+Head node value: 1
+Tail node value: 2
+````
+
+2.2. (уровень сложности: средний)
+
+Создайте функцию make_list(*args), которая создает список на основе аргументов.
+
+````python
+def make_list(*args):
+    if not args:
+        return None
+
+    def pair(value, next_node=None):
+        return lambda selector: value if selector == "value" else next_node
+
+    list_node = None
+    current_node = None
+
+    for arg in reversed(args):
+        if list_node is None:
+            list_node = pair(arg)
+            current_node = list_node
+        else:
+            new_node = pair(arg, current_node)
+            current_node = new_node
+
+    return current_node
+
+# Пример использования
+my_list = make_list(1, 2, 3, 4, 5)
+current_node = my_list
+
+while current_node:
+    print(current_node("value"))
+    current_node = current_node("tail")
+````
+
+Вывод:
+
+````text
+1
+2
+3
+4
+5
+````

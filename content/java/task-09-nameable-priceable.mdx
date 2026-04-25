@@ -1,0 +1,147 @@
+---
+title: Task 9 — Интерфейсы Nameable/Priceable
+sidebar_position: 10
+description: Единые API для объектов с именем и ценой.
+slug: /java/task-09-nameable-priceable
+---
+
+## Задание
+
+Единые API для объектов с именем и ценой. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task9/Car.java`
+- `Task9/Dishes.java`
+- `Task9/Dog.java`
+- `Task9/Nameable.java`
+- `Task9/Priceable.java`
+- `Task9/TestNameable.java`
+
+#### `Task9/Car.java`
+
+```java title="Task9/Car.java"
+package Task9;
+
+public class Car implements Nameable{
+    String name;
+    public Car(String name){
+        this.name = name;
+    }
+    @Override
+    public String getName() {
+        return name;
+    }
+    public String toString(){
+        return "Car = "+ name;
+    }
+}
+
+```
+
+#### `Task9/Dishes.java`
+
+```java title="Task9/Dishes.java"
+package Task9;
+
+import java.awt.print.Printable;
+
+public class Dishes implements Priceable{
+    double price;
+    public Dishes(double price){
+        this.price = price;
+    }
+    @Override
+    public void getPrice() {
+        System.out.printf("Цена = %s", price);
+        //return price;
+    }
+    public static void main(String[] args){
+        Priceable p = new Dishes(12345);
+        //System.out.println(p);
+        p.getPrice();
+    }
+}
+
+```
+
+#### `Task9/Dog.java`
+
+```java title="Task9/Dog.java"
+package Task9;
+
+public class Dog implements Nameable{
+    String name;
+
+    public Dog(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return "Dog  = " + name;
+    }
+
+}
+
+```
+
+#### `Task9/Nameable.java`
+
+```java title="Task9/Nameable.java"
+package Task9;
+
+public interface Nameable {
+    String getName();
+}
+
+```
+
+#### `Task9/Priceable.java`
+
+```java title="Task9/Priceable.java"
+package Task9;
+
+public interface Priceable {
+    void getPrice();
+}
+
+```
+
+#### `Task9/TestNameable.java`
+
+```java title="Task9/TestNameable.java"
+package Task9;
+
+public class TestNameable {
+    public static void main(String[] args){
+        Nameable n = new Dog("KOL");
+        Nameable n1 = new Car("TOYOTA");
+        System.out.println(n);
+        System.out.println(n1);
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 6 Java-файлов. Ключевые сущности: Car, Dishes, Dog, Nameable, Priceable, TestNameable.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 9 — Интерфейсы Nameable/Priceable документирует реальное решение из исходного кода.

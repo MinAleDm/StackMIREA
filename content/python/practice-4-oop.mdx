@@ -1,0 +1,429 @@
+---
+title: "Практика 4 — OOP"
+sidebar_position: 2
+description: "Классы, объекты и деревья выражений из рабочей тетради №4."
+slug: "/python/practice-4-oop"
+---
+
+> Источник: `pr_Python/pr_Python/pract4.ipynb`
+
+# Выполнение рабочей тетради № 4
+
+# 1. Некоторые операции с классами и объектами
+
+## 1.1. (уровень сложности: простейший)
+
+Напишите код, который выведет на экране все имена полей объекта произвольного пользовательского класса,
+кроме служебных имен.
+
+````python
+class Body(object):
+  def __init__(self,age, len):
+    self.age = age
+    self.len = len
+
+def main():
+  Mark = Body(18,186);
+  print(Mark.age,", ",Mark.len)
+
+main()
+````
+
+Вывод:
+
+````text
+18 ,  186
+````
+
+## 1.2.  (уровень сложности: простейший)
+
+Напишите код, который по имени метода, заданному строкой,
+ вызовет этот метод в объекте некоторого пользовательского класса.
+
+````python
+class Body(object):
+  def __init__(self,age, len):
+    self.age = age
+    self.len = len
+
+  def Alive(self):
+    print("This guy is alive. He is ",self.age," y. o.")
+
+
+def main():
+  Mark = Body(18,186);
+  Mark.Alive();
+
+main()
+````
+
+Вывод:
+
+````text
+This guy is alive. He is  18  y. o.
+````
+
+## 1.3. (уровень сложности: простейший)
+
+С кодом ниже что-то не так. Что именно неправильно и как это исправить?
+```
+class A:
+    pass
+
+class B(A):
+    pass
+
+class C(A, B):
+    pass
+```
+
+````python
+class A:
+    pass
+
+class B(A):
+    pass
+
+class C(B):#here
+    pass
+````
+
+## 1.4.  (уровень сложности: низкий)
+
+Напишите функцию-однострочник get_inheritance для вывода строки,
+ отражающей иерархию наследования для входного класса.
+
+Пример:
+```
+>>>print(get_inheritance(OSError))
+OSError -> Exception -> BaseException -> object
+```
+
+````python
+class Car():
+  pass
+
+class Door(Car):
+  pass
+
+class Door_color(Door, Car):
+  pass
+
+def getinheritance(classname):
+    return f"{classname.__name__} -> {', '.join([base.__name__ for base in classname.__bases__])}"
+
+print(getinheritance(Door_color))
+````
+
+Вывод:
+
+````text
+Door_color -> Door, Car
+````
+
+# 2.   Своя реализация структуры данных
+
+Реализуйте хэш-таблицу, аналог встроенного dict.
+
+Используйте для внутренней реализации список пар ключ-значение.
+
+Примените тестирование на случайных данных с использованием assert и оригинального dict.
+
+## 2.1.  (уровень сложности: средний)
+
+Реализуйте методы чтения, записи и получения размера хэш-таблицы.
+
+## 2.2. (уровень сложности: низкий)
+
+Реализуйте для методов своей хэш-таблицы тот же интерфейс, что и в dict, включая перегрузку операций.
+
+Ссылка на dict - https://pythonru.com/osnovy/python-dict
+
+## 2.3.  (уровень сложности: средний)
+
+Реализуйте поддержку итератора для цикла for. Обязательно протестируйте код на примерах с вложенными циклами!
+
+````python
+class MyHashTable:
+    def __init__(self):
+        self.key_value_pairs = []
+
+    def __getitem__(self, key):
+        for k, v in self.key_value_pairs:
+            if k == key:
+                return v
+        raise KeyError(f"Key '{key}' not found")
+
+    def __setitem__(self, key, value):
+        for i, (k, v) in enumerate(self.key_value_pairs):
+            if k == key:
+                self.key_value_pairs[i] = (key, value)
+                return
+        self.key_value_pairs.append((key, value))
+
+    def __len__(self):
+        return len(self.key_value_pairs)
+
+    def __delitem__(self, key):
+        for i, (k, v) in enumerate(self.key_value_pairs):
+            if k == key:
+                del self.key_value_pairs[i]
+                return
+        raise KeyError(f"Key '{key}' not found")
+
+    def __iter__(self):
+        return iter(self.key_value_pairs)
+
+# Тестирование пользовательской хэш-таблицы
+my_dict = MyHashTable()
+my_dict["name"] = "Alice"
+my_dict["age"] = 30
+my_dict["city"] = "Wonderland"
+
+# Получение значений
+print(my_dict["name"])  # Вывод: Alice
+print(my_dict["age"])   # Вывод: 30
+print(my_dict["city"])  # Вывод: Wonderland
+
+# Размер хэш-таблицы
+print(len(my_dict))     # Вывод: 3
+
+# Удаление ключа
+del my_dict["age"]
+print(len(my_dict))     # Вывод: 2
+
+# Итерация по парам ключ-значение
+for key, value in my_dict:
+    print(f"{key}: {value}")
+````
+
+Вывод:
+
+````text
+Тестирование успешно завершено.
+````
+
+# 3. Деревья выражений
+
+Требуется реализовать операции для печати, вычисления арифметических выражений и компиляции выражений в код стековой машины.
+
+## 3.1. (уровень сложности: низкий)
+
+Реализовать классы узлов дерева: Num, Add и Mul. Эти классы просто хранят данные и ничего не знают о действиях, которые могут производиться над выражениями.
+
+Пример, который будет использоваться далее:
+```
+ast = Add(Num(7), Mul(Num(3), Num(2)))
+```
+
+````python
+class Num:
+    def __init__(self, value):
+        self.value = value
+
+    def print(self):
+        return str(self.value)
+
+    def evaluate(self):
+        return self.value
+
+    def compile(self):
+        return f"push {self.value}\n"
+
+
+class Add:
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+    def print(self):
+        return f"({self.left.print()} + {self.right.print()})"
+
+    def evaluate(self):
+        return self.left.evaluate() + self.right.evaluate()
+
+    def compile(self):
+        return self.left.compile() + self.right.compile() + "add\n"
+
+
+class Mul:
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+    def print(self):
+        return f"({self.left.print()} * {self.right.print()})"
+
+    def evaluate(self):
+        return self.left.evaluate() * self.right.evaluate()
+
+    def compile(self):
+        return self.left.compile() + self.right.compile() + "mul\n"
+
+
+# Пример использования:
+ast = Add(Num(7), Mul(Num(3), Num(2)))
+
+# Вывод выражения:
+print(ast.print())
+
+# Вычисление значения выражения:
+print("Result:", ast.evaluate())
+
+# Компиляция в код стековой машины:
+print("Compiled code:")
+print(ast.compile())
+````
+
+Вывод:
+
+````text
+(7 + (3 * 2))
+Result: 13
+Compiled code:
+push 7
+push 3
+push 2
+mul
+add
+````
+
+## 3.2. (уровень сложности: средний)
+
+Реализовать класс-посетитель PrintVisitor для печати выражения. Обойтись без перегрузки repr и str, а также без операторов ветвления!
+
+Пример:
+```
+>>> pv = PrintVisitor()
+>>> print(pv.visit(ast))
+(7 + (3 * 2))
+```
+
+````python
+class Num:
+    def __init__(self, value):
+        self.value = value
+
+    def accept(self, visitor):
+        return visitor.visit_num(self)
+
+
+class Add:
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+    def accept(self, visitor):
+        return visitor.visit_add(self)
+
+
+class Mul:
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+    def accept(self, visitor):
+        return visitor.visit_mul(self)
+
+
+class PrintVisitor:
+    def visit_num(self, node):
+        return str(node.value)
+
+    def visit_add(self, node):
+        return f"({node.left.accept(self)} + {node.right.accept(self)})"
+
+    def visit_mul(self, node):
+        return f"({node.left.accept(self)} * {node.right.accept(self)})"
+
+
+# Пример использования:
+ast = Add(Num(7), Mul(Num(3), Num(2)))
+
+pv = PrintVisitor()
+print(pv.visit_add(ast))
+````
+
+Вывод:
+
+````text
+(7 + (3 * 2))
+````
+
+## 3.3. (уровень сложности: средний)
+
+Реализовать класс-посетитель CalcVisitor для вычисления выражения. Обойтись без eval с exec, а также без операторов ветвления!
+
+Пример:
+```
+>>> cv = CalcVisitor()
+>>> print(cv.visit(ast))
+13
+```
+
+````python
+  class Num:
+    def __init__(self, value):
+        self.value = value
+
+    def accept(self, visitor):
+        return visitor.visit_num(self)
+
+class Add:
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+    def accept(self, visitor):
+        return visitor.visit_add(self)
+
+
+class Mul:
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+    def accept(self, visitor):
+        return visitor.visit_mul(self)
+
+
+class PrintVisitor:
+    def visit_num(self, node):
+        return str(node.value)
+
+    def visit_add(self, node):
+        return f"({node.left.accept(self)} + {node.right.accept(self)})"
+
+    def visit_mul(self, node):
+        return f"({node.left.accept(self)} * {node.right.accept(self)})"
+
+
+class CalcVisitor:
+    def visit_num(self, node):
+        return node.value
+
+    def visit_add(self, node):
+        return node.left.accept(self) + node.right.accept(self)
+
+    def visit_mul(self, node):
+        return node.left.accept(self) * node.right.accept(self)
+
+
+# Пример использования:
+ast = Add(Num(7), Mul(Num(3), Num(2)))
+
+# Печать выражения
+pv = PrintVisitor()
+print(pv.visit_add(ast))
+
+# Вычисление выражения
+cv = CalcVisitor()
+print(cv.visit_add(ast))
+````
+
+Вывод:
+
+````text
+(7 + (3 * 2))
+13
+````

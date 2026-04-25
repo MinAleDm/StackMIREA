@@ -1,0 +1,260 @@
+---
+title: Task 4 — Наследование и композиция
+sidebar_position: 5
+description: Переиспользование поведения через наследование и композицию.
+slug: /java/task-04-inheritance-and-composition
+---
+
+## Задание
+
+Переиспользование поведения через наследование и композицию. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task4/Book.java`
+- `Task4/BookTest.java`
+- `Task4/Circle.java`
+- `Task4/CircleTest.java`
+- `Task4/Human.java`
+
+#### `Task4/Book.java`
+
+```java title="Task4/Book.java"
+package Task4;
+
+public class Book {
+    public String author;
+    public String name;
+    public int year;
+
+    public Book(String author, String name, int year) {
+        this.author = author;
+        this.name = name;
+        this.year = year;
+    }
+    public String getAuthor() {
+        return author;
+    }
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public int getYear() {
+        return year;
+    }
+    public void setYear(int year) {
+        this.year = year;
+    }
+}
+
+```
+
+#### `Task4/BookTest.java`
+
+```java title="Task4/BookTest.java"
+package Task4;
+
+public class BookTest {
+    public static void main(String[] args){
+        Book b = new Book("Lev", "Man", 2000);
+        b.setAuthor("Pol");
+        b.setName("Dog");
+        b.setYear(2000);
+        System.out.println("Author: "+b.getAuthor()+" name: "+b.getName()+" Year: "+b.getYear());
+    }
+}
+
+```
+
+#### `Task4/Circle.java`
+
+```java title="Task4/Circle.java"
+package Task4;
+
+public class Circle {
+    private double radius;
+    private float diametr;
+    public Circle(double radius, float diametr) {
+        this.radius = radius;
+        this.diametr = diametr;
+    }
+    public double getRadius() {
+        return radius;
+    }
+    public void setRadius(double r) {
+        this.radius = r;
+    }
+
+    public float getDiametr() {
+        return diametr;
+    }
+
+    public void setDiametr(float d) {
+        this.diametr = d;
+    }
+
+}
+
+```
+
+#### `Task4/CircleTest.java`
+
+```java title="Task4/CircleTest.java"
+package Task4;
+
+public class CircleTest {
+    public static void main(String[] args){
+        Circle c = new Circle(20, 40);
+        c.setRadius(30);
+        System.out.println("Новый радиус: " +c.getRadius());
+    }
+}
+
+```
+
+#### `Task4/Human.java`
+
+```java title="Task4/Human.java"
+package Task4;
+
+public class Human {
+    static class Head{
+        public String eye;
+        public int volos;
+
+        public Head(String eye, int volos) {
+            this.eye = eye;
+            this.volos = volos;
+        }
+
+        public String getEye() {
+            return eye;
+        }
+
+        public void setEye(String eye) {
+            this.eye = eye;
+        }
+
+        public int getVolos() {
+            return volos;
+        }
+
+        public void setVolos(int volos) {
+            this.volos = volos;
+        }
+
+        @Override
+        public String toString() {
+            return "Head{" +
+                    "eye='" + eye + '\'' +
+                    ", volos='" + volos + '\'' +
+                    '}';
+        }
+    }
+    static class Leg{
+        public int Razmer;
+
+        public Leg(int razmer) {
+            Razmer = razmer;
+        }
+
+        public int getRazmer() {
+            return Razmer;
+        }
+
+        public void setRazmer(int razmer) {
+            Razmer = razmer;
+        }
+
+        @Override
+        public String toString() {
+            return "Leg{" +
+                    "Razmer=" + Razmer +
+                    '}';
+        }
+    }
+    static class Hand{
+        public int ling;
+
+        public Hand(int ling) {
+            this.ling = ling;
+        }
+
+        public int getLing() {
+            return ling;
+        }
+
+        public void setLing(int ling) {
+            this.ling = ling;
+        }
+
+        @Override
+        public String toString() {
+            return "Hand{" +
+                    "ling=" + ling +
+                    '}';
+        }
+    }
+    public int Rost;
+    public String name;
+    public Human(int rost, String name) {
+        Rost = rost;
+        this.name = name;
+    }
+    public int getRost() {
+        return Rost;
+    }
+    public void setRost(int rost) {
+        Rost = rost;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Human{" +
+                "Rost=" + Rost +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    static public void main(String[] args){
+        Human h = new Human(170, "LOK");
+        System.out.println(h);
+        Hand h2 = new Hand(12);
+        System.out.println(h2);
+        Leg l = new Leg(12);
+        System.out.println(l);
+        Head h3 = new Head("red", 12);
+        System.out.println(h3);
+
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 5 Java-файлов. Ключевые сущности: Book, BookTest, Circle, CircleTest, Human.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 4 — Наследование и композиция документирует реальное решение из исходного кода.

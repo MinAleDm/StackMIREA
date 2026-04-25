@@ -1,0 +1,1123 @@
+---
+title: Task 24 — Финальный проект
+sidebar_position: 25
+description: Расширенная система заказов с менеджерами и клиентскими сущностями.
+slug: /java/task-24-final-order-system
+---
+
+## Задание
+
+Расширенная система заказов с менеджерами и клиентскими сущностями. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `task24/Address.java`
+- `task24/AlcohoTable.java`
+- `task24/Customer.java`
+- `task24/Dish.java`
+- `task24/Drink.java`
+- `task24/DrinkTypeEnum.java`
+- `task24/InternetOrder.java`
+- `task24/InternetOrdersManager.java`
+- `task24/MenuItem.java`
+- `task24/Order.java`
+- `task24/OrdersManager.java`
+- `task24/TableOrder.java`
+- `task24/TableOrdersManager.java`
+- `task24/Test.java`
+
+#### `task24/Address.java`
+
+```java title="task24/Address.java"
+package task24;
+
+public final class Address extends Customer{
+    private String cityName;
+    private int zipCode;
+    private String streetName;
+    private int buildingNumber;
+    private int buildingLetter;
+    private int apartmentNumber;
+    public Address EMPTY_ADDRESSS;
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public int getZipCode() {
+        return zipCode;
+    }
+
+    public String getStreetName() {
+        return streetName;
+    }
+
+    public int getBuildingNumber() {
+        return buildingNumber;
+    }
+
+    public int getBuildingLetter() {
+        return buildingLetter;
+    }
+
+    public int getApartmentNumber() {
+        return apartmentNumber;
+    }
+}
+
+```
+
+#### `task24/AlcohoTable.java`
+
+```java title="task24/AlcohoTable.java"
+package task24;
+
+interface AlcohoTable {
+    public boolean isAlcoholicDrink();
+    public double getAlcoholVol();
+
+}
+
+```
+
+#### `task24/Customer.java`
+
+```java title="task24/Customer.java"
+package task24;
+
+
+public class Customer implements Order {
+    private String firstName;
+    private String secondName;
+    private int age;
+    private Address address;
+    private Customer MATURE_UNKNOWN_CUSTOMER;
+    private Customer NOT_MATURE_UNKNOWN_CUSTOMER;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getSecondName() {
+        return secondName;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    @Override
+    public boolean add(MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public String[] itemsNames() {
+        return new String[0];
+    }
+
+    @Override
+    public int itemsQuantity() {
+        return 0;
+    }
+
+    @Override
+    public int itemsQuantity(String itemName) {
+        return 0;
+    }
+
+    @Override
+    public int itemsQuantity(MenuItem itemName) {
+        return 0;
+    }
+
+    @Override
+    public Order[] getOrders() {
+        return new Order[0];
+    }
+
+    @Override
+    public int ordersCostSummary() {
+        return 0;
+    }
+
+    @Override
+    public int ordersQuantity() {
+        return 0;
+    }
+
+    @Override
+    public MenuItem[] getItems() {
+        return new MenuItem[0];
+    }
+
+    @Override
+    public boolean remove(MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public int removeAll(String itemName) {
+        return 0;
+    }
+
+    @Override
+    public int removeAll(MenuItem item) {
+        return 0;
+    }
+
+    @Override
+    public boolean remove(String itemName) {
+        return false;
+    }
+
+    @Override
+    public int costTotal() {
+        return 0;
+    }
+
+    @Override
+    public Customer getCustomer() {
+        return null;
+    }
+
+    @Override
+    public Customer setCustomer(Customer customer) {
+        return null;
+    }
+}
+
+```
+
+#### `task24/Dish.java`
+
+```java title="task24/Dish.java"
+package task24;
+
+import Task23.Item;
+
+import java.util.Comparator;
+import java.util.Scanner;
+
+public final class Dish extends MenuItem {
+    private int coast;
+    private String name;
+    private String description;
+    Dish(String name,String description){
+        super();
+        if (name.isEmpty()){
+            throw new IllegalArgumentException("Название блюда должно быть не пустым");
+        }
+        else if (description.isEmpty()){
+            throw new IllegalArgumentException("Описание должно быть не пустым");
+
+        }else {
+            this.coast = 0;
+            this.name = name;
+            this.description = description;
+        }
+    }
+    Dish(int coast,String name,String description){
+        super();
+        if (name.isEmpty()){
+            throw new IllegalArgumentException("Название блюда должно быть не пустым");
+        }
+        else if (description.isEmpty()){
+            throw new IllegalArgumentException("Описание должно быть не пустым");
+
+        }
+        else if ( coast < 0){
+            throw new IllegalArgumentException("Стоимость должны быть больше 0");
+
+        }else {
+            this.coast = coast;
+            this.name = name;
+            this.description = description;
+        }
+    }
+    public Dish(double cost, Scanner name, Scanner opis) {
+        super();
+    }
+
+    @Override
+    public int getCost() {
+        return coast;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+}
+
+```
+
+#### `task24/Drink.java`
+
+```java title="task24/Drink.java"
+package task24;
+
+import Task23.Item;
+
+final class Drink extends MenuItem implements AlcohoTable {
+    private double alcoholVol;
+    private DrinkTypeEnum type;
+    private int coast;
+    private String name;
+    private String description;
+
+    public DrinkTypeEnum getType() {
+        return type;
+    }
+    Drink(String name,String description){
+        if (name.isEmpty()){
+            throw new IllegalArgumentException("Название блюда должно быть не пустым");
+        }
+        else if (description.isEmpty()){
+            throw new IllegalArgumentException("Описание должно быть не пустым");
+
+        }else {
+            this.coast = 0;
+            this.name = name;
+            this.description = description;
+        }
+    }
+    Drink(int coast,String name,String description){
+        if (name.isEmpty()){
+            throw new IllegalArgumentException("Название блюда должно быть не пустым");
+        }
+        else if (description.isEmpty()){
+            throw new IllegalArgumentException("Описание должно быть не пустым");
+
+        }
+        else if ( coast < 0){
+            throw new IllegalArgumentException("Стоимость должны быть больше 0");
+
+        }else {
+            this.coast = coast;
+            this.name = name;
+            this.description = description;
+        }
+    }
+    Drink(int coast,String name,String description, int alcoholVol,DrinkTypeEnum type){
+        if (name.isEmpty()){
+            throw new IllegalArgumentException("Название блюда должно быть не пустым");
+        }
+        else if (description.isEmpty()){
+            throw new IllegalArgumentException("Описание должно быть не пустым");
+
+        }
+        else if ( coast < 0){
+            throw new IllegalArgumentException("Стоимость должны быть больше 0");
+
+        }else {
+            this.coast = coast;
+            this.name = name;
+            this.description = description;
+            this.alcoholVol = alcoholVol;
+            this.type = type;
+        }
+    }
+
+    @Override
+    public boolean isAlcoholicDrink() {
+        return false;
+    }
+
+    @Override
+    public double getAlcoholVol() {
+        return 0;
+    }
+
+    @Override
+    public int getCost() {
+        return coast;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+}
+
+```
+
+#### `task24/DrinkTypeEnum.java`
+
+```java title="task24/DrinkTypeEnum.java"
+package task24;
+
+import java.util.Objects;
+
+public class DrinkTypeEnum {
+    public static String Proverc(String n){
+        String t = "";
+        if (Objects.equals(n, "AL")){
+            t = "Предъявите паспор";
+        }
+        return t;
+    }
+}
+
+```
+
+#### `task24/InternetOrder.java`
+
+```java title="task24/InternetOrder.java"
+package task24;
+
+import java.util.HashMap;
+import java.util.List;
+
+public class InternetOrder implements Order{
+    private int size;
+    private ListNode head;
+    private ListNode tail;
+    class ListNode{
+        private ListNode next;
+        private ListNode prev;
+        private MenuItem value;
+        ListNode(MenuItem value){
+            this.next = null;
+            this.prev = null;
+            this.value = value;
+        }
+
+    }
+    InternetOrder(int size){
+        this.tail = null;
+        this.head = null;
+        this.size = size;
+    }
+    @Override
+    public boolean add(MenuItem item) {
+        ListNode node = new ListNode(item);
+        if(head == null){
+            head = node;
+            tail = node;
+            return true;
+        }else{
+            node.next = head;
+            head.prev = node;
+            head = node;
+            return true;
+        }
+    }
+    @Override
+    public String[] itemsNames() {
+        String str[] = new String[size];
+        ListNode temp = head;
+        int i = 0;
+        while (temp != null & i < size){
+            str[i] = temp.value.getName();
+            i++;
+            temp = temp.next;
+        }
+        return str;
+    }
+    @Override
+    public int itemsQuantity() {
+        ListNode temp = head;
+        int count = 0;
+        while (temp != null){
+            count++;
+            temp = temp.next;
+        }
+        return count;
+    }
+    @Override
+    public int itemsQuantity(String itemName) {
+        ListNode temp = head;
+        int count = 0;
+        while (temp != null){
+            if(temp.value.getName().equals(itemName)) {
+                count++;
+            }
+            temp = temp.next;
+        }
+        return count;
+    }
+
+    @Override
+    public int itemsQuantity(MenuItem itemName) {
+        ListNode temp = head;
+        int count = 0;
+        while (temp != null){
+            if(temp.value.equals(itemName)) {
+                count++;
+            }
+            temp = temp.next;
+        }
+        return count;
+    }
+
+    @Override
+    public Order[] getOrders() {
+        return orderManager.values().toArray(new Order[0]);
+    }
+
+    @Override
+    public int ordersCostSummary() {
+        int sum = 0;
+        ListNode temp = head;
+        while (temp != null){
+            sum += temp.value.getCost();
+            temp = temp.next;
+        }
+        return sum;
+    }
+
+    @Override
+    public int ordersQuantity() {
+        return orderManager.size();
+    }
+
+    @Override
+    public MenuItem[] getItems() {
+        return orderManager.values().toArray(new MenuItem[0]);
+    }
+
+    @Override
+    public boolean remove(MenuItem item) {
+        if (head == null){
+            return false;
+        }
+        if (head == tail && head.value.equals(item)){
+            head = null;
+            tail = null;
+            return true;
+        }
+        ListNode temp = head;
+        while (temp != null & temp.value.equals(item)){
+            temp = temp.next;
+        }
+        temp.prev.next = temp.next;
+        temp.next.prev = temp.prev;
+        temp.prev = null;
+        temp.next = null;
+        return true;
+    }
+
+    @Override
+    public int removeAll(String itemName) {
+        if (head == null){
+            return 0;
+        }
+        if (head == tail & head.value.getName().equals(itemName)){
+            head = null;
+            tail = null;
+            return 1;
+        }
+        int count = 0;
+        ListNode temp = head;
+        while (temp != null){
+            if(temp.value.getName().equals(itemName)){
+                count++;
+                temp.prev.next = temp.next;
+                temp.next.prev = temp.prev;
+                temp.prev = null;
+                temp.next = null;
+            }
+            temp = temp.next;
+        }
+        return count;
+    }
+
+    @Override
+    public int removeAll(MenuItem item) {
+        if (head == null){
+            return 0;
+        }
+        if (head == tail & head.value.equals(item)){
+            head = null;
+            tail = null;
+            return 1;
+        }
+        int count = 0;
+        ListNode temp = head;
+        while (temp != null){
+            if(temp.value.equals(item)){
+                count++;
+                temp.prev.next = temp.next;
+                temp.next.prev = temp.prev;
+                temp.prev = null;
+                temp.next = null;
+            }
+            temp = temp.next;
+        }
+        return count;
+    }
+
+    @Override
+    public boolean remove(String itemName) {
+        if (head == null){
+            return false;
+        }
+        if (head == tail && head.value.getName().equals(itemName)){
+            head = null;
+            tail = null;
+            return true;
+        }
+        ListNode temp = head;
+        while (temp != null & temp.value.getName().equals(itemName)){
+            temp = temp.next;
+        }
+        temp.prev.next = temp.next;
+        temp.next.prev = temp.prev;
+        temp.prev = null;
+        temp.next = null;
+        return true;
+    }
+
+
+    @Override
+    public int costTotal() {
+        orderManager.values().stream().filter(value -> orderManager.containsValue(value)).toList();
+        return 0;
+    }
+
+    @Override
+    public Customer getCustomer() {
+        return null;
+    }
+
+    @Override
+    public Customer setCustomer(Customer customer) {
+        return null;
+    }
+}
+
+```
+
+#### `task24/InternetOrdersManager.java`
+
+```java title="task24/InternetOrdersManager.java"
+package task24;
+class QueueNode{
+    private QueueNode next;
+    private QueueNode prev;
+    private Order value;
+}
+public class InternetOrdersManager implements OrdersManager{
+    private QueueNode head;
+    private QueueNode tail;
+    private int size;
+    public boolean add(Order order){
+        return true;
+    }
+    public Order remove(){
+        return null;
+    }
+    public Order order(){
+        return null;
+    }
+    @Override
+    public int itemsQuantity(String itemName) {
+        return 0;
+    }
+
+    @Override
+    public int itemsQuantity(MenuItem item) {
+        return 0;
+    }
+
+    @Override
+    public Order[] getOrders() {
+        return new Order[0];
+    }
+
+    @Override
+    public int ordersCostSummary() {
+        return 0;
+    }
+
+    @Override
+    public int ordersQuantity() {
+        return 0;
+    }
+}
+
+```
+
+#### `task24/MenuItem.java`
+
+```java title="task24/MenuItem.java"
+package task24;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class MenuItem implements Order{
+    private int cost;
+    private String name;
+    private String description;
+
+    public  int getCost(){
+        return cost;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
+    @Override
+    public boolean add(MenuItem item) {
+        orderManager.put(item.getName(),item);
+        return true;
+    }
+
+    @Override
+    public String[] itemsNames() {
+        return orderManager.keySet().stream().filter(key -> orderManager.get(key) != null).toArray(String[]::new);
+    }
+
+    @Override
+    public int itemsQuantity() {
+        return orderManager.keySet().size();
+    }
+
+    @Override
+    public int itemsQuantity(String itemName) {
+        return (int) orderManager.keySet().stream().filter(key -> key.equals(itemName)).count();
+    }
+
+    @Override
+    public int itemsQuantity(MenuItem itemName) {
+        int count = 0;
+        for (Map.Entry<String, Order> entry : orderManager.entrySet()) {
+            Order order = entry.getValue();
+            if (order.equals(itemName)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+
+    @Override
+    public Order[] getOrders() {
+        return orderManager.values().toArray(new Order[0]);
+    }
+
+    @Override
+    public int ordersCostSummary() {
+        return 0;
+    }
+
+    @Override
+    public int ordersQuantity() {
+        return orderManager.size();
+    }
+
+    @Override
+    public MenuItem[] getItems() {
+        return orderManager.values().toArray(new MenuItem[0]);
+    }
+
+    @Override
+    public boolean remove(MenuItem item) {
+        return orderManager.remove(item.getName(),item);
+    }
+
+    @Override
+    public int removeAll(String itemName) {
+        int initialSize = orderManager.size(); // Запоминаем начальный размер HashMap
+        orderManager.entrySet().removeIf(entry -> entry.getKey().equals(itemName));
+        int countDel = initialSize - orderManager.size(); // Вычисляем количество удаленных элементов
+        return countDel;
+    }
+
+
+    @Override
+    public int removeAll(MenuItem item) {
+        int count = 0;
+        for(int i = 0 ; i < orderManager.size();i++){
+            if(orderManager.remove(item.name,item)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public boolean remove(String itemName) {
+        return orderManager.remove(itemName) != null;
+    }
+    @Override
+    public int costTotal() {
+        return 0;
+    }
+
+    @Override
+    public Customer getCustomer() {
+        return null;
+    }
+
+    @Override
+    public Customer setCustomer(Customer customer) {
+        return null;
+    }
+    @Override
+    public String toString() {
+        return "cost = " + cost + ", name = " + name + ", description = " + description;
+    }
+    public String prints(){
+        return orderManager.toString();
+    }
+}
+
+```
+
+#### `task24/Order.java`
+
+```java title="task24/Order.java"
+    package task24;
+
+    public interface Order extends OrdersManager{
+        public boolean add(MenuItem item);
+        public String[] itemsNames();
+        public int itemsQuantity();
+        public int itemsQuantity(String itemName);
+        public int itemsQuantity(MenuItem itemName);
+        public MenuItem[] getItems();
+        public boolean remove(MenuItem item);
+        public int removeAll(String itemName);
+        public int removeAll(MenuItem item);
+        public boolean remove(String itemName);
+
+        public int costTotal();
+        public Customer getCustomer();
+        public Customer setCustomer(Customer customer);
+
+    }
+
+```
+
+#### `task24/OrdersManager.java`
+
+```java title="task24/OrdersManager.java"
+package task24;
+
+import java.util.HashMap;
+
+interface OrdersManager{
+    HashMap<String,Order> orderManager = new HashMap<>();
+    public int itemsQuantity(String itemName);
+    public int itemsQuantity(MenuItem item);
+    public Order[] getOrders();
+    public int ordersCostSummary();
+    public int ordersQuantity();
+
+}
+
+```
+
+#### `task24/TableOrder.java`
+
+```java title="task24/TableOrder.java"
+package task24;
+
+import java.util.Map;
+
+public class TableOrder implements Order{
+    private int size;
+    private MenuItem[] items;
+
+    @Override
+    public boolean add(MenuItem item) {
+        orderManager.put(item.getName(),item);
+        return true;
+    }
+
+    @Override
+    public String[] itemsNames() {
+        return orderManager.keySet().stream().filter(key -> orderManager.get(key) != null).toArray(String[]::new);
+    }
+    @Override
+    public int itemsQuantity() {
+        return orderManager.keySet().size();
+    }
+
+    @Override
+    public int itemsQuantity(String itemName) {
+        return (int) orderManager.keySet().stream().filter(key -> key.equals(itemName)).count();
+    }
+    @Override
+    public int itemsQuantity(MenuItem itemName) {
+        int count = 0;
+        for (Map.Entry<String, Order> entry : orderManager.entrySet()) {
+            Order order = entry.getValue();
+            if (order.equals(itemName)) {
+                count++;
+            }
+        }
+        return count;
+    }
+    @Override
+    public Order[] getOrders() {
+        return orderManager.values().toArray(new Order[0]);
+    }
+    @Override
+    public int ordersCostSummary() {
+        return 0;
+    }
+
+    @Override
+    public int ordersQuantity() {
+        return orderManager.size();
+    }
+
+    @Override
+    public MenuItem[] getItems() {
+        return orderManager.values().toArray(new MenuItem[0]);
+    }
+
+    @Override
+    public boolean remove(MenuItem item) {
+        return orderManager.remove(item.getName(),item);
+    }
+
+    @Override
+    public int removeAll(String itemName) {
+        int initialSize = orderManager.size(); // Запоминаем начальный размер HashMap
+        orderManager.entrySet().removeIf(entry -> entry.getKey().equals(itemName));
+        int countDel = initialSize - orderManager.size(); // Вычисляем количество удаленных элементов
+        return countDel;
+    }
+
+
+    @Override
+    public int removeAll(MenuItem item) {
+        int count = 0;
+        for(int i = 0 ; i < orderManager.size();i++){
+            if(orderManager.remove(item.getName(),item)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public boolean remove(String itemName) {
+        return orderManager.remove(itemName) != null;
+    }
+    @Override
+    public int costTotal() {
+        return 0;
+    }
+
+    @Override
+    public Customer getCustomer() {
+        return null;
+    }
+
+    @Override
+    public Customer setCustomer(Customer customer) {
+        return null;
+    }
+
+}
+
+```
+
+#### `task24/TableOrdersManager.java`
+
+```java title="task24/TableOrdersManager.java"
+package task24;
+
+public class TableOrdersManager implements OrdersManager{
+    private Order[] orders;
+    public void add(Order order, int tableNumber){}
+    public void addItem(MenuItem item, int tableNumber){}
+    public int freeTableNumber(Order order, int tableNumber){ return 0;}
+    public int[] freeTableNumbers(Order order, int tableNumber){ return null;}
+
+    public Order getOrder(int tableNumber){ return null;}
+    public void remove(int tableNumber){}
+    public int remove(Order order){ return 0;}
+    public int removeAll(Order order){return 0;}
+
+    @Override
+    public int itemsQuantity(String itemName) {
+        return 0;
+    }
+
+    @Override
+    public int itemsQuantity(MenuItem item) {
+        return 0;
+    }
+    @Override
+    public Order[] getOrders() {
+        return new Order[0];
+    }
+    @Override
+    public int ordersCostSummary() {
+        return 0;
+    }
+    @Override
+    public int ordersQuantity() {
+        return 0;
+    }
+}
+
+```
+
+#### `task24/Test.java`
+
+```java title="task24/Test.java"
+package task24;
+
+import java.util.Arrays;
+import java.util.Scanner;
+
+import static task24.DrinkTypeEnum.Proverc;
+
+public class Test {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        Scanner r = new Scanner(System.in);
+        Scanner w = new Scanner(System.in);
+        MenuItem menuItem = new MenuItem();
+        double cost;
+        boolean bool = true;
+        String name, opis;
+        Scanner nomder = new Scanner(System.in);
+        System.out.println("Ввелитед 1 если вы делаете заказ в ресторане:\n" +
+                "Введите 2 если делаете заказ на сайте:\n" +
+                "Введите 3 если хотите популярные блюда ресторана:");
+        switch (nomder.nextInt()) {
+            case 1:
+                while (bool) {
+                    System.out.println("Что хотите добавить в заказ \n1 если еду: \n2 если напиток:");
+                    switch (nomder.nextInt()) {
+                        case 1:
+                            System.out.println("Введите название товара: ");
+                            name = r.nextLine();
+                            System.out.println("Введите цену товара: ");
+                            cost = s.nextDouble();
+                            System.out.println("Введите описание товара: ");
+                            opis = w.nextLine();
+                            Dish d = new Dish((int) cost, name, opis);
+                            menuItem.add(d);
+                            System.out.println("Ввелите 1 если вы хотите заказать еще или 0 если вы закончили с заказом");
+                            if (nomder.nextInt() == 1){
+                                bool = true;
+                                break;
+                            }else {
+                                bool=false;
+                                break;
+                            }
+                        case 2:
+                            System.out.println("Введите название напитка: ");
+                            name = r.nextLine();
+                            System.out.println("Введите цену напитка: ");
+                            cost = s.nextDouble();
+                            System.out.println("Введите описание напитка если он алкагольный введите AL: ");
+                            opis = w.nextLine();
+                            Drink dr = new Drink((int) cost, name, opis);
+                            menuItem.add(dr);
+                            System.out.println(Proverc(opis));
+                            System.out.println("Ввелите 1 если вы хотите заказать еще или 0 если вы закончили с заказом");
+                            if (nomder.nextInt() == 1){
+                                bool = true;
+                                break;
+                            }else {
+                                bool=false;
+                                break;
+                            }
+                    }
+                }
+                break;
+            case 2:
+                while (bool) {
+                    System.out.println("Что хотите добавить в заказ \n1 если еду: \n2 если напиток:");
+                    switch (nomder.nextInt()) {
+                        case 1:
+                            System.out.println("Введите название товара: ");
+                            name = r.nextLine();
+                            System.out.println("Введите цену товара: ");
+                            cost = s.nextDouble();
+                            System.out.println("Введите описание товара: ");
+                            opis = w.nextLine();
+                            Dish d = new Dish((int) cost, name, opis);
+                            menuItem.add(d);
+                            System.out.println("Ввелите 1 если вы хотите заказать еще или 0 если вы закончили с заказом");
+                            if (nomder.nextInt() == 1){
+                                bool = true;
+                                break;
+                            }else {
+                                bool=false;
+                                break;
+                            }
+                        case 2:
+                            System.out.println("Введите название напитка: ");
+                            name = r.nextLine();
+                            System.out.println("Введите цену напитка: ");
+                            cost = s.nextDouble();
+                            System.out.println("Введите описание напитка если он алкагольный введите AL: ");
+                            opis = w.nextLine();
+                            Drink dr = new Drink((int) cost, name, opis);
+                            menuItem.add(dr);
+                            System.out.println(Proverc(opis));
+                            System.out.println("Ввелите 1 если вы хотите заказать еще или 0 если вы закончили с заказом");
+                            if (nomder.nextInt() == 1){
+                                bool = true;
+                                break;
+                            }else {
+                                bool=false;
+                                break;
+                            }
+                    }
+                }
+                break;
+            case 3:
+                Dish dishOne = new Dish(10,"Название№1","Описание№1");
+                Dish dishTwo = new Dish(500,"Название№2","Описание№2");
+                Dish dishFree = new Dish(1000,"Название№3","Описание№3");
+                Drink drink = new Drink(120,"dsd","dsds");
+                menuItem.add(dishOne);
+                menuItem.add(dishTwo);
+                menuItem.add(dishFree);
+                menuItem.add(drink);
+        }
+        System.out.println(Arrays.stream(menuItem.itemsNames()).toList());
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 14 Java-файлов. Ключевые сущности: Address, AlcohoTable, Customer, Dish, Drink, DrinkTypeEnum.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 24 — Финальный проект документирует реальное решение из исходного кода.

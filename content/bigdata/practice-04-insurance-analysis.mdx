@@ -1,0 +1,616 @@
+---
+title: Практика 4. Анализ данных страхования
+description: Практика с датасетом по страхованию и подготовкой признаков.
+order: 5
+---
+
+## Wiki-версия
+
+Материал полностью перенесен в документацию. Исходный ноутбук удален из репозитория.
+
+Минькин Александр Дмитривеич - ИКБО-25-22
+
+# Практическая работа №4
+
+## Корреляция, линейная регрессия и дисперсионный анализ
+
+1.	Определить два вектора, представляющие собой число автомобилей, припаркованных в течении 5 рабочих дней у бизнес-центра на уличной стоянке и в подземном гараже.
+
+
+| День         | Улица | Гараж |
+|--------------|-------|-------|
+| Понедельник  | 80    | 100   |
+| Вторник      | 98    | 82    |
+| Среда        | 75    | 105   |
+| Четверг      | 91    | 89    |
+| Пятница      | 78    | 102   |
+
+```python
+# Определяем векторы с количеством автомобилей
+улица = [80, 98, 75, 91, 78]
+гараж = [100, 82, 105, 89, 102]
+
+# Определяем дни недели
+дни = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"]
+
+# Выводим данные
+for i in range(5):
+    print(f"{дни[i]} - Улица: {улица[i]}, Гараж: {гараж[i]}")
+```
+
+**Вывод:**
+
+```text
+Понедельник - Улица: 80, Гараж: 100
+Вторник - Улица: 98, Гараж: 82
+Среда - Улица: 75, Гараж: 105
+Четверг - Улица: 91, Гараж: 89
+Пятница - Улица: 78, Гараж: 102
+```
+
+1.1.	Найти и интерпретировать корреляцию между переменными «Улица» и «Гараж» (подсчитать корреляцию по Пирсону).
+
+```python
+import numpy as np
+
+# Данные
+улица = np.array([80, 98, 75, 91, 78])
+гараж = np.array([100, 82, 105, 89, 102])
+
+# Вычисляем корреляцию Пирсона
+корреляция = np.corrcoef(улица, гараж)[0, 1]
+
+print(f"Коэффициент корреляции Пирсона между улицей и гаражом: {корреляция:.2f}")
+```
+
+**Вывод:**
+
+```text
+Коэффициент корреляции Пирсона между улицей и гаражом: -1.00
+```
+
+1.2.	Построить диаграмму рассеяния для вышеупомянутых переменных.
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Данные
+улица = np.array([80, 98, 75, 91, 78])
+гараж = np.array([100, 82, 105, 89, 102])
+дни = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"]
+
+# Создание диаграммы рассеяния
+plt.figure(figsize=(8, 5))
+plt.scatter(улица, гараж, color='blue')
+
+# Добавляем подписи к точкам
+for i, день in enumerate(дни):
+    plt.text(улица[i]+0.5, гараж[i]+0.5, день, fontsize=9)
+
+# Подписи осей и заголовок
+plt.xlabel("Улица")
+plt.ylabel("Гараж")
+plt.title("Диаграмма рассеяния: Улица vs Гараж")
+plt.grid(True)
+plt.show()
+```
+
+**Вывод:**
+
+```text
+<Figure size 800x500 with 1 Axes>
+```
+
+2.	Найти и выгрузить данные. Вывести, провести предобработку и описать признаки.
+
+```python
+from google.colab import files
+uploaded = files.upload()
+```
+
+**Вывод:**
+
+```text
+<IPython.core.display.HTML object>
+
+Saving data_population2023.csv to data_population2023.csv
+```
+
+2.1.	Построить корреляционную матрицу по одной целевой переменной. Определить наиболее коррелирующую переменную, продолжить с ней работу в следующем пункте.
+
+```python
+import pandas as pd
+
+# 1. Загрузка данных (например, из CSV)
+df = pd.read_csv("data_population2023.csv")
+# Для примера создадим тестовый DataFrame
+
+# 2. Просмотр данных
+print("Первые строки данных:")
+print(df.head())
+
+# 3. Проверка на пропуски
+print("\nИнформация о данных:")
+print(df.info())
+
+# 4. Описательная статистика
+print("\nОписательные статистики:")
+print(df.describe())
+```
+
+**Вывод:**
+
+```text
+Первые строки данных:
+   sr.no.     province division district  households  population_2023  \
+0       1  Balochistan    Kalat   Awaran       27808           178958   
+1       2  Balochistan    Kalat    Kalat       33415           272506   
+2       3  Balochistan    Kalat  Khuzdar      161594           997214   
+3       4  Balochistan    Kalat  Lasbela      115635           680977   
+4       5  Balochistan    Kalat  Mastung       43736           313271   
+
+   average_household_size  population_2017  growth_rate  area(km²)  ...  \
+0                    6.44           121821         6.64      29510  ...   
+1                    8.16           211201         4.35       6622  ...   
+2                    6.17           798896         3.78      35380  ...   
+3                    5.89           576271         2.83      15153  ...   
+4                    7.16           265676         2.79       5896  ...   
+
+   primary_girls_schools  secondary_boys_schools  secondary_girls_schools  \
+0                    107                      24                       13   
+1                     84                      23                       18   
+2                    177                      45                       46   
+3                    124                      46                       29   
+4                     94                      24                       31   
+
+   high_boys_schools  high_girls_schools  Intermediate_boys_schools  \
+0                 29                  10                          2   
+1                 27                  17                          1   
+2                 32                  21                          6   
+3                 27                  11                          4   
+4                 18                  18                          2   
+
+   Intermediate_girls_schools  total_boys_schools  total_girls_schools  \
+0                           2                 249                  132   
+1                           1                 269                  120   
+2                           1                 569                  245   
+3                           4                 507                  168   
+4                           0                 268                  143   
+
+   total_schools  
+0            381  
+1            389  
+2            814  
+3            675  
+4            411  
+
+[5 rows x 22 columns]
+
+Информация о данных:
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 136 entries, 0 to 135
+Data columns (total 22 columns):
+ #   Column                      Non-Null Count  Dtype  
+---  ------                      --------------  -----  
+ 0   sr.no.                      136 non-null    int64  
+ 1   province                    136 non-null    object 
+ 2   division                    136 non-null    object 
+ 3   district                    136 non-null    object 
+ 4   households                  136 non-null    int64  
+ 5   population_2023             136 non-null    int64  
+ 6   average_household_size      136 non-null    float64
+ 7   population_2017             136 non-null    int64  
+ 8   growth_rate                 136 non-null    float64
+ 9   area(km²)                   136 non-null    int64  
+ 10  density_2023(people/km²)    136 non-null    float64
+ 11  primary_boys_schools        136 non-null    int64  
+ 12  primary_girls_schools       136 non-null    int64  
+ 13  secondary_boys_schools      136 non-null    int64  
+ 14  secondary_girls_schools     136 non-null    int64  
+ 15  high_boys_schools           136 non-null    int64  
+ 16  high_girls_schools          136 non-null    int64  
+ 17  Intermediate_boys_schools   136 non-null    int64  
+ 18  Intermediate_girls_schools  136 non-null    int64  
+ 19  total_boys_schools          136 non-null    int64  
+ 20  total_girls_schools         136 non-null    int64  
+ 21  total_schools               136 non-null    int64  
+dtypes: float64(3), int64(16), object(3)
+memory usage: 23.5+ KB
+None
+
+Описательные статистики:
+           sr.no.    households  population_2023  average_household_size  \
+count  136.000000  1.360000e+02     1.360000e+02              136.000000   
+mean    68.500000  2.819159e+05     1.775731e+06                6.451618   
+std     39.403892  2.789400e+05     1.791408e+06                0.944771   
+min      1.000000  1.640000e+04     1.275710e+05                4.180000   
+25%     34.750000  7.052575e+04     4.999090e+05                5.852500   
+50%     68.500000  2.187750e+05     1.370099e+06                6.390000   
+75%    102.250000  3.838998e+05     2.338289e+06                6.960000   
+max    136.000000  2.012526e+06     1.300414e+07                9.110000   
+
+       population_2017  growth_rate     area(km²)  density_2023(people/km²)  \
+count     1.360000e+02   136.000000    136.000000                136.000000   
+mean      1.527093e+06     2.827574   6036.323529               1521.740000   
+std       1.540987e+06     1.542254   6802.861419               6036.440643   
+min       9.705200e+04     0.230000     69.000000                  6.020000   
+25%       4.326818e+05     2.077500   2289.000000                122.947500   
+50%       1.216293e+06     2.460000   3709.500000                331.580000   
+75%       1.942269e+06     2.875000   7492.000000                772.712500   
+max       1.111998e+07     9.510000  44748.000000              55396.010000   
+
+       primary_boys_schools  primary_girls_schools  secondary_boys_schools  \
+count            136.000000             136.000000              136.000000   
+mean             579.588235             264.397059               51.860294   
+std              591.909008             207.461492               34.935321   
+min                0.000000               0.000000                0.000000   
+25%              239.250000              93.750000               24.750000   
+50%              378.000000             206.000000               46.000000   
+75%              641.750000             395.250000               72.500000   
+max             3375.000000            1068.000000              241.000000   
+
+       secondary_girls_schools  high_boys_schools  high_girls_schools  \
+count               136.000000         136.000000          136.000000   
+mean                 50.786765          64.617647           44.029412   
+std                  51.258879          53.103959           51.681781   
+min                   0.000000           0.000000            0.000000   
+25%                  16.750000          27.000000           10.000000   
+50%                  31.000000          53.000000           23.500000   
+75%                  72.500000          84.250000           55.250000   
+max                 281.000000         345.000000          300.000000   
+
+       Intermediate_boys_schools  Intermediate_girls_schools  \
+count                 136.000000                  136.000000   
+mean                   10.647059                    6.389706   
+std                    20.981660                    8.071140   
+min                     0.000000                    0.000000   
+25%                     3.000000                    1.000000   
+50%                     6.500000                    3.000000   
+75%                    12.000000                    9.250000   
+max                   233.000000                   51.000000   
+
+       total_boys_schools  total_girls_schools  total_schools  
+count          136.000000           136.000000     136.000000  
+mean           706.713235           365.602941    1072.316176  
+std            621.938128           292.229090     753.412205  
+min              0.000000             0.000000       0.000000  
+25%            321.250000           120.000000     469.750000  
+50%            540.500000           268.000000     864.000000  
+75%            788.000000           582.750000    1439.250000  
+max           3684.000000          1367.000000    4269.000000
+```
+
+2.2.	Реализовать регрессию вручную, отобразить наклон, сдвиг и MSE.
+
+```python
+import numpy as np
+
+# Данные (например, наиболее коррелирующая переменная с целевой)
+X = np.array([80, 98, 75, 91, 78])  # независимая переменная
+y = np.array([100, 82, 105, 89, 102])  # целевая переменная
+
+# 1. Вычисляем средние значения
+X_mean = np.mean(X)
+y_mean = np.mean(y)
+
+# 2. Вычисляем наклон (w) и сдвиг (b) по формулам линейной регрессии
+w = np.sum((X - X_mean) * (y - y_mean)) / np.sum((X - X_mean)**2)
+b = y_mean - w * X_mean
+
+print(f"Наклон (w): {w:.2f}")
+print(f"Сдвиг (b): {b:.2f}")
+
+# 3. Вычисляем предсказания
+y_pred = w * X + b
+
+# 4. Вычисляем MSE (среднеквадратичную ошибку)
+MSE = np.mean((y - y_pred)**2)
+print(f"MSE: {MSE:.2f}")
+```
+
+**Вывод:**
+
+```text
+Наклон (w): -1.00
+Сдвиг (b): 180.00
+MSE: 0.00
+```
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Данные
+X = np.array([80, 98, 75, 91, 78])  # независимая переменная
+y = np.array([100, 82, 105, 89, 102])  # целевая переменная
+
+# Линейная регрессия вручную
+X_mean = np.mean(X)
+y_mean = np.mean(y)
+w = np.sum((X - X_mean) * (y - y_mean)) / np.sum((X - X_mean)**2)
+b = y_mean - w * X_mean
+
+# Предсказанные значения
+y_pred = w * X + b
+
+# Построение графика
+plt.figure(figsize=(8,5))
+plt.scatter(X, y, color='blue', label='Данные')
+plt.plot(X, y_pred, color='red', label=f'Регрессия: y = {w:.2f}x + {b:.2f}')
+plt.xlabel("X (наиболее коррелирующая переменная)")
+plt.ylabel("y (Целевая переменная)")
+plt.title("Линейная регрессия вручную")
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+**Вывод:**
+
+```text
+<Figure size 800x500 with 1 Axes>
+```
+
+3.	Загрузить данные: 'insurance.csv'. Вывести и провести предобработку. Вывести список уникальных регионов.
+
+```python
+from google.colab import files
+uploaded = files.upload()
+```
+
+**Вывод:**
+
+```text
+<IPython.core.display.HTML object>
+
+Saving insurance.csv to insurance.csv
+```
+
+3.1.	Выполнить однофакторный ANOVA тест, чтобы проверить влияние региона на индекс массы тела (BMI), используя первый способ, через библиотеку Scipy.
+
+```python
+import pandas as pd
+import scipy.stats as stats
+
+# Загрузка данных
+df = pd.read_csv('insurance.csv')
+
+# Проверим уникальные регионы
+print("Уникальные регионы:", df['region'].unique())
+
+# Группируем данные по регионам и извлекаем BMI для каждой группы
+groups = [df[df['region'] == region]['bmi'] for region in df['region'].unique()]
+
+# Выполняем однофакторный ANOVA тест
+f_stat, p_value = stats.f_oneway(*groups)
+
+# Вывод результатов
+print(f"F-статистика: {f_stat:.3f}")
+print(f"P-значение: {p_value:.3f}")
+
+# Интерпретация
+if p_value < 0.05:
+    print("Результат значимый: средние значения BMI различаются между регионами.")
+else:
+    print("Результат не значимый: средние значения BMI не различаются между регионами.")
+```
+
+**Вывод:**
+
+```text
+Уникальные регионы: ['southwest' 'southeast' 'northwest' 'northeast']
+F-статистика: 39.495
+P-значение: 0.000
+Результат значимый: средние значения BMI различаются между регионами.
+```
+
+3.2.	Выполнить однофакторный ANOVA тест, чтобы проверить влияние региона на индекс массы тела (BMI), используя второй способ, с помощью функции anova_lm() из библиотеки statsmodels.
+
+```python
+import pandas as pd
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+from statsmodels.stats.anova import anova_lm
+
+# Загрузка данных
+df = pd.read_csv('insurance.csv')
+
+# Проверим уникальные регионы
+print("Уникальные регионы:", df['region'].unique())
+
+# Создаем линейную модель: BMI ~ region
+model = ols('bmi ~ C(region)', data=df).fit()
+
+# Выполняем однофакторный ANOVA тест
+anova_results = anova_lm(model)
+
+# Вывод результатов
+print(anova_results)
+```
+
+**Вывод:**
+
+```text
+Уникальные регионы: ['southwest' 'southeast' 'northwest' 'northeast']
+               df        sum_sq      mean_sq          F        PR(>F)
+C(region)     3.0   4055.880631  1351.960210  39.495057  1.881839e-24
+Residual   1334.0  45664.319755    34.231124        NaN           NaN
+```
+
+3.3.	С помощью t критерия Стьюдента перебрать все пары. Определить поправку Бонферрони. Сделать выводы.
+
+```python
+import pandas as pd
+from itertools import combinations
+from scipy.stats import ttest_ind
+
+# Загрузка данных
+df = pd.read_csv('insurance.csv')
+
+# Список уникальных регионов
+regions = df['region'].unique()
+print("Уникальные регионы:", regions)
+
+# Генерируем все возможные пары регионов
+pairs = list(combinations(regions, 2))
+
+# Уровень значимости
+alpha = 0.05
+# Поправка Бонферрони
+bonf_alpha = alpha / len(pairs)
+
+print(f"Поправка Бонферрони: {bonf_alpha:.4f}")
+
+# Выполняем t-тест для каждой пары
+for r1, r2 in pairs:
+    group1 = df[df['region'] == r1]['bmi']
+    group2 = df[df['region'] == r2]['bmi']
+    t_stat, p_value = ttest_ind(group1, group2, equal_var=False)  # Welch t-test
+    significant = "Да" if p_value < bonf_alpha else "Нет"
+    print(f"{r1} vs {r2}: t = {t_stat:.3f}, p = {p_value:.4f}, значимо после Bonferroni? {significant}")
+```
+
+**Вывод:**
+
+```text
+Уникальные регионы: ['southwest' 'southeast' 'northwest' 'northeast']
+Поправка Бонферрони: 0.0083
+southwest vs southeast: t = -5.952, p = 0.0000, значимо после Bonferroni? Да
+southwest vs northwest: t = 3.284, p = 0.0011, значимо после Bonferroni? Да
+southwest vs northeast: t = 3.117, p = 0.0019, значимо после Bonferroni? Да
+southeast vs northwest: t = 9.377, p = 0.0000, значимо после Bonferroni? Да
+southeast vs northeast: t = 8.835, p = 0.0000, значимо после Bonferroni? Да
+northwest vs northeast: t = 0.060, p = 0.9519, значимо после Bonferroni? Нет
+```
+
+3.4.	Выполнить пост-хок тесты Тьюки и построить график.
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+
+# Загрузка данных
+df = pd.read_csv('insurance.csv')
+
+# Пост-хок тест Тьюки
+tukey = pairwise_tukeyhsd(endog=df['bmi'],    # зависимая переменная
+                          groups=df['region'], # группирующая переменная
+                          alpha=0.05)
+
+# Вывод результатов
+print(tukey.summary())
+
+# Визуализация результатов
+tukey.plot_simultaneous(comparison_name=df['region'].unique()[0])  # выбираем первый регион для базовой линии
+plt.title("Пост-хок тест Тьюки для BMI по регионам")
+plt.xlabel("Разница средних BMI")
+plt.show()
+```
+
+**Вывод:**
+
+```text
+Multiple Comparison of Means - Tukey HSD, FWER=0.05    
+==========================================================
+  group1    group2  meandiff p-adj   lower   upper  reject
+----------------------------------------------------------
+northeast northwest   0.0263 0.9999 -1.1552  1.2078  False
+northeast southeast   4.1825    0.0   3.033   5.332   True
+northeast southwest   1.4231 0.0107  0.2416  2.6046   True
+northwest southeast   4.1562    0.0  3.0077  5.3047   True
+northwest southwest   1.3968 0.0127  0.2162  2.5774   True
+southeast southwest  -2.7594    0.0 -3.9079 -1.6108   True
+----------------------------------------------------------
+
+<Figure size 1000x600 with 1 Axes>
+```
+
+3.5.	Выполнить двухфакторный ANOVA тест, чтобы проверить влияние региона и пола на индекс массы тела (BMI), используя функцию anova_lm() из библиотеки statsmodels.
+
+```python
+import pandas as pd
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+from statsmodels.stats.anova import anova_lm
+
+# Загрузка данных
+df = pd.read_csv('insurance.csv')
+
+# Проверим уникальные значения регионов и пола
+print("Уникальные регионы:", df['region'].unique())
+print("Уникальные значения пола:", df['sex'].unique())
+
+# Создаем линейную модель с двумя факторами: BMI ~ region + sex
+model = ols('bmi ~ C(region) + C(sex)', data=df).fit()
+
+# Выполняем двухфакторный ANOVA тест
+anova_results = anova_lm(model)
+
+# Вывод результатов
+print(anova_results)
+```
+
+**Вывод:**
+
+```text
+Уникальные регионы: ['southwest' 'southeast' 'northwest' 'northeast']
+Уникальные значения пола: ['female' 'male']
+               df        sum_sq      mean_sq          F        PR(>F)
+C(region)     3.0   4055.880631  1351.960210  39.539923  1.773031e-24
+C(sex)        1.0     86.007035    86.007035   2.515393  1.129767e-01
+Residual   1333.0  45578.312720    34.192283        NaN           NaN
+```
+
+3.6.	Выполнить пост-хок тесты Тьюки и построить график.
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+
+# Загрузка данных
+df = pd.read_csv('insurance.csv')
+
+# Линейная модель с двумя факторами
+model = ols('bmi ~ C(region) + C(sex)', data=df).fit()
+
+# Пост-хок тест Тьюки для региона
+tukey = pairwise_tukeyhsd(endog=df['bmi'], groups=df['region'], alpha=0.05)
+
+# Вывод результатов
+print(tukey.summary())
+
+# Визуализация
+tukey.plot_simultaneous(comparison_name=df['region'].unique()[0])  # базовый регион
+plt.title("Пост-хок тест Тьюки для BMI по регионам")
+plt.xlabel("Разница средних BMI")
+plt.show()
+```
+
+**Вывод:**
+
+```text
+Multiple Comparison of Means - Tukey HSD, FWER=0.05    
+==========================================================
+  group1    group2  meandiff p-adj   lower   upper  reject
+----------------------------------------------------------
+northeast northwest   0.0263 0.9999 -1.1552  1.2078  False
+northeast southeast   4.1825    0.0   3.033   5.332   True
+northeast southwest   1.4231 0.0107  0.2416  2.6046   True
+northwest southeast   4.1562    0.0  3.0077  5.3047   True
+northwest southwest   1.3968 0.0127  0.2162  2.5774   True
+southeast southwest  -2.7594    0.0 -3.9079 -1.6108   True
+----------------------------------------------------------
+
+<Figure size 1000x600 with 1 Axes>
+```
+
+**Вывод:**
+
+В ходе работы были проведены статистические анализы данных о здоровье и парковках: выполнена загрузка и предобработка наборов данных, рассчитаны корреляции Пирсона, построены диаграммы рассеяния и реализована линейная регрессия вручную с оценкой наклона, сдвига и `MSE`.
+
+Для данных `insurance.csv` проведен однофакторный и двухфакторный `ANOVA` анализ с использованием библиотек `Scipy` и `Statsmodels`, выполнены пост-хок тесты Тьюки, применена поправка Бонферрони и визуализированы результаты различий между группами. Работа показала применение методов статистики и `Python` для анализа, визуализации и интерпретации данных.

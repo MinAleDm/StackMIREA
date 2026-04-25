@@ -1,0 +1,301 @@
+---
+title: Task 8 — Графика и анимация
+sidebar_position: 9
+description: Работа с графическими примитивами и обновлением сцены.
+slug: /java/task-08-graphics-and-animation
+---
+
+## Задание
+
+Работа с графическими примитивами и обновлением сцены. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task8/Animation.java`
+- `Task8/Picture.java`
+- `Task8/RandomShapes.java`
+- `Task8/tret.java`
+
+#### `Task8/Animation.java`
+
+```java title="Task8/Animation.java"
+package Task8;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class Animation {
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Анимация");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        final ImageIcon[] icon = {new ImageIcon("D:\\Обои\\1234.jpeg")};
+        //ImageIcon icon1 = new ImageIcon("D:\\Обои\\1680.jpg");
+        JLabel label1;
+        final JLabel[] label2 = new JLabel[1];
+        label1 = new JLabel("lol", icon[0], SwingConstants.CENTER);
+        //label2 = new JLabel("lop", icon1, SwingConstants.CENTER);
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.BLACK);
+        panel.setPreferredSize(new Dimension(1919, 1079));
+        panel.add(label1);
+        //panel.add(label2);
+        frame.getContentPane().add(panel);
+        frame.pack();
+        frame.setVisible(true);
+        final int[] count = {0};
+        Timer t = new Timer();
+        TimerTask animate = null;
+        t.schedule(animate, 1, 200);
+        animate = new TimerTask() {
+            @Override
+            public void run() {
+                switch (count[0]) {
+                    case 0:
+                        ImageIcon icon = new ImageIcon("D:\\Обои\\1680.jpg");
+                        JLabel label2 = new JLabel("lop", icon, SwingConstants.CENTER);
+                        JPanel panel1 = new JPanel();
+                        panel1.add(label2);
+                        break;
+                    case 1:
+                        ImageIcon icon1 = new ImageIcon("D:\\Обои\\1234.jpeg");
+                        JLabel label3 = new JLabel("lop", icon1, SwingConstants.CENTER);
+                        JPanel panel2 = new JPanel();
+                        panel2.add(label3);
+                        break;
+                }
+                count[0]++;
+                if(count[0] == 2) {
+                    count[0] = 0;
+                }
+            }
+        };
+    }
+}
+
+```
+
+#### `Task8/Picture.java`
+
+```java title="Task8/Picture.java"
+package Task8;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Arrays;
+
+public class Picture {
+    public static void main(String[] args){
+        String r = "";
+        JFrame frame = new JFrame ("Картинка");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        for (int i=0; i<args.length; i++){
+            r=args[i];
+        }
+        ImageIcon icon = new ImageIcon(r);
+        JLabel label1;
+        label1 = new JLabel("FreeBSD Left", icon, SwingConstants.CENTER);
+        //label1.setHorizontalTextPosition(SwingConstants.LEFT);
+        //label1.setVerticalTextPosition(SwingConstants.BOTTOM);
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.BLACK);
+        panel.setPreferredSize(new Dimension(200, 300));
+        panel.add(label1);
+        frame.getContentPane().add(panel);
+        frame.pack();
+        frame.setVisible(true);
+    }
+}
+
+```
+
+#### `Task8/RandomShapes.java`
+
+```java title="Task8/RandomShapes.java"
+package Task8;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Random;
+
+//import static javax.swing.UIManager.getColor;
+
+abstract class Shape {
+    Color color;
+    int x;
+    int y;
+
+    public Shape(Color color, int x, int y) {
+        this.color = color;
+        this.x = x;
+        this.y = y;
+    }
+
+    public abstract void draw(Graphics g);
+}
+
+class RectangleShape extends Shape {
+    private int width;
+    private int height;
+
+    public RectangleShape(Color color, int x, int y, int width, int height) {
+        super(color, x, y);
+        this.width = width;
+        this.height = height;
+    }
+    public Color getColor(){
+        return null;
+    }
+    @Override
+    public void draw(Graphics g) {
+        g.setColor(getColor());
+        g.fillRect(x, y, width, height);
+    }
+}
+
+class CircleShape extends Shape {
+    private int radius;
+    private Random random = new Random();
+    public CircleShape(Color color, int x, int y, int radius) {
+        super(color, x, y);
+        this.radius = radius;
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        g.setColor(getColor());
+        g.fillOval(x, y, 2 * radius, 2 * radius);
+    }
+
+    private Color getColor() {
+        Color randomColor = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        return randomColor;
+    }
+}
+
+public class RandomShapes extends JPanel {
+    private static final int WIDTH = 800;
+    private static final int HEIGHT = 600;
+    private static final int NUM_SHAPES = 20;
+
+    private final Random random = new Random();
+
+    private RandomShapes() {
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        for (int i = 0; i < NUM_SHAPES; i++) {
+            int x = random.nextInt(WIDTH);
+            int y = random.nextInt(HEIGHT);
+            int shapeType = random.nextInt(2);
+            if (shapeType == 0) {
+                int width = random.nextInt(100) + 20;
+                int height = random.nextInt(100) + 20;
+                RectangleShape rectangle = new RectangleShape(Color.red, x, y, width, height);
+                rectangle.draw(g);
+            } else {
+                int radius = random.nextInt(50) + 10;
+                CircleShape circle = new CircleShape(Color.red, x, y, radius);
+                circle.draw(g);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Random Shapes");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.add(new RandomShapes());
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
+    }
+}
+
+```
+
+#### `Task8/tret.java`
+
+```java title="Task8/tret.java"
+package Task8;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.util.Timer;
+import java.util.TimerTask;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+public class tret extends  JPanel{
+        private static final int HEIGHT = 1080;
+        private static final int WIDTH = 1920;
+        private JFrame frame;
+        private Timer timer;
+        private Image image;
+        public tret() {
+            frame = new JFrame("Application name");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(WIDTH, HEIGHT);
+            frame.add(this);
+            frame.setVisible(true);
+            image =  new ImageIcon("D:\\Обои\\1234.jpeg").getImage();
+            count = 0;
+            timer = new Timer();
+            timer.schedule(animate, 1,200);
+        }
+        private int count;
+        TimerTask animate = new TimerTask() {
+
+            @Override
+            public void run() {
+                switch (count) {
+                    case 20:
+                        image = new ImageIcon("D:\\Обои\\1680.jpg").getImage();
+                        break;
+                    case 40:
+                        image = new ImageIcon("D:\\Обои\\03.jpg").getImage();
+                        break;
+                    case 60:
+                        image = new ImageIcon("D:\\Обои\\1234.jpeg").getImage();
+                        break;
+                    default:
+                        break;
+                }
+                count++;
+                if (count == 80) {
+                    count = 0;
+                }
+                repaint();
+            }
+        };
+        public void paint(Graphics canvas) {
+            canvas.drawImage(image, 0, 0,  null);
+        }
+        public static void main(String[] args){
+            new tret();
+        }
+
+    }
+
+```
+
+
+## Описание
+
+В этом модуле используется 4 Java-файлов. Ключевые сущности: Animation, Picture, RandomShapes, tret.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 8 — Графика и анимация документирует реальное решение из исходного кода.

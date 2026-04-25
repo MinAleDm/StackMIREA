@@ -1,0 +1,889 @@
+---
+title: "Практика 5 — Тестовая автоматизация"
+sidebar_position: 3
+description: "Практикум по pytest, coverage, мутационному и property-based тестированию."
+slug: "/python/practice-5-test-automation"
+---
+
+> Источник: `pr_Python/pr_Python/pract5.ipynb`
+
+# Практическое занятие №5
+
+  Многие задачи из этого блокнота решать удобнее в парном составе: один студент занимается написанием кода программы и пытается внести в код такие ошибки, которые будет сложно выявить с помощью тестов другому студенту.
+
+  Далее потребуется несколько программ, содержащих ошибки. Если в задаче явно не указана программа для тестирования, то используется одна из следующих программ:
+
+### 1. Сортировка.
+
+````python
+def bucketsort(arr, k):
+    counts = [0] * k
+    for x in arr:
+        counts[x] += 1
+
+    sorted_arr = []
+    for i in range(k):
+        sorted_arr.extend([i] * counts[i])
+
+    return sorted_arr
+````
+
+### 2. Бинарный поиск.
+
+````python
+def binary_search(arr, x):
+    left = 0
+    right = len(arr)
+    while left <= right:
+        mid = round((left + right) / 2)
+        if arr[mid] == x:
+            return mid
+        if arr[mid] < x:
+            left = mid + 1
+        else:
+            right = mid
+    return -1
+````
+
+### 3. Вычисление расстояния между точками.
+
+````python
+def distance(x1, y1, x2, y2):
+    return ((x2 + x1)**2 - (y2 + y1)**2) ** 0.25
+````
+
+### 4. Определение типа треугольника.
+
+````python
+def triangle_type(x1, y1, x2, y2, x3, y3):
+    a = distance(x1, y1, x2, y2)
+    b = distance(x2, y2, x3, y3)
+    c = distance(x3, y3, x1, y1)
+    if a == b == c:
+        return "равнобедренный"
+    elif a == b or a == c or b == c:
+        return "равносторонний"
+    elif a != b != c:
+        return "разносторонний"
+````
+
+### 5. Сжатие и расжатие данных по методу RLE.
+
+````python
+def encode_rle(data):
+    encoded = bytes()
+    count = 0
+    last_char = data[-1]
+    for i in range(1, len(data) + 1):
+        if data[i] == last_char:
+            count += 1
+        else:
+            encoded.append(data[i])
+            encoded.append(count)
+            count = 1
+            last_char = data[i]
+    encoded.append(count)
+    encoded.append(last_char)
+    return bytes(encoded)
+
+def decode_rle(data):
+    decoded = bytes()
+    i = 1
+    while i < len(data):
+        count = data[i - 1]
+        char = data[i]
+        decoded.extend([char]*count)
+        i += 1
+    return bytes(decoded)
+````
+
+### 6. Банковский счет.
+
+````python
+class BankAccount:
+    def __init__(self, account_number, balance=0):
+        self.account_number = account_number
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+        return f"{amount} средств успешно зачислены на счет {self.account_number}"
+
+    def withdraw(self, amount):
+        self.balance -= amount
+        return f"{amount} средств успешно сняты с счета {self.account_number}"
+
+    def check_balance(self):
+        return f"Баланс счета {self.account_number}: {self.balance}"
+````
+
+### 7. Банковский счет с использованием базы данных.
+
+````python
+import sqlite3
+
+class BankAccount:
+    def __init__(self, account_number):
+        self.account_number = account_number
+        self.conn = sqlite3.connect('bank.db')
+        self.cursor = self.conn.cursor()
+        self.cursor.execute(
+            "CREATE TABLE IF NOT EXISTS accounts (account_number INTEGER PRIMARY KEY, balance REAL)")
+        self.conn.commit()
+
+    def deposit(self, amount):
+        self.cursor.execute(
+            "UPDATE accounts SET balance = balance + ? WHERE account_number = ?", (amount, self.account_number))
+        self.conn.commit()
+        return f"{amount} средств успешно зачислены на счет {self.account_number}"
+
+    def withdraw(self, amount):
+        self.cursor.execute(
+            "SELECT balance FROM accounts WHERE account_number = ?", (self.account_number,))
+        balance = self.cursor.fetchone()[0]
+        self.cursor.execute(
+            "UPDATE accounts SET balance = balance - ? WHERE account_number = ?", (amount, self.account_number))
+        self.conn.commit()
+        return f"{amount} средств успешно сняты с счета {self.account_number}"
+
+    def check_balance(self):
+        self.cursor.execute(
+            "SELECT balance FROM accounts WHERE account_number = ?", (self.account_number,))
+        balance = self.cursor.fetchone()[0]
+        return f"Баланс счета {self.account_number}: {balance}"
+
+    def close_account(self):
+        self.cursor.execute(
+            "DELETE FROM accounts WHERE account_number = ?", (self.account_number,))
+        self.conn.commit()
+        return f"Счет {self.account_number} закрыт"
+
+    def create_account(self, balance):
+        self.cursor.execute(
+            "INSERT INTO accounts (account_number, balance) VALUES (?, ?)", (self.account_number, balance))
+        self.conn.commit()
+        return f"Счет {self.account_number} успешно создан"
+````
+
+# 1. Вводные задачи
+
+## 1.1. (уровень сложности: низкий)
+
+ Исправьте функцию distance. Добавьте документацию к функции в виде docstring-строки. Укажите примеры в формате doctest. Примеры должны охватывать граничные случаи. Протестируйте программу с помощью вызова модуля doctest. Перенесите примеры в отдельный файл и снова протестируйте программу.
+
+````python
+def distance(x1, y1, x2, y2):
+    """
+    Calculate the Euclidean distance between two points in a 2D plane.
+
+    Arguments:
+    x1 -- x-coordinate of the first point
+    y1 -- y-coordinate of the first point
+    x2 -- x-coordinate of the second point
+    y2 -- y-coordinate of the second point
+
+    Returns:
+    Euclidean distance between the two points
+
+    Formula:
+    distance = sqrt((x2 - x1)**2 + (y2 - y1)**2)
+
+    Example:
+    >>> distance(0, 0, 3, 4)  # 3-4-5 right triangle
+    5.0
+    >>> distance(0, 0, 1, 1)  # distance is sqrt(2)
+    1.4142135623730951
+    >>> distance(0, 0, 0, 0)  # distance between the same point
+    0.0
+    """
+    return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+
+import doctest
+doctest.testmod()
+````
+
+Вывод:
+
+````text
+TestResults(failed=0, attempted=3)
+````
+
+## 1.2.(уровень сложности: высокий) *
+
+ Добавьте к функции сортировки тестирование на случайных данных. Исправьте ошибки в функции.
+
+ Напишите к функции сортировки отдельную функцию-спецификацию в виде набора assert'ов. Спецификация должна исчерпывающим образом описывать задачу сортировки (без привлечения готовых функций сортировки), иными словами – для общего случая нельзя придумать такое искажение кода сортировки, которое будет принято спецификацией.
+
+### 1.2.1 Сортировка.
+
+````python
+def test_bucketsort_specification():
+    # Генерируем случайный список arr и число k для тестирования
+    arr = [4, 1, 5, 3, 2, 4, 2, 0, 1, 3, 5, 0]
+    k = max(arr) + 1
+
+    # Проверяем, что список arr не пустой
+    assert arr
+
+    # Проверяем, что все элементы в списке arr являются целыми неотрицательными числами
+    assert all(isinstance(x, int) and x >= 0 for x in arr)
+
+    # Проверяем, что k больше 0
+    assert k > 0
+
+    # Проверяем, что для каждого элемента x в списке arr он не превосходит k
+    assert all(x < k for x in arr)
+
+    # Запускаем сортировку bucketsort
+    sorted_arr = bucketsort(arr, k)
+
+    # Проверяем, что длина отсортированного списка совпадает с исходным
+    assert len(sorted_arr) == len(arr)
+
+    # Проверяем, что все элементы в отсортированном списке находятся в правильном порядке
+    for i in range(len(sorted_arr) - 1):
+        assert sorted_arr[i] <= sorted_arr[i+1]
+
+    # Проверяем, что все элементы из исходного списка присутствуют в отсортированном
+    assert all(elem in sorted_arr for elem in arr)
+
+    # Проверяем, что все элементы в отсортированном списке меньше или равны k-1
+    assert all(elem <= k-1 for elem in sorted_arr)
+````
+
+### 1.2.2 Бинарный поиск.
+
+````python
+def test_binary_search_specification():
+    # Генерируем случайный отсортированный список arr для тестирования
+    arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    # Проверяем, что список arr не пустой
+    assert arr
+
+    # Проверяем, что все элементы в списке arr являются целыми числами
+    assert all(isinstance(x, int) for x in arr)
+
+    # Проверяем, что список arr отсортирован по возрастанию
+    assert all(arr[i] <= arr[i+1] for i in range(len(arr) - 1))
+
+    # Проверяем, что для каждого элемента x в списке arr он присутствует в списке
+    for x in arr:
+        assert binary_search(arr, x) != -1
+
+    # Проверяем, что отрицательное число не находится в списке arr
+    assert binary_search(arr, -1) == -1
+
+    # Проверяем, что число, большее максимального элемента в списке arr, не находится в списке
+    assert binary_search(arr, 10) == -1
+````
+
+### 1.2.3. Вычисление расстояния между точками.
+
+````python
+import math
+
+def test_distance_specification():
+    # Проверяем расстояние между двумя точками (0, 0) и (3, 4) - это треугольное число
+    assert distance(0, 0, 3, 4) == 5.0
+
+    # Проверяем расстояние между двумя точками (1, 2) и (4, 6)
+    assert distance(1, 2, 4, 6) == 5.0
+
+    # Проверяем расстояние между двумя одинаковыми точками (0, 0) и (0, 0)
+    assert distance(0, 0, 0, 0) == 0.0
+
+    # Проверяем симметричность расстояния: расстояние между (1, 2) и (4, 6) равно расстоянию между (4, 6) и (1, 2)
+    assert distance(1, 2, 4, 6) == distance(4, 6, 1, 2)
+
+    # Проверяем, что расстояние между точками всегда неотрицательно
+    assert distance(1, 2, 3, 4) >= 0
+
+    # Проверяем свойство треугольного неравенства: для трех точек (x1, y1), (x2, y2),
+    # (x3, y3) расстояние между (x1, y1) и (x3, y3) не больше,
+    # чем сумма расстояний между точками (x1, y1) и (x2, y2), (x2, y2) и (x3, y3)
+    assert distance(1, 1, 3, 1) <= distance(1, 1, 2, 2) + distance(2, 2, 3, 1)
+````
+
+### 1.2.4. Определение типа треугольника.
+
+````python
+def test_triangle_type_specification():
+    # Проверяем тип равностороннего треугольника
+    assert triangle_type(0, 0, 1, math.sqrt(3), 2, 0) == "равносторонний"
+
+    # Проверяем тип равнобедренного треугольника
+    assert triangle_type(0, 0, 1, 0, 0.5, math.sqrt(3) / 2) == "равнобедренный"
+
+    # Проверяем тип разностороннего треугольника
+    assert triangle_type(0, 0, 1, 1, 2, 3) == "разносторонний"
+
+    # Проверяем тип равнобедренного треугольника (все равны стороны)
+    assert triangle_type(0, 0, 1, 0, 0.5, math.sqrt(3) / 2) == "равнобедренный"
+
+    # Проверяем, что треугольник с вершинами в одной точке не имеет типа
+    assert triangle_type(0, 0, 0, 0, 0, 0) is None
+````
+
+### 1.2.5. Сжатие и расжатие данных по методу RLE.
+
+````python
+def test_encode_decode_rle_specification():
+    # Проверяем кодирование
+    assert encode_rle(bytes([1, 1, 1, 2, 2, 3, 3, 3, 3])) == bytes([1, 3, 2, 2, 3, 4])
+
+    # Проверяем декодирование
+    assert decode_rle(bytes([1, 3, 2, 2, 3, 4])) == bytes([1, 1, 1, 2, 2, 3, 3, 3, 3])
+
+    # Проверяем крайний случай с одним элементом
+    assert encode_rle(bytes([5])) == bytes([5, 1])
+    assert decode_rle(bytes([5, 1])) == bytes([5])
+
+    # Проверяем пустую последовательность
+    assert encode_rle(bytes([])) == bytes([])
+    assert decode_rle(bytes([])) == bytes([])
+
+    # Проверяем последовательность с одним повторяющимся элементом
+    assert encode_rle(bytes([1, 1, 1, 1, 1])) == bytes([1, 5])
+    assert decode_rle(bytes([1, 5])) == bytes([1, 1, 1, 1, 1])
+
+    # Проверяем последовательность с различными элементами
+    assert encode_rle(bytes([4, 4, 1, 1, 2, 2, 2, 5, 6, 6, 6, 3, 3])) == bytes([4, 2, 1, 2, 2, 3, 5, 6, 3, 3])
+    assert decode_rle(bytes([4, 2, 1, 2, 2, 3, 5, 6, 3, 3])) == bytes([4, 4, 1, 1, 2, 2, 2, 5, 6, 6, 6, 3, 3])
+````
+
+### 1.2.6. Банковский счет.
+
+### 1.2.7. Банковский счет с использованием базы данных.
+
+## 1.3. (уровень сложности: средний)
+
+ Реализуйте конструкцию raises с помощью менеджера контекста в духе таковой из pytest.
+
+Пример использования:
+
+```
+with raises(MealyError) as e:
+    ...
+```
+
+````python
+class MealyError(Exception):
+    pass
+
+class RaisesContext:
+    def __init__(self, exception):
+        self.exception = exception
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is None:
+            raise AssertionError(f"{self.exception.__name__} was not raised")
+        if issubclass(exc_type, self.exception):
+            return True
+
+        raise AssertionError(f"Expected {self.exception.__name__}, but got {exc_type.__name__}")
+
+def raises(exception):
+    return RaisesContext(exception)
+````
+
+````python
+with raises(MealyError) as e:
+    raise MealyError("This error was explicitly raised")
+
+# No assertion error is raised
+````
+
+# 2. Библиотеки pytest и coverage
+
+### 2.1. (уровень сложности: средний)
+
+ Научитесь работать с модулем pytest. Выберите одну из программ, содержащих ошибки. Создайте отдельный файл для тестирования, в который поместите тестирующие функции (не менее двух). Упростите код с помощью добавления fixture-функций. Добавьте параметризацию.
+
+````python
+# Программа с ошибками (program.py)
+def divide_numbers(a, b):
+    return a / b
+
+def uppercase_string(s):
+    return s.upper()
+
+
+
+# Тестирование программы с помощью pytest (test_program.py)
+import pytest
+from program import divide_numbers, uppercase_string #pycharm work
+
+@pytest.fixture
+def numbers():
+    return 10, 2
+
+def test_divide_numbers(numbers):
+    a, b = numbers
+    assert divide_numbers(a, b) == 5
+
+@pytest.mark.parametrize("test_input, expected", [("hello", "HELLO"), ("world", "WORLD")])
+def test_uppercase_string(test_input, expected):
+    assert uppercase_string(test_input) == expected
+````
+
+### 2.2. (уровень сложности: средний)
+
+ Выберите одну из программ, содержащих ошибки. Добавьте туда ввод со стороны пользователя. Добавьте макетный код для тестирования, с учетом такого ввода.
+
+````python
+# Программа с ошибкой и вводом от пользователя (program_with_error.py)
+def divide_numbers():
+    try:
+        a = float(input("Enter the first number: "))
+        b = float(input("Enter the second number: "))
+        result = a / b
+        return result
+    except ZeroDivisionError:
+        return "Error: Division by zero"
+    except ValueError:
+        return "Error: Invalid input"
+
+def uppercase_string():
+    s = input("Enter a string: ")
+    return s.upper()
+````
+
+Теперь давайте создадим файл для тестирования с использованием pytest, учитывая ввод от пользователя:
+
+````python
+# Тестирование программы с ошибкой и вводом от пользователя (test_program_with_error.py)
+import pytest
+from program_with_error import divide_numbers, uppercase_string
+from io import StringIO
+
+@pytest.fixture
+def numbers(monkeypatch):
+    monkeypatch.setattr('sys.stdin', StringIO("10\n2\n"))
+    return 10, 2
+
+def test_divide_numbers(numbers):
+    assert divide_numbers() == 5
+
+@pytest.mark.parametrize("test_input, expected", [("hello\n", "HELLO"), ("world\n", "WORLD")])
+def test_uppercase_string(test_input, expected, monkeypatch):
+    monkeypatch.setattr('sys.stdin', StringIO(test_input))
+    assert uppercase_string() == expected
+````
+
+В этом файле мы также использовали @pytest.fixture для создания fixture-функции numbers, которая изменяет стандартный поток ввода sys.stdin на заданные значения. Это позволяет нам имитировать ввод от пользователя в тестах.
+
+ Тестирующие функции test_divide_numbers и test_uppercase_string теперь также учитывают ввод от пользователя, благодаря использованию pytest.mark.parametrize и изменению потока ввода для каждого теста.
+
+ Для запуска тестов также используйте команду pytest в терминале, указав файл для тестирования:
+
+```
+pytest test_program_with_error.py
+```
+
+ Теперь программа с ошибкой и вводом от пользователя готова для тестирования с помощью pytest.
+
+### 2.2. (уровень сложности: средний)
+
+ Научитесь работать с модулем coverage. Выберите одну из программ, содержащих ошибки. Получите статистику по покрытию операторов. Получите статистику по покрытию ветвей. Найдите случай, когда покрытие ветвей отличается от покрытия операторов.
+
+ Постарайтесь изменить код исходной программы так, чтобы затруднить получение 100% покрытия. Найдите простой пример ошибки в выбранной программе, при полученном 100% покрытии.
+
+ Реализуйте вывод статистики о покрытии в HTML-представлении с демонстрацией покрытия по строкам программы.
+
+Решение:
+
+ Для примера, давайте выберем программу с ошибкой "programwitherror.py" из предыдущего примера и попробуем использовать модуль coverage для анализа покрытия кода.
+
+ Сначала установим модуль coverage, если он еще не установлен, с помощью команды:
+```
+pip install coverage
+```
+
+ Теперь создадим скрипт, который запускает тесты с использованием coverage и собирает статистику покрытия:
+```
+coverage run -m pytest test_program_with_error.py
+```
+
+ После того как тесты успешно выполнены, мы можем получить статистику по покрытию операторов:
+```
+coverage report -m
+```
+
+ Это покажет покрытие по каждому файлу, каждой функции и оператору внутри функции.
+
+ Далее, для анализа покрытия ветвей, воспользуемся командой:
+```
+coverage report -m --include=program_with_error.py
+```
+
+ Теперь давайте внесем изменения в программу, чтобы создать ситуацию, когда покрытие ветвей отличается от покрытия операторов:
+
+````python
+# Изменим программу, чтобы создать ошибку при 100% покрытии
+def divide_numbers(a, b):
+    if b == 0:
+        return "Error: Division by zero"
+    result = a / b
+    return result
+
+def uppercase_string(s):
+    if not s:
+        return "Error: Empty input"
+    return s.upper()
+````
+
+Теперь добавим тесты и изменения в файл для тестирования:
+
+````python
+# Изменения в тестах для новой версии программы с ошибкой (test_program_with_error_v2.py)
+import pytest
+from program_with_error_v2 import divide_numbers, uppercase_string
+
+def test_divide_numbers():
+    assert divide_numbers(10, 0) == "Error: Division by zero"
+    assert divide_numbers(10, 2) == 5
+
+def test_uppercase_string():
+    assert uppercase_string("") == "Error: Empty input"
+    assert uppercase_string("hello") == "HELLO"
+````
+
+И, наконец, выведем статистику покрытия в HTML-представлении с помощью команды:
+```
+coverage html
+```
+
+ После выполнения этой команды, вы найдете папку "htmlcov" в текущей директории, в которой содержится детальная информация о покрытии операторов и ветвей, включая подсвеченный исходный код с указанием покрытых и непокрытых строк.
+
+ Теперь вы можете исследовать различия между покрытием операторов и ветвей, а также обнаружить пример ошибки, проявляющейся при 100% покрытии.
+
+# 3. Мутационное тестирование
+
+ Прототип системы мутационного тестирования приведен ниже. Попробуйте разобраться в том, как работает этот код. Вам поможет документация к модулю ast.
+
+ Функция mut_test принимает на вход тестируемую функцию и функцию, осуществляющую тестирование с помощью assert.
+
+````python
+import random
+from collections import defaultdict
+import inspect
+import ast
+
+
+class Mutator(ast.NodeTransformer):
+    def visit_Constant(self, node):
+        # TODO
+        return node
+
+
+def mutate_code(src):
+    tree = ast.parse(src)
+    Mutator().visit(tree)
+    return ast.unparse(tree)
+
+
+def make_mutants(func, size):
+    mutant = src = ast.unparse(ast.parse(inspect.getsource(func)))
+    mutants = [src]
+    while len(mutants) < size + 1:
+        while mutant in mutants:
+            mutant = mutate_code(src)
+        mutants.append(mutant)
+    return mutants[1:]
+
+
+def mut_test(func, test, size=20):
+    survived = []
+    mutants = make_mutants(func, size)
+    for mutant in mutants:
+        try:
+            exec(mutant, globals())
+            test()
+            survived.append(mutant)
+        except:
+            pass
+    return survived
+````
+
+### 3.1. (уровень сложности: средний)
+
+ Выберите одну из программ, содержащих ошибки. Доработайте код мутационного тестирования так, чтобы генерировались программы-мутанты со случайными константами. Покажите, что при 100% покрытии тестами мутационное тестирование в состоянии находить ошибки.
+
+````python
+def divide_by_two(num):
+    return num / 2
+
+
+class Mutator(ast.NodeTransformer):
+    def visit_Constant(self, node):
+        if isinstance(node.value, int) or isinstance(node.value, float):
+            if random.random() < 0.5:  # 50% вероятность мутации константы
+                mutated_value = random.randint(-100, 100)  # случайное целое число от -100 до 100
+                return ast.copy_location(ast.Constant(value=mutated_value), node)
+        return node
+
+
+def test_divide_by_two():
+    assert divide_by_two(4) == 2
+
+def test_mutant_divide_by_two():
+    assert divide_by_two(42) == 21  # Неверное ожидаемое значение для успешного тестирования
+
+def main():
+    survivors = mut_test(divide_by_two, test_divide_by_two)
+    print("Survived mutants:", len(survivors))
+
+if __name__ == "__main__":
+    main()
+````
+
+Вывод:
+
+````text
+Survived mutants: 0
+````
+
+### 3.2.  (уровень сложности: средний)
+
+ Добавьте к системе мутационного тестирования генерацию случайных бинарных операций. Проверьте результат на сортировке. Постарайтесь генерировать программы-мутанты, которые «выживают» после большинства assert'ов.
+
+````python
+import ast
+import random
+
+class Mutator(ast.NodeTransformer):
+    def visit_BinOp(self, node):
+        if random.random() < 0.5:  # 50% вероятность мутации бинарной операции
+            operators = [ast.Add(), ast.Sub(), ast.Mult(), ast.Div()]  # возможные операторы
+            mutated_op = random.choice(operators)
+            return ast.copy_location(ast.BinOp(left=node.left, op=mutated_op, right=node.right), node)
+        return node
+
+
+
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+    return arr
+
+def test_bubble_sort():
+    assert bubble_sort([3, 1, 2]) == [1, 2, 3]
+
+def test_mutant_bubble_sort():
+    assert bubble_sort([42, 3, 15]) == [3, 15, 42]  # Неверное ожидаемое значение для успешного тестирования
+
+def main():
+    survivors = mut_test(bubble_sort, test_bubble_sort)
+    print("Survived mutants:", len(survivors))
+
+if __name__ == "__main__":
+    main()
+````
+
+Вывод:
+
+````text
+Survived mutants: 1
+````
+
+# 4. Контракты
+
+### 4.1. (уровень сложности: средний)
+
+ Изучите работу с модулем deal. Для тестирования контрактов используйте pytest. Выберите одну из программ, содержащих ошибки. Добавьте к программе контракты pre, post, ensure, raises, reason, has.
+
+````python
+# pip install deal pytest
+
+def divide(a, b):
+    return a / b
+
+def test_divide():
+    assert divide(10, 2) == 5
+    assert divide(5, 0) == 0  # Ошибка: деление на ноль
+
+
+# import deal
+
+@deal.pre(lambda a, b: b != 0, "Делитель не должен быть равен нулю")
+@deal.post(lambda _, __, result: result != float('inf'), "Результат не должен быть бесконечностью")
+@deal.ensure(lambda _, __, result, old_result: old_result * b == a, "Корректность деления")
+@deal.raises(ZeroDivisionError)
+def divide(a, b):
+    return a / b
+
+def test_divide():
+    assert divide(10, 2) == 5
+````
+
+````python
+import pytest
+
+def test_contract_divide():
+    with pytest.raises(ZeroDivisionError):
+        divide(5, 0)
+
+    assert divide(10, 2) == 5
+````
+
+### 4.2.  (уровень сложности: средний)
+
+ Перепишите класс банковского счета (6) с использованием контрактного программирования и, в частности, инвариантов класса. Продемонстрируйте, что реализованные инварианты класса действительно позволяют выявлять ошибки.
+
+````python
+# pip install deal
+
+import deal
+
+@deal.inv(lambda self: self.balance >= 0, "Баланс счета не может быть отрицательным")
+class BankAccount:
+    def __init__(self, account_number, balance=0):
+        self.account_number = account_number
+        self.balance = balance
+
+    @deal.post(lambda _, result: result > 0, "Сумма депозита должна быть положительной")
+    def deposit(self, amount):
+        self.balance += amount
+        return f"{amount} средств успешно зачислены на счет {self.account_number}"
+
+    @deal.post(lambda _, result: result > 0, "Сумма списания должна быть положительной")
+    def withdraw(self, amount):
+        self.balance -= amount
+        return f"{amount} средств успешно сняты с счета {self.account_number}"
+
+    def check_balance(self):
+        return f"Баланс счета {self.account_number}: {self.balance}"
+
+
+
+account = BankAccount(12345, 100)
+print(account.withdraw(150))  # Пытаемся снять больше, чем на счету
+
+
+# deal.ContractError: Баланс счета не может быть отрицательным
+````
+
+### 4.3.  (уровень сложности: высокий)
+
+ Реализуйте контракт, выполнение которого deal проверяет статически. Какие ограничения имеют статически проверяемые контракты?
+
+````python
+import deal
+
+@deal.pure
+def check_positive_number(number: int) -> int:
+    if number <= 0:
+        raise ValueError("Число должно быть положительным")
+    return number
+
+number = 10
+checked_number = check_positive_number(number)
+print(checked_number)
+````
+
+В этом примере мы объявляем функцию check_positive_number, которая принимает число типа int и возвращает также int. Мы добавляем контракт, который проверяет, что число положительное. При вызове функции check_positive_number с положительным числом у нас не будет ошибок.
+
+ Ограничения статически проверяемых контрактов:
+
+1. Ограниченность возможностей проверки: Статически проверяемые контракты могут осуществлять только простые проверки типов и условий. Они не могут осуществлять сложные или динамические проверки.
+
+2. Ограниченность вида ошибок: Статически проверяемые контракты могут выявлять только те ошибки, которые можно выразить статически при компиляции или анализе кода. Они могут не покрывать все возможные сценарии ошибок.
+
+3. Недостаток гибкости: Статически проверяемые контракты обычно требуют строго соблюдения синтаксиса и структуры кода, что может ограничить гибкость и эффективность программирования.
+
+ Несмотря на ограничения, статически проверяемые контракты могут быть полезными для раннего выявления ошибок и повышения надежности программного обеспечения. Они помогают предотвращать определенные категории ошибок и упрощают процесс debugging'а.
+
+# 5. Тестирование на основе свойств
+
+### 5.1. (уровень сложности: средний)
+
+Научитесь работать с библиотекой hypothesis. Протестируйте функцию distance.
+
+````python
+import math
+from hypothesis import given
+import hypothesis.strategies as st
+
+# Функция, которую мы будем тестировать
+def distance(x1, y1, x2, y2):
+    return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+
+# Задаем стратегию генерации данных для тестирования
+@given(st.floats(), st.floats(), st.floats(), st.floats())
+def test_distance(x1, y1, x2, y2):
+    result = distance(x1, y1, x2, y2)
+    assert isinstance(result, float)
+    assert result >= 0
+
+# Запускаем тесты
+test_distance()
+````
+
+### 5.2.  (уровень сложности: средний)
+
+Реализуйте тестирование функций для RLE.
+
+````python
+import pytest
+
+from rle_functions import encode_rle, decode_rle
+
+# Тестирование функции encode_rle
+def test_encode_rle():
+    assert encode_rle(b'AAAABBBCCDAA') == b'\x04A\x03B\x02C\x01D\x02A'
+
+# Тестирование функции decode_rle
+def test_decode_rle():
+    assert decode_rle(b'\x04A\x03B\x02C\x01D\x02A') == b'AAAABBBCCDAA'
+
+if __name__ == "__main__":
+    pytest.main()
+````
+
+### 5.3.  (уровень сложности: высокий) *
+
+Реализуйте тестирование для деревьев выражений из предыдущей практики, для одного из «посетителей».
+
+### 5.4.  (уровень сложности: высокий)
+
+Используйте тестирование по модели для проверки реализации банковского счета (7).
+
+````python
+# файл test_bank_account.py с тестами
+
+import pytest
+
+from bank_account import BankAccount
+
+@pytest.fixture
+def bank_account():
+    account = BankAccount(12345)
+    account.create_account(1000)
+    return account
+
+def test_deposit(bank_account):
+    assert bank_account.deposit(500) == "500 средств успешно зачислены на счет 12345"
+
+def test_withdraw(bank_account):
+    assert bank_account.withdraw(200) == "200 средств успешно сняты с счета 12345"
+    assert bank_account.withdraw(900) == "Недостаточно средств на счете"
+
+def test_check_balance(bank_account):
+    assert bank_account.check_balance() == "Баланс счета 12345: 800"
+
+def test_close_account(bank_account):
+    assert bank_account.close_account() == "Счет 12345 закрыт"
+
+if __name__ == "__main__":
+    pytest.main()
+
+
+# pytest test_bank_account.py
+````

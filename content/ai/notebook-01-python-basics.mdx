@@ -1,0 +1,574 @@
+---
+title: "AI Notebook 1 — Основа Python"
+sidebar_position: 2
+description: "Типы данных, условия, циклы и старт работы с NumPy."
+slug: "/ai/notebook-01-python-basics"
+---
+
+**Основа Python. Библиотеки.**
+
+Дата - 25.02.2023
+
+**1.1. Теоретический материал – Типы данных**
+
+*Типы данных*
+Все типы данных в Python относятся к одной из 2-х категорий: 
+изменяемые (mutable) и неизменяемые (immutable).
+*Неизменяемые объекты:*
+ - исловые данные (int, float),
+ - bool,
+ - None,
+ - символьные строки (class 'str'),
+ - кортежи (tuple).
+Изменяемые объекты:
+ - списки (list),
+ - множества (set),
+ - словари (dict).
+
+**1.2. Пример**
+
+*Задача:*
+Выведите на печать и определите тип переменной.
+
+````python
+x= 3+5.2*7
+y= None
+z= 'a',5,12.345, (2,'b')
+df= [['Антонова Антонина',34,'ж'],['Борисов Борис',26,'м']]
+A={1,'title',2,'content'}
+print(x,'|',type(x),'\n',y,'|',type(y),'\n',df,'|',type(df),'\n',A,'|',type(A),'\n')
+````
+
+Вывод:
+
+````code
+39.4 | <class 'float'> 
+ None | <class 'NoneType'> 
+ [['Антонова Антонина', 34, 'ж'], ['Борисов Борис', 26, 'м']] | <class 'list'> 
+ {'content', 1, 2, 'title'} | <class 'set'> 
+````
+
+**1.3. Пример**
+
+*Задача:*
+Выведите на печать и определите тип переменной.
+
+````python
+x=5 >=2
+A={ 1,3,7,8}
+B={2,4,5,10,'apple'}
+C=A&B
+df= 'Антонова Антонина',34,'ж'
+z='type'
+D=[1,'title',2,'connect']
+print(x,'|',type(x),'\n',A,'|',type(A),'\n',B,'|',type(B),'\n',C,'|',type(C),'\n',df,'|',type(df),'\n',z,'|',type(z),'\n',D,'|',type(D),'\n')
+````
+
+Вывод:
+
+````text
+True | <class 'bool'> 
+ {8, 1, 3, 7} | <class 'set'> 
+ {2, 'apple', 4, 5, 10} | <class 'set'> 
+ set() | <class 'set'> 
+ ('Антонова Антонина', 34, 'ж') | <class 'tuple'> 
+ type | <class 'str'> 
+ [1, 'title', 2, 'connect'] | <class 'list'> 
+````
+
+**2.1. Теоретический материал – Условный оператор**
+
+*If  – Условный оператор*
+
+В коде часто приходится проверять выполнимость или невыполнимость каких-то условий. Синтаксис:
+
+> **if** *условие1 (булевское выражение) :*
+
+> **код, который выполнится, если условие верно**
+
+> **elif** *условие2 (булевское выражение):*
+
+> **код, который выполнится, если условие1 было неверно, а условие2 верно**
+
+> **else:**
+
+> **код, который выполнится, если условие1 и условие2 были неверны**
+
+Обратите внимание, что код, который должен выполняться внутри каждого условия, записывается с отступом в 4 пробела от уровня if, elif и else: в питоне области видимости переменных обозначаются отступами.
+
+ ***То есть, отступы позволяют понять, где начинается код, который должен выполняться при выполнении условия в if, и где заканчивается.***
+
+**2.2. Пример**
+
+*Задача:Вывести на экран является ли переменная х положительной, отрицательной или равна нулю.*
+
+````python
+x=125
+if x<0:
+  print('x отрицательный')
+elif x==0:
+  print('x равен 0')   
+else:
+  print('x положительный')
+````
+
+Вывод:
+
+````code
+x положительный
+````
+
+**2.3. Задание**
+
+*Задача: Напишите код. Задается х, напечатать какому из интервалов принадлежит: (-infinity, -5), [-5, 5] или от (5, +infinity)*
+
+````python
+x=int(input())
+if x < -5:
+  print('x пренадлежит интервалу от -бесконечности до -5')
+elif -5<x<5:
+  print('x пренадлежит интервалу от -5 до 5')
+else:
+  print('x пренадлежит интервалу от 5 до +бесконечности')
+````
+
+Вывод:
+
+````code
+45
+x пренадлежит интервалу от 5 до +бесконечности
+````
+
+**3.1. Теоретический материал – Циклы, массивы, срезы**
+
+**Циклы - for и while**
+
+Цикл while проверяет истинность условия, и если условие истинно, то выполняет инструкции цикла.
+
+Синтаксис:
+
+while условие:
+
+инструкции
+
+Инструкции, которые относятся к циклу while, располагаются на последующих строках и должны иметь отступ от начала ключевого слова while.
+
+Цикл **for** проходит по набору значений, помещает каждое значение в переменную с которой в цикле можно производить различные действия.
+
+Синтаксис:
+
+for переменная in набор_значений:
+
+инструкции
+
+После ключевого слова **for** идет название переменной, в которую будут помещаться значения. После оператора **in** указывается набор значений и двоеточие. Инструкции, которые относятся к циклу, располагаются на последующих строках и должны иметь отступ.
+При создании цикла удобно пользоваться функцией **range(a, b)**, которая создает последовательность чисел от **a до b-1**.
+
+**3.2.1. Пример**
+
+*Задача:Вывести все числа от 1 до 10 с шагом 3.*
+
+````python
+x=1
+while x <=10:
+  print(x)
+  x+=3
+````
+
+Вывод:
+
+````code
+1
+4
+7
+10
+````
+
+**3.2.2. Пример**
+
+*Задача:Задан список. Напечатать все элементы списка.*
+
+````python
+models=['KNN','decision tree','lineral models']
+for model in models:
+  print (model)
+````
+
+Вывод:
+
+````code
+KNN
+decision tree
+lineral models
+````
+
+**3.2.3. Пример**
+
+*Задача:Создать список от 1 до 99 с шагом 7.*
+
+````python
+list_int=range(1,100,7)
+print(list(list_int))
+````
+
+Вывод:
+
+````code
+[1, 8, 15, 22, 29, 36, 43, 50, 57, 64, 71, 78, 85, 92, 99]
+````
+
+**3.2.4. Пример**
+
+*Задача:Вывести на экран числа от 5 до 105 с шагом 25, используя функцию range()*
+
+````python
+for i in range(5,106,25):
+  print(i)
+````
+
+Вывод:
+
+````code
+5
+30
+55
+80
+105
+````
+
+**3.2.5. Пример**
+
+*Задача:Срез. Необходимо получить каждый k-й элемент массива a, начиная с элемента с индексом i (включительно) и заканчивая элементом с индексом j (не включительно), c шагом 2. Переставить все элементы в обратном порядке.*
+
+````python
+a=[1,2,3,4,5,6,7,8,9]
+b=a[1:7:2]
+c=a[::-1]
+print(b)
+print(c)
+````
+
+Вывод:
+
+````code
+[2, 4, 6]
+[9, 8, 7, 6, 5, 4, 3, 2, 1]
+````
+
+**3.3.1 Задание**
+*Задача:Выведите числа из примера на while (3.2.1) в обратном порядке.*
+
+````python
+x=10
+while x>=1:
+  print(x)
+  x-=3
+````
+
+Вывод:
+
+````code
+10
+7
+4
+1
+````
+
+**3.3.2 Задание**
+
+*Задача: При решении задач машинного обучения часто в качестве объектов исследования выступает человек. Создайте список значимых характеристик (признаков), идентифицирующих человека. Выведите список на экран.*
+
+````python
+id=['Фамилия','Имя', 'Отчетсво',Int_Возраст,'Город']
+for i in id:
+  print(i)
+````
+
+Вывод:
+
+````code
+Фамилия
+Имя
+Отчетсво
+Int_Возраст
+Город
+````
+
+**3.3.3 Задание**
+
+*Задача:Создать список чисел от 2 до 15 с шагом 1.*
+
+````python
+a=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+b=a[2:15:1]
+print(b)
+````
+
+Вывод:
+
+````code
+[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+````
+
+**3.3.4 Задание**
+
+*Задача: Выведите числа из примера на for c функцией range() (3.2.4) в обратном порядке.*
+
+````python
+for i in range(105,4,-25):
+  print(i)
+````
+
+Вывод:
+
+````code
+105
+80
+55
+30
+5
+````
+
+**3.3.5 Задание**
+
+*Задача: Срез. Напишите код, который все элементы массива x с четными индексами переставит в обратном порядке. Т.е. если x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], то код должен сформировать [8, 1, 6, 3, 4, 5, 2, 7, 0, 9].*
+
+````python
+a=[0,1,2,3,4,5,7,8,9,10]
+b=a[::-1]
+print(b)
+````
+
+Вывод:
+
+````code
+[10, 9, 8, 7, 5, 4, 3, 2, 1, 0]
+````
+
+**4.1. Теоретический материал - Библиотеки**
+
+Машинное обучение опирается на фундаментальные понятия и законы математики и информатики. Библиотека математических функций (math) применяется при решении большинства прикладных задач анализа данных. Также, и некоторые другие библиотеки Python содержат математические функции (например, NumPy). Важную роль играет библиотека matplotlib, которая позволяет производить визуализацию расчетов в удобной для восприятия человеком форме: графики, диаграммы, гистограммы.
+
+**Подключение библиотек – синтаксис:**
+
+*import math as m*
+
+*import numpy as np*
+
+*import matplotlib.pyplot as plt*
+
+*etc…*
+
+Библиотеки в python содержат не только функции, позволяющие решать различные задачи, но и некоторые популярные константы, например число Эйлера.
+
+**4.2.1 Пример**
+
+*Задача:Рассчитать синус от е радиан и вывести результат на экран*
+
+````python
+import math as m
+print (m.sin(m.e))
+````
+
+Вывод:
+
+````code
+0.41078129050290885
+````
+
+**4.2.2 Пример**
+
+*Задача: Для функции* sin⁡〖(xe^cos⁡〖(x)〗 )〗 *на интервале* [0;10] *с шагом* 0,05 *построить график функции, закрасить площадь под ним и вычислить значение этой площади.
+Д*ля вычисления площади воспользуйтесь функцией* trapz(), *вычисляющей интеграл по правилу трапеции. Для ее корректной работы необходимо подключить следующие библиотеки:*
+
+`from scipy.integrate import simps`
+
+`from numpy import trapz`
+
+````python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import simps
+from numpy import trapz
+x=np.arange(0.0,10,0.1)
+y=np.abs(np.sin(x*np.exp(np.cos(x))))
+plt.grid()
+plt.plot(x,y,c='r')
+plt.fill_between(x,y)
+
+area= trapz(y)
+print(area)
+````
+
+**4.2.3 Пример**
+
+*Задача:Дано некоторое распределение оценок в группе за экзамен. Нарисовать круговую и точечную диаграммы распределения.*
+
+````python
+from matplotlib import pyplot as plt
+import numpy as np
+
+marks = ['Неуд','Удовл','Хор','Отл']
+
+data = [3,7,8,4]
+fig= plt.figure(figsize=(10,7))
+plt.pie(data, labels=marks)
+plt.show()
+plt.grid()
+plt.scatter (marks,data)
+````
+
+
+**4.3.1 Задание**
+
+*Задача: Задайте массив случайных значений из интервала (0; 1). 
+Рассчитайте средние и медианные значения для массива, сравните результаты, какие выводы можно сделать о значениях? 
+Постройте точечную диаграмму рассеяния полученного ряда.*
+
+````python
+import numpy as np
+import matplotlib.pyplot as plt
+size = 10
+x = range(0, size)
+random = np.random.random_sample(size = size)
+average = np.average(random)
+median = np.median(random)
+print(random, average, median)
+if average == median:
+  print("Средние и медианные значения массива равны")
+elif average > median:
+  print("Среднее значение больше медианного")
+else:
+  print("Медианное значение больше среднего")
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.scatter(x, random)
+plt.show() 
+````
+
+**4.3.2 Задание**
+
+*Задача:*
+
+*Дана функция* ![image.png](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKYAAAA7CAYAAADxcPHqAAAAAXNSR0ICQMB9xQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUATWljcm9zb2Z0IE9mZmljZX/tNXEAAATGSURBVHja7ZxNTuMwGIZzAA4AEmbHAVqXLcsSjViPSKOuQKyQN3OAlF2lERdgx445wSyGE3CDWXCD3mGmTurEcZ3EdpM0Py/SKxVamSR+/P34+1zv+fnZg6CuCQ8BApgQBDChcYK5/fkHHUcAswJMrGwIYEIAsy9Qjt3dAcwOg4lJBJgAs0VF0fKMet4Xv0cyf/oBMHsCxNCtJZvPvy+j6IwDOvWmf/hrgNkzMBfUe/Po4m0V0ltCZr+HNokLSl58Fk0AZg/deEhp5Ifs2xAnKfT9+8f1+gRgGgKxXj+e+Ofeh3fuf7T94FQw2Zw+DNGqcC9Aw9UtYkxDIOTgvA0w1W0g+TW/Fp/Sn0ObQA4lD1GQlTtYqqc5+VEFJresNxf0tY7YTwU0Yv6EEP8Xi4LLGZm9+0F0XTVGndfTlOLnKu3Ljs1q9h5MF/UBzLHLevKbBjP+LL14Fdeg28NrC8w0hhaWS3Kre+8pzyBv8eiX+r9iNx2/RzYiNmbh1R3xvM0xYvbOgykmXTf5ur/VCWbEgksetxI/jPh4JmM3BaYAT7jQBKQEIvGeWDRqEijCC3HdYk+y0GVvgR9q8taIK1dBtAEz3lssa99Sgvp0cnd/57/zMeqqetheTwxiwaJIIM1bwRjGrbXjIIvXJolL8lnyF1C2BKathZItEmPBZEq8T0IXL024NJPrKbuvxE0rYO52KcRCSuHUQF9mmTsNS4172FVjdQbMLCYjG169CRhrzIKYL5T92FCOD2WYBJgqYLrPyuIufDYj733YFuoMmOoAusFiF1mXxSTTz4BFl9k2EAc0+b1tMNN9WgkYfk10zh6yxCcDV16g/HPytlVRSMKTndT172LSsngUYBokQ7kNdiW7dE02ctn41o0ztjo9lsXU3qO0AMuy8pwb17jyxDuQDYc8N9Z2YbYRaxZZdxuY1GdzyFhOYNa1dwh1QzJQrjCpC1uEYTbj1QJm3WYcalZVHkHeQXABMwr8a9myqzsqrYIJAcwymETrIcCEagFTuParkN2lMXMBYEUw6ba8qipb/L2y7jRM5JjBXC4fsgQmAUjeTzYFU6107SV6msoWLOZIZFPZ0lWphLUrq0QVwVTWYV80nhWY+JaLYXwbh5Ur14Kpjz+LCixlsWpRZatzFnMM2f2x77EtMOMzVlLhQC0sxHFlQWULYALMRsDMkhtZ+RJuWWULYFpKrtq4djZ1Gcz9ip1UuQv9+6xitZ8AiftSu+vVONakssU/nz3r/Z4EgKloxdhpXO/mE3hx8+rS3TRUr9BUrVzdsAeYFZbT5PwQwHQfS9coc3Qwmz7669qokNt6cWxFA5iHj3WUm2vj6O8hYJokEABzgGCK102d6alLrt+AATABZu2SKyiu1hadWDVwMgQwdUdlZVdu06hQmbUbHLsFmADT0x2VDaJgkjbDWjYqWC2GgmO3AHOgYLo0JKgW0LVRwWpBWDY7QCNz5bqjsq5lN5usvejYLcAEmNr4T4WxCTDLjt0CzJ6DaXL018Ra6o7KNglm1bFbgNlTMG2O/lq58Z0rP6RRoTr7rz52CzB7bjEH+1ABJsAEmAATk4Z7BJgAE2Bi0nCPABNgQgATYAJMTBrA7DWYEAQwIYAJQQATGrz+A7FmapPAVxLbAAAAAElFTkSuQmCC)  *Создать массив из 10 значений функции (x, например, изменяется от 1 до 10). Выделить срез первой половины массива и построить графики для основного массива, используя plt.plot(), для среза – точечный (plt.scatter()).*
+
+````python
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+max=[]
+midium=[]
+n=11
+fig, ax = plt.subplots()
+ax.set_facecolor('black')
+for x in range(1, n):
+    max.append(((1+np.e**x**(0.5)+np.cos(x**2))**0.5/
+                abs(1-np.sin(x)**3))+np.log10(abs(x*2)))
+print(max)
+plt.plot(max)
+plt.show() 
+for i in range (5):
+  midium.append(max[i])
+print(midium)
+plt.scatter(midium, midium, c = 'black')
+plt.show() 
+````
+
+**4.3.3 Задание**
+
+*Задача:*
+*Дана функция |cos⁡(xe^((cos⁡(x)+ln⁡(x+1) ) ) ) | Построить график на интервале (0, 10) с шагом 1 с заливкой площади и найти эту площадь под ним. Для вычисления площади воспользуйтесь функцией trapz(), вычисляющей интеграл по правилу трапеции.
+Для ее корректной работы необходимо подключить следующие библиотеки:
+`from scipy.integrate import simps`
+`from numpy import trapz*`
+
+````python
+from scipy.integrate import simps
+from numpy import trapz
+import numpy as np
+import matplotlib.pyplot as plt
+y=[]
+x=np.arange(0.0, 10, 1)
+for i in range(1, 11):
+    y.append((np.cos(i*np.e**((np.cos(i)+np.log10(i+1))))**2)**0.5)
+print(max)
+plt.grid()
+plt.plot(x, y, c="r")
+plt.fill_between(x, y)
+area=trapz(y)
+print (area)
+````
+
+**4.3.4 Задание**
+
+*Задача:*
+*Откройте статистические данные по стоимости акций Apple, Microsoft, Google за 12 месяцев 2021 г. Постройте 3 графика на плоскости и оцените их динамику. Подумайте, как можно улучшить визуализацию результатов.
+Для начальных данных допустимо использовать следующий ресурс: https://finance.yahoo.com*
+
+````python
+import math
+import numpy
+import matplotlib.pyplot as plt
+Apple = [167.30, 154.73, 170.09,
+         157.28, 137.13, 147.04,
+         165.35, 150.7, 140.09,
+         142.16, 129.62,132.62]
+Microsoft = [252.75, 295.2, 294.95,
+            309.42, 284.47, 272.42,
+            259.58, 278.01, 260.04,
+            240.74, 228.11, 154.69]
+Google = [89.70, 135.3, 134.17,
+          140.7, 117.16, 114.14,
+          109.08, 115.48, 110.55,
+          99.3, 90.5, 101.28]
+rng = numpy.arange(12)
+fig, ax = plt.subplots(figsize=(10, 5))
+plt.plot(1 + rng, Microsoft, c = 'red', label = 'Microsoft')
+plt.plot(1 + rng, Apple, c = 'gray', label = "Apple")
+plt.plot(1 + rng, Google, c = 'blue', label = 'Google')
+ax.set_xlim(xmin=1 + rng[0], xmax=1 + rng[-1])
+ax.legend(loc='upper left')
+plt.grid()
+plt.show()
+````
+
+**4.3.5 Задание**
+
+*Задача:* *Создайте простейший калькулятор, включающий основные действия для двух переменных '+','-','∙','÷', а также вычисление следующих функций: e^(x+y),sin⁡〖(x+y)〗,cos⁡〖(x+y)〗,x^y.*
+
+````python
+import math
+
+x = 5
+y = 12
+
+for dev in range(0, 8):
+  if dev == 0:
+    print(x + y)
+  elif dev == 1:
+    print(x - y)
+  elif dev == 2:
+    print(x * y)
+  elif dev == 3:
+    print(x / y)
+  elif dev == 4:
+    print(math.e ** (x + y))
+  elif dev == 5:
+    print(math.sin(x + y))
+  elif dev == 6:
+    print(math.cos(x + y))
+  else:
+    print(x ** y)
+````
+
+Вывод:
+
+````code
+17
+-7
+60
+0.4166666666666667
+24154952.753575277
+-0.9613974918795568
+-0.27516333805159693
+244140625
+````

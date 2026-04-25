@@ -1,0 +1,342 @@
+---
+title: Task 21 — Queue ADT
+sidebar_position: 22
+description: Абстрактные типы данных и разные реализации очереди.
+slug: /java/task-21-queue-adts
+---
+
+## Задание
+
+Абстрактные типы данных и разные реализации очереди. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task21/AbstractQueue.java`
+- `Task21/ArrayQueue.java`
+- `Task21/ArrayQueueADT.java`
+- `Task21/ArrayQueueModule.java`
+- `Task21/LinkedQueue.java`
+- `Task21/Queue.java`
+- `Task21/TestArray.java`
+- `Task21/TestLinked.java`
+
+#### `Task21/AbstractQueue.java`
+
+```java title="Task21/AbstractQueue.java"
+package Task21;
+
+public class AbstractQueue {
+    protected int rear, front;
+}
+
+```
+
+#### `Task21/ArrayQueue.java`
+
+```java title="Task21/ArrayQueue.java"
+package Task21;
+
+public class ArrayQueue {
+    int SIZE = 5;
+    int[] arr;
+    int front, rear;
+    int count;
+
+    public ArrayQueue(){
+        arr = new int[SIZE];
+        front=rear=-1;
+        count = 0;
+    }
+    public void enqueue(int element){
+        if(count==SIZE){
+            throw new IllegalStateException("Переполнение массива");
+        }
+        if(isEmpty()){
+            front=rear=0;
+        }else{
+            rear=(rear+1)%SIZE;
+        }
+        arr[rear] = element;
+        count++;
+    }
+    public int element(){
+        if (isEmpty()) {
+            throw new IllegalStateException("Queue is empty");
+        }
+        return arr[front];
+    }
+
+    public int dequeue() {
+        if (isEmpty()) {
+            throw new IllegalStateException("Queue is empty");
+        }
+        int value = arr[front];
+        if (front == rear) {
+            front = rear = -1;
+        } else {
+            front = (front + 1) % SIZE;
+        }
+
+        count--;
+        return value;
+    }
+
+    public int size() {
+        return count;
+    }
+    public void clear() {
+        front = rear = -1;
+        count = 0;
+    }
+    public boolean isEmpty(){
+        if (front==-1){
+            return true;
+        }else {
+            return false;
+        }
+    }
+}
+
+```
+
+#### `Task21/ArrayQueueADT.java`
+
+```java title="Task21/ArrayQueueADT.java"
+package Task21;
+
+public class ArrayQueueADT {
+    public ArrayQueueADT(ArrayQueueModule queue){
+        this.queue = queue;
+    }
+    private ArrayQueueModule queue;
+    public void enqueue(int elemen) {
+        queue.enqueue(elemen);
+    }
+    public int element(){
+        return queue.element();
+    }
+    public int dequeue(){
+        return queue.dequeue();
+    }
+    public int size(){
+        return queue.size();
+    }
+    public void clear(){
+        queue.clear();
+    }
+    public boolean isEmpty(){
+        return queue.isEmpty();
+    }
+}
+
+```
+
+#### `Task21/ArrayQueueModule.java`
+
+```java title="Task21/ArrayQueueModule.java"
+package Task21;
+
+public class ArrayQueueModule {
+    int SIZE = 5;
+    int[] arr;
+    int front, rear;
+    int count;
+
+    public ArrayQueueModule(){
+        arr = new int[SIZE];
+        front=rear=-1;
+        count = 0;
+    }
+    public void enqueue(int element){
+        if(count==SIZE){
+            throw new IllegalStateException("Переполнение массива");
+        }
+        if(isEmpty()){
+            front=rear=0;
+        }else{
+            rear=(rear+1)%SIZE;
+        }
+        arr[rear] = element;
+        count++;
+    }
+    public int element(){
+        if (isEmpty()) {
+            throw new IllegalStateException("Queue is empty");
+        }
+        return arr[front];
+    }
+
+    public int dequeue() {
+        if (isEmpty()) {
+            throw new IllegalStateException("Queue is empty");
+        }
+        int value = arr[front];
+        if (front == rear) {
+            front = rear = -1;
+        } else {
+            front = (front + 1) % SIZE;
+        }
+
+        count--;
+        return value;
+    }
+
+    public int size() {
+        return count;
+    }
+    public void clear() {
+        front = rear = -1;
+        count = 0;
+    }
+    public boolean isEmpty(){
+        if (front==-1){
+            return true;
+        }else {
+            return false;
+        }
+    }
+}
+
+```
+
+#### `Task21/LinkedQueue.java`
+
+```java title="Task21/LinkedQueue.java"
+package Task21;
+
+
+import java.util.LinkedList;
+
+public class LinkedQueue extends AbstractQueue implements Queue {
+   private LinkedList<Object> queue;
+    public LinkedQueue(){
+        queue=new LinkedList<>();
+        front=0;
+        rear=0;
+    }
+    @Override
+    public void enqueue(Object o) {
+        queue.add(o);
+        rear++;
+    }
+
+    @Override
+    public Object element() {
+        if(isEmpty())throw new IndexOutOfBoundsException("Массив пуст!!");
+        return queue.get(front);
+    }
+    @Override
+    public Object dequeue() {
+        if (isEmpty()) throw new IndexOutOfBoundsException("Массив пуст!!");
+        System.out.println(front+" "+rear);
+        return queue.remove(front);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return queue.isEmpty();
+    }
+
+    @Override
+    public boolean clear() {
+        queue.clear();
+        front=0;
+        rear=0;
+        return false;
+    }
+}
+
+```
+
+#### `Task21/Queue.java`
+
+```java title="Task21/Queue.java"
+package Task21;
+
+public interface Queue {
+    void enqueue(Object o);
+    Object element();
+    Object dequeue();
+    boolean isEmpty();
+    boolean clear();
+}
+
+```
+
+#### `Task21/TestArray.java`
+
+```java title="Task21/TestArray.java"
+package Task21;
+
+public class TestArray {
+    public static void main(String[] args) {
+        ArrayQueueModule m = new ArrayQueueModule();
+       // b.dequeue();
+        m.enqueue(1);
+        m.enqueue(2);
+        m.enqueue(3);
+        m.enqueue(1);
+        m.enqueue(2);
+        System.out.println(m.size());
+        System.out.println(m.element());
+        System.out.println(m.dequeue());
+        System.out.println(m.isEmpty());
+        ArrayQueueADT a = new ArrayQueueADT(m);
+        System.out.println(a.size());
+        System.out.println(a.element());
+        System.out.println(a.dequeue());
+        System.out.println(a.isEmpty());
+        ArrayQueue q = new ArrayQueue();
+        q.enqueue(1);
+        q.enqueue(2);
+        q.enqueue(3);
+        q.enqueue(1);
+        q.enqueue(2);
+        System.out.println(q.size());
+        System.out.println(q.element());
+        System.out.println(q.dequeue());
+        System.out.println(q.isEmpty());
+    }
+}
+
+```
+
+#### `Task21/TestLinked.java`
+
+```java title="Task21/TestLinked.java"
+package Task21;
+
+public class TestLinked {
+    public static void main(String[] args){
+        LinkedQueue l = new LinkedQueue();
+        l.enqueue(1);
+        l.enqueue(3);
+        l.enqueue(2);
+        System.out.println(l.dequeue());
+        //System.out.println(l.element());
+        System.out.println(l.dequeue());
+        System.out.println("Пустой ли массив ? "+l.isEmpty());
+        //System.out.println(l.clear());
+        System.out.println(l.dequeue());
+        System.out.println("Пустой ли массив ? "+l.isEmpty());
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 8 Java-файлов. Ключевые сущности: AbstractQueue, ArrayQueue, ArrayQueueADT, ArrayQueueModule, LinkedQueue, Queue.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 21 — Queue ADT документирует реальное решение из исходного кода.

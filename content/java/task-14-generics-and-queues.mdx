@@ -1,0 +1,233 @@
+---
+title: Task 14 — Generics и очереди
+sidebar_position: 15
+description: Обобщения и безопасная работа с очередями.
+slug: /java/task-14-generics-and-queues
+---
+
+## Задание
+
+Обобщения и безопасная работа с очередями. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task14/BoundedWaitList.java`
+- `Task14/IWaitList.java`
+- `Task14/Main.java`
+- `Task14/UnfairWaitList.java`
+- `Task14/WaitList.java`
+
+#### `Task14/BoundedWaitList.java`
+
+```java title="Task14/BoundedWaitList.java"
+package Task14;
+
+public class BoundedWaitList<E> extends WaitList<E>{
+    private int capacity;
+    public  BoundedWaitList(int capacity){
+        if (capacity>0)
+            this.capacity = capacity;
+        else
+            System.out.println("Очередь должна состоять больше чем из 0 элементов");
+    }
+    public int getCapacity() {
+        return capacity;
+    }
+    public void add(E element){
+        if(capacity > content.size())
+            content.add(element);
+        else
+            System.out.println("Очередь переполнена");
+    }
+
+    @Override
+    public String toString() {
+        return "BoundedWaitList - " + content;
+    }
+}
+
+```
+
+#### `Task14/IWaitList.java`
+
+```java title="Task14/IWaitList.java"
+package Task14;
+
+import java.util.Collection;
+
+public interface IWaitList<E> {
+    void add(E element);
+    E remove();
+    boolean contains(E element);
+    boolean containsAll(Collection<E> c);
+    boolean isEmpty();
+}
+
+```
+
+#### `Task14/Main.java`
+
+```java title="Task14/Main.java"
+package Task14;
+
+import java.util.ArrayList;
+
+public class Main {
+    static public void main(String[] args){
+        WaitList <String> wait = new WaitList<>();
+        ArrayList<String> al = new ArrayList<>();
+        al.add("O");
+        wait.add("L");
+        wait.add("O");
+        wait.add("L");
+        System.out.println(wait);
+        wait.remove();
+        System.out.println(wait);
+        System.out.println("Есть ли 'L' ? - " + wait.contains("L"));
+        al.add("D");
+        System.out.println("Есть ли 'D'? - " + wait.containsAll(al));
+        System.out.println("Список пуст ? - " +  wait.isEmpty());
+        System.out.println("------------------------------");
+        BoundedWaitList<String> bout = new BoundedWaitList<>(4);
+        bout.add("f");
+        bout.add("a");
+        bout.add("B");
+        bout.add("a");
+        bout.add("!");
+        System.out.println(bout);
+        bout.remove();
+        System.out.println(bout);
+        bout.add("!");
+        System.out.println(bout);
+        System.out.println("Объем списка: "+bout.getCapacity());
+        System.out.println("----------------------------");
+        UnfairWaitList<String> unf = new UnfairWaitList<>();
+        unf.add("L");
+        unf.add("O");
+        unf.add("T");
+        unf.add("p");
+        System.out.println(unf);
+        unf.remove("L");
+        System.out.println("Попытка удаления первого элемента: "+unf);
+        unf.remove("O");
+        System.out.println("Удаление элемента: "+unf);
+        unf.moveToBack("T");
+        System.out.println("Перенос элемента в конец: "+unf);
+
+    }
+}
+
+```
+
+#### `Task14/UnfairWaitList.java`
+
+```java title="Task14/UnfairWaitList.java"
+package Task14;
+
+public class UnfairWaitList<E> extends WaitList<E> {
+    public UnfairWaitList(){}
+    public void remove(E element){
+        for(int i =0; i<content.size();i = i) {
+            E el = content.remove();
+            if(!el.equals(element) | (el.equals(element) && i == 0)){
+                content.add(el);
+                i++;
+            }
+        }
+    }
+    public void moveToBack(E element){
+        remove(element);
+        content.add(element);
+    }
+}
+
+```
+
+#### `Task14/WaitList.java`
+
+```java title="Task14/WaitList.java"
+package Task14;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+public class WaitList<E> implements IWaitList<E>{
+    protected ConcurrentLinkedQueue<E> content;
+    public WaitList(){
+        content = new ConcurrentLinkedQueue<>();
+    }
+    public WaitList(Collection<E> c){
+        content = new ConcurrentLinkedQueue<>(c);
+    }
+    @Override
+    public String toString() {
+        return "WaitList{" +
+                "content=" + content +
+                '}';
+    }
+
+    @Override
+    public void add(E element) {
+        content.add(element);
+    }
+
+    @Override
+    public E remove() {
+        if(isEmpty()){
+            throw new IllegalStateException("Очередь пуста");
+        }
+        return content.remove();
+    }
+
+    @Override
+    public boolean contains(E element) {
+        boolean res = false;
+        for (int i = 0; i < content.size(); i++) {
+            E cur = content.remove();
+            if (cur.equals(element))
+                res = true;
+            content.add(cur);
+        }
+        return res;
+    }
+
+    @Override
+    public boolean containsAll(Collection<E> c) {
+        ArrayList<E> al = new ArrayList<>(c);
+        boolean res = false;
+        for(int i = 0; i < c.size(); i++){
+            res = false;
+            for(int j = 0; j < content.size(); j++){
+                E el = content.remove();
+                if(el.equals(al.get(i))) res = true;
+                content.add(el);
+            }
+            if(!res) return res;
+        }
+        return res;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return content.isEmpty();
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 5 Java-файлов. Ключевые сущности: BoundedWaitList, IWaitList, Main, UnfairWaitList, WaitList.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 14 — Generics и очереди документирует реальное решение из исходного кода.

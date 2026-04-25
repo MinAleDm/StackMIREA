@@ -1,0 +1,286 @@
+---
+title: Task 16 — Исключения
+sidebar_position: 17
+description: Обработка исключений и безопасное выполнение кода.
+slug: /java/task-16-exceptions
+---
+
+## Задание
+
+Обработка исключений и безопасное выполнение кода. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task16/Exception1.java`
+- `Task16/Exception2.java`
+- `Task16/Exception3.java`
+- `Task16/Exception4.java`
+- `Task16/ThrowsDemo5.java`
+- `Task16/ThrowsDemo6.java`
+- `Task16/ThrowsDemo7.java`
+- `Task16/ThrowsDemo8.java`
+
+#### `Task16/Exception1.java`
+
+```java title="Task16/Exception1.java"
+package Task16;
+
+public class Exception1 {
+    public static void exceptionDemo(){
+        System.out.println(2/0);
+    }
+    public static void exceptionDemo1(){
+        System.out.println(2.0/0.0);
+    }
+    public static void exceptionDemo2(){
+        try {
+            System.out.println(2/0);
+        }catch (ArithmeticException e){
+            System.out.println("Attempted division by zero");
+        }
+    }
+        public static void main(String[] args){
+            exceptionDemo1();
+            exceptionDemo2();
+            exceptionDemo();
+        }
+    }
+
+
+```
+
+#### `Task16/Exception2.java`
+
+```java title="Task16/Exception2.java"
+package Task16;
+
+import java.util.Scanner;
+
+public class Exception2 {
+    public static void exceptionDemo1(){
+        Scanner myScanner = new Scanner(System.in);
+        System.out.println("Enter an integer ");
+        String intString = myScanner.next();
+        int i = Integer.parseInt(intString);
+        System.out.println(2/i);
+    }
+    public static void exceptionDemo(){
+        try {
+            Scanner myScanner = new Scanner(System.in);
+            System.out.println("Enter an integer ");
+            String intString = myScanner.next();
+            int i = Integer.parseInt(intString);
+            System.out.println(2/i);
+        }catch (NumberFormatException e){
+            System.out.println("error");
+        }
+    }
+    public static void main(String[] args){
+        exceptionDemo();
+        exceptionDemo1();
+    }
+}
+
+```
+
+#### `Task16/Exception3.java`
+
+```java title="Task16/Exception3.java"
+package Task16;
+
+import java.util.Scanner;
+
+public class Exception3 {
+    public static void exceptionDemo() {
+        try {
+            Scanner myScanner = new Scanner(System.in);
+            System.out.println("Enter an integer ");
+            String intString = myScanner.next();
+            int i = Integer.parseInt(intString);
+            System.out.println(2 / i);
+        } catch (Exception e) {
+            System.err.println("error");
+        }
+    }
+    public static void main(String[] args){
+        exceptionDemo();
+    }
+}
+
+```
+
+#### `Task16/Exception4.java`
+
+```java title="Task16/Exception4.java"
+package Task16;
+
+import java.util.Scanner;
+
+public class Exception4 {
+    public static void exceptionDemo(){
+        try {
+            Scanner myScanner = new Scanner(System.in);
+            System.out.println("Enter an integer ");
+            String intString = myScanner.next();
+            int i = Integer.parseInt(intString);
+            System.out.println(2/i);
+        }catch (NumberFormatException e){
+            System.out.println("error");
+        }finally {
+            System.out.println("Проверка работы блока finally");
+        }
+    }
+    public static void main(String[] args){
+        exceptionDemo();
+    }
+}
+
+```
+
+#### `Task16/ThrowsDemo5.java`
+
+```java title="Task16/ThrowsDemo5.java"
+package Task16;
+
+public class ThrowsDemo5 {
+    public static String getDetails1(String key){
+        if (key == null) {
+            throw new NullPointerException("null key in getDetails");
+        }
+        return key;
+    }
+    public static String getDetails(String key){
+        try {
+            if (key == null){
+                throw new NullPointerException("null key in getDetails");
+
+            }
+        }catch (NullPointerException e){}
+        return "data " + key;
+    }
+    public static void main(String[] args){
+        System.out.println(getDetails(null));
+        System.out.println(getDetails1(null));
+    }
+}
+
+```
+
+#### `Task16/ThrowsDemo6.java`
+
+```java title="Task16/ThrowsDemo6.java"
+package Task16;
+public class ThrowsDemo6 {
+    public void printMessage(String key){
+        try {
+            String message = getDetails(key);
+            System.out.println(message);
+        }catch (Exception e){
+
+        }
+        System.out.println(key);
+    }
+    public  String getDetails(String key){
+        if (key == null){
+            throw new NullPointerException("null key in getDetails");
+        }
+        return "data for " + key;
+    }
+    public static void main(String[] args){
+        ThrowsDemo6 n = new ThrowsDemo6();
+        n.printMessage("tol");
+        n.printMessage(null);
+        n.getDetails("kol");
+        n.getDetails(null);
+    }
+}
+
+```
+
+#### `Task16/ThrowsDemo7.java`
+
+```java title="Task16/ThrowsDemo7.java"
+package Task16;
+
+import java.util.*;
+
+public class ThrowsDemo7 {
+    public void getKey() throws Exception {
+        Scanner myScanner = new Scanner(System.in);
+        String key = myScanner.next();
+        printDetails(key);
+    }
+    public void printDetails(String key) throws Exception {
+            String message = getDetails(key);
+            System.out.println(message);
+
+    }
+    private String getDetails(String key) throws Exception {
+        if(Objects.equals(key, "!")){
+            throw new Exception("Key set to empty string");
+        }
+        return "data for " + key;
+    }
+    public static void main(String[] args) throws Exception {
+        ThrowsDemo7 n = new ThrowsDemo7();
+        n.getKey();
+    }
+}
+
+```
+
+#### `Task16/ThrowsDemo8.java`
+
+```java title="Task16/ThrowsDemo8.java"
+package Task16;
+
+import java.util.Objects;
+import java.util.Scanner;
+
+public class ThrowsDemo8 {
+    public void getKey() {
+        boolean r = true;
+        while (r)
+            try {
+                Scanner myScanner = new Scanner(System.in);
+                String key = myScanner.next();
+                printDetails(key);
+                r = false;
+            }catch (Exception e){
+                r = true;
+            }
+    }
+    public void printDetails(String key) throws Exception {
+            String message = getDetails(key);
+            System.out.println(message);
+    }
+    private String getDetails(String key) throws Exception {
+        if(Objects.equals(key,"!")){
+            throw new Exception("Key set to empty string");
+        }
+        return "data for " + key;
+    }
+    public static void main(String[] args) {
+        ThrowsDemo8 n = new ThrowsDemo8();
+        n.getKey();
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 8 Java-файлов. Ключевые сущности: Exception1, Exception2, Exception3, Exception4, ThrowsDemo5, ThrowsDemo6.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 16 — Исключения документирует реальное решение из исходного кода.

@@ -1,0 +1,145 @@
+---
+title: Task 3 — Конструкторы и инкапсуляция
+sidebar_position: 4
+description: Инициализация объектов и контроль состояния через инкапсуляцию.
+slug: /java/task-03-constructors-and-encapsulation
+---
+
+## Задание
+
+Инициализация объектов и контроль состояния через инкапсуляцию. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task3/Author.java`
+- `Task3/Ball.java`
+- `Task3/TestAuthor.java`
+- `Task3/TestBall.java`
+
+#### `Task3/Author.java`
+
+```java title="Task3/Author.java"
+package Task3;
+
+public class Author {
+    private String name;
+    private String email;
+    private char gender;
+    public Author(String n, String e, char g){
+        name = n;
+        email = e;
+        gender = g;
+    }
+    public void setName(String name){
+        this.name = name;
+    }
+    public String getName(){
+        return name;
+    }
+    public void setEmail(String email){
+        this.email = email;
+    }
+    public String getEmail(){
+        return email;
+    }
+    public void getGender(char gender){
+        this.gender = gender;
+    }
+    public char setGender(){
+        return gender;
+    }
+    public String toString(){
+        return this.name+" ("+gender+") at "+email;
+    }
+
+}
+
+```
+
+#### `Task3/Ball.java`
+
+```java title="Task3/Ball.java"
+package Task3;
+
+public class Ball {
+    private double x = 0.0;
+    private double y = 0.0;
+    public Ball(){}
+    public Ball(double x, double y){
+        this.x = x;
+        this.y = y;
+    }
+    public double getX(){
+        return x;
+    }
+    public double getY(){
+        return y;
+    }
+    public void setX(double x){
+        this.x = x;
+    }
+    public void setY(double y){
+        this.y = y;
+    }
+    public void setXY(double x, double y){
+        this.x = x;
+        this.y = y;
+    }
+    public void move(double xDisp, double yDisp){
+        x += xDisp;
+        y += yDisp;
+    }
+    public String toString(){
+        return "Ball ("+this.x+", "+this.y+").";
+    }
+}
+
+```
+
+#### `Task3/TestAuthor.java`
+
+```java title="Task3/TestAuthor.java"
+package Task3;
+
+public class TestAuthor {
+    public static void main(String[] args){
+        Author a1 = new Author("Petr Grob", "peGrob@somewhere.com", 'M');
+        System.out.println(a1);
+    }
+
+}
+
+```
+
+#### `Task3/TestBall.java`
+
+```java title="Task3/TestBall.java"
+package Task3;
+
+public class TestBall {
+    public static void main(String[] args){
+        Ball b1 = new Ball(100, 100);
+        System.out.println(b1);
+        b1.move(30, 15);
+        System.out.println(b1);
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 4 Java-файлов. Ключевые сущности: Author, Ball, TestAuthor, TestBall.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 3 — Конструкторы и инкапсуляция документирует реальное решение из исходного кода.

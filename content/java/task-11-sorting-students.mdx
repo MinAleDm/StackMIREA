@@ -1,0 +1,199 @@
+---
+title: Task 11 — Сортировка студентов
+sidebar_position: 12
+description: Сортировка и сравнение объектов по метрикам.
+slug: /java/task-11-sorting-students
+---
+
+## Задание
+
+Сортировка и сравнение объектов по метрикам. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task11/Connection.java`
+- `Task11/SortingStudentsByGPA.java`
+- `Task11/Student.java`
+
+#### `Task11/Connection.java`
+
+```java title="Task11/Connection.java"
+package Task11;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class Connection {
+    String name;
+    int age;
+
+    public Connection(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+
+    public static void main(String[] args){
+        List<String[]> c =new ArrayList<>();
+
+        c.add(new String[]{"Max", "10"});
+        c.add(new String[]{"Nicolai", "20"});
+        c.add(new String[]{"Tolic", "19"});
+        c.add(new String[]{"Dane", "17"});
+
+        List<String[]> r = new ArrayList<>();
+        r.add(new String[]{"Denes","23"});
+        r.add(new String[]{"Dasha", "30"});
+        r.add(new String[]{"Oleg", "27"});
+        //c.addAll(r);
+        //System.out.print(c);
+        List<String[]> t = mergeSort(c, r);
+        for (String[] d: t){
+            System.out.println("[" +d[0]+", "+d[1] +"]");
+        }
+    }
+    private static List<String[]> mergeSort(List<String[]> c, List<String[]> r) {
+        if (c.size()<=1 && r.size()<=1){
+            return merge(c, r);
+        }
+        int m1 = c.size()/2;
+        int m2 = r.size()/2;
+        List<String[]> left1 = c.subList(0, m1);
+        List<String[]> right1 = c.subList(m1, c.size());
+        List<String[]> left2 = r.subList(0,m2);
+        List<String[]> right2 = r.subList(m2, r.size());
+        List<String[]> sortleft = mergeSort(left1, left2);
+        List<String[]> sortright = mergeSort(right1, right2);
+        return merge(sortleft, sortright);
+    }
+    public static List<String[]> merge(List<String[]> left, List<String[]> right) {
+        List<String[]> result = new ArrayList<>();
+        int i = 0;
+        int j = 0;
+        while (i < left.size() && j < right.size()) {
+            if (Integer.parseInt(left.get(i)[1]) < Integer.parseInt(right.get(j)[1])) {
+                result.add(left.get(i));
+                i++;
+            } else {
+                result.add(right.get(j));
+                j++;
+            }
+        }
+            while (i < left.size()) {
+                result.add(left.get(i));
+                i++;
+            }
+            while (j < right.size()) {
+                result.add(right.get(j));
+                j++;
+            }
+        return result;
+    }
+}
+
+
+```
+
+#### `Task11/SortingStudentsByGPA.java`
+
+```java title="Task11/SortingStudentsByGPA.java"
+package Task11;
+import java.util.*;
+public class SortingStudentsByGPA implements Comparable<SortingStudentsByGPA>{
+    public String name;
+    public int bal;
+
+    public SortingStudentsByGPA(String name, int bal) {
+        this.name = name;
+        this.bal = bal;
+    }
+
+    @Override
+    public int compareTo(SortingStudentsByGPA o) {
+        return o.bal - this.bal;
+    }
+    public static void main(String[] args){
+        List<SortingStudentsByGPA> r = new ArrayList<>();
+        r.add(new SortingStudentsByGPA("Nicolai", 123));
+        r.add(new SortingStudentsByGPA("Oleg", 200));
+        r.add(new SortingStudentsByGPA("Sasha", 260));
+        r.add(new SortingStudentsByGPA("Nikita", 250));
+        Collections.sort(r);
+        for (SortingStudentsByGPA s : r){
+            System.out.println(s.name+ " Баллы "+s.bal);
+        }
+    }
+}
+
+
+
+```
+
+#### `Task11/Student.java`
+
+```java title="Task11/Student.java"
+package Task11;
+
+public class Student {
+    String name;
+    int iDNumber;
+
+    public Student(String name, int iDNumber) {
+        this.name = name;
+        this.iDNumber = iDNumber;
+    }
+    public void setName(String name){
+        this.name=name;
+    }
+    public String getName(){
+        return name;
+    }
+    public int getiDNumber() {
+        return iDNumber;
+    }
+    public void setiDNumber(int iDNumber) {
+        this.iDNumber = iDNumber;
+    }
+    public static void main(String[] args){
+        Student[] s = new Student[6];
+        s[0]=new Student("Sol",1);
+        s[1]=new Student("Pol",2);
+        s[2]=new Student("Kol",3);
+        s[3]=new Student("Tol",7);
+        s[4]=new Student("Fol",0);
+        s[5]=new Student("Rol",4);
+        for(int i = 1; i < s.length; i++){
+            Student current = s[i];
+            int j = i-1;
+            while (j>=0 && s[j].getiDNumber() > current.getiDNumber()){
+                s[j+1]=s[j];
+                j--;
+            }
+            s[j+1]=current;
+        }
+        System.out.println("     ");
+        for(Student f: s){
+            System.out.println("Name: "+f.getName()+" id: "+f.getiDNumber());
+        }
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 3 Java-файлов. Ключевые сущности: Connection, SortingStudentsByGPA, Student.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 11 — Сортировка студентов документирует реальное решение из исходного кода.

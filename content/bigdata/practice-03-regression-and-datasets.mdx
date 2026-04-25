@@ -1,0 +1,871 @@
+---
+title: Практика 3. Регрессия и наборы данных
+description: Работа с несколькими датасетами и построение моделей.
+order: 4
+---
+
+## Wiki-версия
+
+Материал полностью перенесен в документацию. Исходный ноутбук удален из репозитория.
+
+Минькин Александр Дмитривеич - ИКБО-25-22
+
+# Практическая работа №3
+
+## Статистика на Python
+Генеральная совокупность – это множество абсолютно всех объектов,
+которые используются для исследования.
+Выборка
+
+
+1. Загрузить данные из файла “insurance.csv”.
+2. С помощью метода describe() посмотреть статистику по данным. Сделать
+выводы.
+
+```python
+from google.colab import files
+uploaded = files.upload()
+```
+
+**Вывод:**
+
+```text
+<IPython.core.display.HTML object>
+
+Saving insurance.csv to insurance (1).csv
+```
+
+```python
+import pandas as pd
+
+# 1. Загрузка данных
+df = pd.read_csv("insurance (1).csv")
+
+# 2. Просмотр первых строк
+print("Первые 5 строк датасета:")
+print(df.head(), "\n")
+
+# 3. Общая информация о данных
+print("Информация о данных:")
+print(df.info(), "\n")
+
+# 4. Статистическое описание
+print("Статистическое описание данных:")
+print(df.describe(include='all'), "\n")
+```
+
+**Вывод:**
+
+```text
+Первые 5 строк датасета:
+   age     sex     bmi  children smoker     region      charges
+0   19  female  27.900         0    yes  southwest  16884.92400
+1   18    male  33.770         1     no  southeast   1725.55230
+2   28    male  33.000         3     no  southeast   4449.46200
+3   33    male  22.705         0     no  northwest  21984.47061
+4   32    male  28.880         0     no  northwest   3866.85520 
+
+Информация о данных:
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 1338 entries, 0 to 1337
+Data columns (total 7 columns):
+ #   Column    Non-Null Count  Dtype  
+---  ------    --------------  -----  
+ 0   age       1338 non-null   int64  
+ 1   sex       1338 non-null   object 
+ 2   bmi       1338 non-null   float64
+ 3   children  1338 non-null   int64  
+ 4   smoker    1338 non-null   object 
+ 5   region    1338 non-null   object 
+ 6   charges   1338 non-null   float64
+dtypes: float64(2), int64(2), object(3)
+memory usage: 73.3+ KB
+None 
+
+Статистическое описание данных:
+                age   sex          bmi     children smoker     region  \
+count   1338.000000  1338  1338.000000  1338.000000   1338       1338   
+unique          NaN     2          NaN          NaN      2          4   
+top             NaN  male          NaN          NaN     no  southeast   
+freq            NaN   676          NaN          NaN   1064        364   
+mean      39.207025   NaN    30.663397     1.094918    NaN        NaN   
+std       14.049960   NaN     6.098187     1.205493    NaN        NaN   
+min       18.000000   NaN    15.960000     0.000000    NaN        NaN   
+25%       27.000000   NaN    26.296250     0.000000    NaN        NaN   
+50%       39.000000   NaN    30.400000     1.000000    NaN        NaN   
+75%       51.000000   NaN    34.693750     2.000000    NaN        NaN   
+max       64.000000   NaN    53.130000     5.000000    NaN        NaN   
+
+             charges  
+count    1338.000000  
+unique           NaN  
+top              NaN  
+freq             NaN  
+mean    13270.422265  
+std     12110.011237  
+min      1121.873900  
+25%      4740.287150  
+50%      9382.033000  
+75%     16639.912515  
+max     63770.428010
+```
+
+**Выводы:**
+- Возраст: от 18 до 64 лет, средний — около 39 лет.
+- Пол: примерно поровну мужчин и женщин.
+- Средний BMI ~30.7, что указывает на избыточный вес.
+- Среднее количество детей — 1.
+- Курильщиков ~20%.
+- Средние страховые выплаты около 13 270, но разброс большой (до 63 770).
+
+3. Построить гистограммы для числовых показателей. Сделать выводы.
+
+```python
+# Импорт библиотек
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Загрузка данных
+df = pd.read_csv("insurance.csv")
+
+# 2. Просмотр числовых столбцов
+numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
+print("Числовые признаки:", list(numeric_cols), "\n")
+
+# 3. Построение гистограмм
+df[numeric_cols].hist(bins=20, figsize=(12, 8), color='skyblue', edgecolor='black')
+plt.suptitle("Гистограммы числовых признаков страховых данных", fontsize=16)
+plt.show()
+```
+
+**Вывод:**
+
+```text
+Числовые признаки: ['age', 'bmi', 'children', 'charges']
+
+<Figure size 1200x800 with 4 Axes>
+```
+
+**Выводы:**
+- Возраст (age): распределение равномерное от 18 до 64 лет.
+- Индекс массы тела (bmi): большинство людей имеют BMI в диапазоне 25–35 (избыточный вес).
+- Количество детей (children): большинство клиентов не имеют детей или имеют 1–2 ребёнка.
+- Страховые выплаты (charges): распределение сильно скошено вправо — у большинства низкие выплаты, у меньшинства очень высокие.
+
+4. Найти меры центральной тенденции и меры разброса для индекса массы
+тела (bmi) и расходов (charges). Отобразить результаты в виде текста и на
+гистограммах (3 вертикальные линии). Добавить легенду на графики.
+
+
+Сделать выводы.
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# 1. Загрузка данных
+df = pd.read_csv("insurance.csv")
+
+# 2. Расчёт статистических мер
+for col in ['bmi', 'charges']:
+    mean = df[col].mean()
+    median = df[col].median()
+    mode = df[col].mode()[0]
+    std = df[col].std()
+    min_val = df[col].min()
+    max_val = df[col].max()
+
+    # 3. Текстовый вывод
+    print(f"===== {col.upper()} =====")
+    print(f"Среднее значение: {mean:.2f}")
+    print(f"Медиана: {median:.2f}")
+    print(f"Мода: {mode:.2f}")
+    print(f"Стандартное отклонение: {std:.2f}")
+    print(f"Минимум: {min_val:.2f}")
+    print(f"Максимум: {max_val:.2f}")
+    print()
+
+    # 4. Построение гистограммы с линиями
+    plt.figure(figsize=(8, 5))
+    plt.hist(df[col], bins=30, color='skyblue', edgecolor='black')
+    plt.axvline(mean, color='red', linestyle='--', linewidth=2, label=f'Среднее ({mean:.2f})')
+    plt.axvline(median, color='green', linestyle='-', linewidth=2, label=f'Медиана ({median:.2f})')
+    plt.axvline(mode, color='orange', linestyle='-.', linewidth=2, label=f'Мода ({mode:.2f})')
+    plt.title(f"Распределение {col}")
+    plt.xlabel(col)
+    plt.ylabel("Частота")
+    plt.legend()
+    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.show()
+```
+
+**Вывод:**
+
+```text
+===== BMI =====
+Среднее значение: 30.66
+Медиана: 30.40
+Мода: 32.30
+Стандартное отклонение: 6.10
+Минимум: 15.96
+Максимум: 53.13
+
+<Figure size 800x500 with 1 Axes>
+
+===== CHARGES =====
+Среднее значение: 13270.42
+Медиана: 9382.03
+Мода: 1639.56
+Стандартное отклонение: 12110.01
+Минимум: 1121.87
+Максимум: 63770.43
+
+<Figure size 800x500 with 1 Axes>
+```
+
+5. Построить box-plot для числовых показателей. Названия графиков должны
+соответствовать названиям признаков. Сделать выводы.
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Загрузка данных
+df = pd.read_csv("insurance.csv")
+
+# 2. Определим числовые признаки
+numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
+
+# 3. Построим boxplot для каждого числового признака
+plt.figure(figsize=(12, 8))
+
+for i, col in enumerate(numeric_cols, 1):
+    plt.subplot(2, 2, i)  # 2 строки, 2 столбца
+    plt.boxplot(df[col], patch_artist=True, boxprops=dict(facecolor='skyblue'))
+    plt.title(col)
+    plt.ylabel("Значение")
+    plt.grid(True, linestyle='--', alpha=0.6)
+
+plt.suptitle("Box-plot для числовых признаков", fontsize=16)
+plt.tight_layout(rect=[0, 0, 1, 0.96])
+plt.show()
+```
+
+**Вывод:**
+
+```text
+<Figure size 1200x800 with 4 Axes>
+```
+
+6. Используя признак charges или imb, проверить, выполняется ли
+центральная предельная теорема. Использовать различные длины выборок
+n. Количество выборок = 300. Вывести результат в виде гистограмм. Найти
+стандартное отклонение и среднее для полученных распределений.
+Сделать выводы.
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Загружаем данные
+df = pd.read_csv("insurance.csv")
+
+# 2. Выбираем признак для анализа (можно заменить на 'bmi')
+data = df['charges']
+
+# 3. Задаем параметры
+n_values = [5, 30, 100]     # размеры выборок
+num_samples = 300           # количество выборок
+
+# 4. Проверка ЦПТ для разных n
+plt.figure(figsize=(15, 4))
+
+for i, n in enumerate(n_values, 1):
+    sample_means = []
+
+    # создаем 300 выборок размера n и считаем среднее каждой
+    for _ in range(num_samples):
+        sample = np.random.choice(data, size=n, replace=True)
+        sample_means.append(np.mean(sample))
+
+    sample_means = np.array(sample_means)
+
+    # 5. Строим гистограммы распределений средних
+    plt.subplot(1, 3, i)
+    plt.hist(sample_means, bins=20, color='skyblue', edgecolor='black')
+    plt.title(f'n = {n}\nСреднее: {sample_means.mean():.2f}, σ: {sample_means.std():.2f}')
+    plt.xlabel("Среднее значение выборки")
+    plt.ylabel("Частота")
+    plt.grid(True, linestyle='--', alpha=0.6)
+
+plt.suptitle("Проверка Центральной предельной теоремы (ЦПТ) для признака 'charges'", fontsize=14)
+plt.tight_layout(rect=[0, 0, 1, 0.95])
+plt.show()
+```
+
+**Вывод:**
+
+```text
+<Figure size 1500x400 with 3 Axes>
+```
+
+7. Построить 95% и 99% доверительный интервал для среднего значения
+расходов и среднего значения индекса массы тела.
+
+```python
+import pandas as pd
+import numpy as np
+import scipy.stats as st
+
+# 1. Загружаем данные
+df = pd.read_csv("insurance.csv")
+
+# 2. Функция для вычисления доверительного интервала
+def confidence_interval(data, confidence=0.95):
+    n = len(data)
+    mean = np.mean(data)
+    std_err = st.sem(data)  # стандартная ошибка среднего
+    h = std_err * st.t.ppf((1 + confidence) / 2, n - 1)
+    return mean, mean - h, mean + h
+
+# 3. Расчёт интервалов для 'charges' и 'bmi'
+for col in ['charges', 'bmi']:
+    mean_95, lower_95, upper_95 = confidence_interval(df[col], 0.95)
+    mean_99, lower_99, upper_99 = confidence_interval(df[col], 0.99)
+
+    print(f"===== {col.upper()} =====")
+    print(f"Среднее значение: {mean_95:.2f}")
+    print(f"95% доверительный интервал: [{lower_95:.2f}, {upper_95:.2f}]")
+    print(f"99% доверительный интервал: [{lower_99:.2f}, {upper_99:.2f}]")
+    print()
+
+# 4. (Дополнительно) Визуализация интервалов
+import matplotlib.pyplot as plt
+
+cols = ['charges', 'bmi']
+conf_95 = [confidence_interval(df[c], 0.95) for c in cols]
+conf_99 = [confidence_interval(df[c], 0.99) for c in cols]
+
+plt.figure(figsize=(8, 5))
+x = np.arange(len(cols))
+
+# Средние значения
+means = [c[0] for c in conf_95]
+
+# Ошибки для интервалов
+err_95 = [c[0] - c[1] for c in conf_95]
+err_99 = [c[0] - c[1] for c in conf_99]
+
+# Построение графика
+plt.errorbar(x, means, yerr=err_95, fmt='o', color='blue', capsize=5, label='95% ДИ')
+plt.errorbar(x, means, yerr=err_99, fmt='o', color='red', capsize=8, label='99% ДИ')
+plt.xticks(x, cols)
+plt.ylabel("Среднее значение")
+plt.title("Доверительные интервалы для средних значений (charges и bmi)")
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.show()
+```
+
+**Вывод:**
+
+```text
+===== CHARGES =====
+Среднее значение: 13270.42
+95% доверительный интервал: [12620.95, 13919.89]
+99% доверительный интервал: [12416.43, 14124.41]
+
+===== BMI =====
+Среднее значение: 30.66
+95% доверительный интервал: [30.34, 30.99]
+99% доверительный интервал: [30.23, 31.09]
+
+<Figure size 800x500 with 1 Axes>
+```
+
+8. Проверить распределения следующих признаков на нормальность: индекс
+массы тела, расходы. Сформулировать нулевую и альтернативную
+гипотезы. Для каждого признака использовать KS-тест и q-q plot. Сделать
+выводы на основе полученных p-значений.
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as st
+import statsmodels.api as sm
+
+# 1. Загрузка данных
+df = pd.read_csv("insurance.csv")
+
+# 2. Проверяем признаки
+features = ['bmi', 'charges']
+
+for col in features:
+    data = df[col]
+
+    # --- Нормализация для KS-теста (приводим данные к z-оценкам) ---
+    standardized = (data - np.mean(data)) / np.std(data)
+
+    # --- KS-тест ---
+    ks_stat, p_value = st.kstest(standardized, 'norm')
+
+    print(f"===== Признак: {col.upper()} =====")
+    print("Нулевая гипотеза H₀: данные распределены нормально.")
+    print("Альтернативная гипотеза H₁: данные НЕ распределены нормально.")
+    print(f"Статистика теста: {ks_stat:.4f}")
+    print(f"p-значение: {p_value:.4f}")
+
+    if p_value < 0.05:
+        print("→ Отклоняем H₀: распределение статистически отличается от нормального.\n")
+    else:
+        print("→ Не отклоняем H₀: нет оснований считать распределение ненормальным.\n")
+
+    # --- Q-Q plot ---
+    plt.figure(figsize=(6, 5))
+    sm.qqplot(data, line='s', markerfacecolor='blue', alpha=0.5)
+    plt.title(f"Q-Q Plot для признака '{col}'")
+    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.show()
+```
+
+**Вывод:**
+
+```text
+===== Признак: BMI =====
+Нулевая гипотеза H₀: данные распределены нормально.
+Альтернативная гипотеза H₁: данные НЕ распределены нормально.
+Статистика теста: 0.0261
+p-значение: 0.3145
+→ Не отклоняем H₀: нет оснований считать распределение ненормальным.
+
+<Figure size 600x500 with 0 Axes>
+
+<Figure size 640x480 with 1 Axes>
+
+===== Признак: CHARGES =====
+Нулевая гипотеза H₀: данные распределены нормально.
+Альтернативная гипотеза H₁: данные НЕ распределены нормально.
+Статистика теста: 0.1885
+p-значение: 0.0000
+→ Отклоняем H₀: распределение статистически отличается от нормального.
+
+<Figure size 600x500 with 0 Axes>
+
+<Figure size 640x480 with 1 Axes>
+```
+
+9.  Загрузить данные из файла “ECDCCases.csv”.
+
+```python
+from google.colab import files
+uploaded = files.upload()
+```
+
+**Вывод:**
+
+```text
+<IPython.core.display.HTML object>
+
+Saving ECDCCases.csv to ECDCCases.csv
+```
+
+10.  Проверить в данных наличие пропущенных значений. Вывести
+количество пропущенных значений в процентах. Удалить два признака, в
+которых больше всех пропущенных значений. Для оставшихся признаков
+обработать пропуски: для категориального признака использовать
+заполнение значением по умолчанию (например, «other»), для числового
+признака использовать заполнение медианным значением. Показать, что
+пропусков больше в данных нет.
+
+```python
+import pandas as pd
+
+# Загружаем данные
+df = pd.read_csv("ECDCCases.csv")
+
+# 1. Проверяем наличие пропущенных значений
+missing_counts = df.isna().sum()
+missing_percent = (missing_counts / len(df)) * 100
+print("Пропущенные значения в процентах:\n", missing_percent)
+
+# 2. Находим два признака с наибольшим количеством пропусков и удаляем их
+top2_missing_cols = missing_counts.sort_values(ascending=False).head(2).index
+df = df.drop(columns=top2_missing_cols)
+print("\nУдалены признаки с наибольшим количеством пропусков:", list(top2_missing_cols))
+
+# 3. Обрабатываем пропуски:
+# Для категориальных признаков заполняем значением "other"
+categorical_cols = df.select_dtypes(include=['object']).columns
+df[categorical_cols] = df[categorical_cols].fillna("other")
+
+# Для числовых признаков заполняем медианой
+numeric_cols = df.select_dtypes(include=['number']).columns
+df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
+
+# 4. Проверяем, что пропусков больше нет
+print("\nКоличество пропущенных значений после обработки:\n", df.isna().sum())
+```
+
+**Вывод:**
+
+```text
+Пропущенные значения в процентах:
+ dateRep                                                       0.000000
+day                                                           0.000000
+month                                                         0.000000
+year                                                          0.000000
+cases                                                         0.000000
+deaths                                                        0.000000
+countriesAndTerritories                                       0.000000
+geoId                                                         0.444236
+countryterritoryCode                                          0.198695
+popData2019                                                   0.198695
+continentExp                                                  0.000000
+Cumulative_number_for_14_days_of_COVID-19_cases_per_100000    4.650750
+dtype: float64
+
+Удалены признаки с наибольшим количеством пропусков: ['Cumulative_number_for_14_days_of_COVID-19_cases_per_100000', 'geoId']
+
+Количество пропущенных значений после обработки:
+ dateRep                    0
+day                        0
+month                      0
+year                       0
+cases                      0
+deaths                     0
+countriesAndTerritories    0
+countryterritoryCode       0
+popData2019                0
+continentExp               0
+dtype: int64
+```
+
+11.  Посмотреть статистику по данным, используя describe(). Сделать выводы
+о том, какие признаки содержат выбросы. Посмотреть, для каких стран
+количество смертей в день превысило 3000 и сколько таких дней было.
+
+```python
+import pandas as pd
+
+# Загружаем данные
+df = pd.read_csv("ECDCCases.csv")
+
+# 1. Статистика по данным
+print("Описание данных:\n")
+print(df.describe())
+
+# 2. Определяем признаки с возможными выбросами
+# Обычно выбросы проявляются как экстремальные значения в 'max' и 'min'
+numeric_cols = df.select_dtypes(include=['number']).columns
+for col in numeric_cols:
+    q1 = df[col].quantile(0.25)
+    q3 = df[col].quantile(0.75)
+    iqr = q3 - q1
+    lower_bound = q1 - 1.5 * iqr
+    upper_bound = q3 + 1.5 * iqr
+    outliers = df[(df[col] < lower_bound) | (df[col] > upper_bound)]
+    if not outliers.empty:
+        print(f"\nПризнак '{col}' содержит выбросы.")
+        print(f"Количество выбросов: {len(outliers)}")
+
+# 3. Смотрим, для каких стран количество смертей в день превышало 3000
+high_deaths = df[df['deaths'] > 3000]
+print("\nДни с количеством смертей > 3000:")
+print(high_deaths[['countriesAndTerritories', 'dateRep', 'deaths']])
+
+# 4. Сколько таких дней было
+num_high_death_days = len(high_deaths)
+print(f"\nКоличество дней с количеством смертей > 3000: {num_high_death_days}")
+```
+
+**Вывод:**
+
+```text
+Описание данных:
+
+                day         month          year          cases        deaths  \
+count  61904.000000  61904.000000  61904.000000   61904.000000  61904.000000   
+mean      15.629232      7.067104   2019.998918    1155.079026     26.053987   
+std        8.841624      2.954816      0.032881    6779.010824    131.222948   
+min        1.000000      1.000000   2019.000000   -8261.000000  -1918.000000   
+25%        8.000000      5.000000   2020.000000       0.000000      0.000000   
+50%       15.000000      7.000000   2020.000000      15.000000      0.000000   
+75%       23.000000     10.000000   2020.000000     273.000000      4.000000   
+max       31.000000     12.000000   2020.000000  234633.000000   4928.000000   
+
+        popData2019  \
+count  6.178100e+04   
+mean   4.098628e+07   
+std    1.531246e+08   
+min    8.150000e+02   
+25%    1.293120e+06   
+50%    7.169456e+06   
+75%    2.851583e+07   
+max    1.433784e+09   
+
+       Cumulative_number_for_14_days_of_COVID-19_cases_per_100000  
+count                                       59025.000000           
+mean                                           66.316369           
+std                                           162.324550           
+min                                          -147.419587           
+25%                                             0.757526           
+50%                                             6.724045           
+75%                                            52.561206           
+max                                          1900.836210           
+
+Признак 'year' содержит выбросы.
+Количество выбросов: 67
+
+Признак 'cases' содержит выбросы.
+Количество выбросов: 10080
+
+Признак 'deaths' содержит выбросы.
+Количество выбросов: 10657
+
+Признак 'popData2019' содержит выбросы.
+Количество выбросов: 6661
+
+Признак 'Cumulative_number_for_14_days_of_COVID-19_cases_per_100000' содержит выбросы.
+Количество выбросов: 8073
+
+Дни с количеством смертей > 3000:
+        countriesAndTerritories     dateRep  deaths
+2118                  Argentina  02/10/2020    3351
+16908                   Ecuador  07/09/2020    3800
+37038                    Mexico  09/10/2020    3013
+44888                      Peru  14/08/2020    3935
+44909                      Peru  24/07/2020    3887
+59007  United_States_of_America  12/12/2020    3343
+59009  United_States_of_America  10/12/2020    3124
+59016  United_States_of_America  03/12/2020    3190
+59239  United_States_of_America  24/04/2020    3179
+59245  United_States_of_America  18/04/2020    3770
+59247  United_States_of_America  16/04/2020    4928
+
+Количество дней с количеством смертей > 3000: 11
+```
+
+12.  Найти дублирование данных. Удалить дубликаты.
+
+```python
+import pandas as pd
+
+# Загружаем данные
+df = pd.read_csv("ECDCCases.csv")
+
+# 1. Проверяем наличие дубликатов
+num_duplicates = df.duplicated().sum()
+print(f"Количество дубликатов: {num_duplicates}")
+
+# 2. Удаляем дубликаты
+df = df.drop_duplicates()
+print(f"Количество строк после удаления дубликатов: {len(df)}")
+```
+
+**Вывод:**
+
+```text
+Количество дубликатов: 4
+Количество строк после удаления дубликатов: 61900
+```
+
+13.  Загрузить данные из файла “bmi.csv”.
+
+```python
+from google.colab import files
+uploaded = files.upload()
+```
+
+**Вывод:**
+
+```text
+<IPython.core.display.HTML object>
+
+Saving bmi.csv to bmi.csv
+```
+
+Взять оттуда две выборки. Одна выборка – это индекс массы тела людей c региона northwest, вторая выборка – это индекс массы тела людей с региона southwest. Сравнить средние значения этих выборок, используя t-критерий Стьюдента. Предварительно проверить выборки на нормальность (критерий Шопиро Уилка) и на гомогенность дисперсии (критерий Бартлетта).
+
+```python
+import pandas as pd
+from scipy.stats import shapiro, bartlett, ttest_ind
+
+# 1. Загружаем данные
+df = pd.read_csv("bmi.csv")
+
+# 2. Создаем две выборки по регионам
+bmi_nw = df[df['region'] == 'northwest']['bmi']
+bmi_sw = df[df['region'] == 'southwest']['bmi']
+
+# 3. Проверка на нормальность (Shapiro-Wilk test)
+shapiro_nw = shapiro(bmi_nw)
+shapiro_sw = shapiro(bmi_sw)
+
+print("Shapiro-Wilk test для northwest:", shapiro_nw)
+print("Shapiro-Wilk test для southwest:", shapiro_sw)
+
+# 4. Проверка на гомогенность дисперсий (Bartlett test)
+bartlett_test = bartlett(bmi_nw, bmi_sw)
+print("\nBartlett test:", bartlett_test)
+
+# 5. Сравнение средних (t-тест Стьюдента)
+# Если дисперсии гомогенные, equal_var=True, иначе False
+equal_var = bartlett_test.pvalue > 0.05
+t_test = ttest_ind(bmi_nw, bmi_sw, equal_var=equal_var)
+
+print("\nT-test Стьюдента:", t_test)
+print("\nСредние значения BMI по выборкам:")
+print("Northwest:", bmi_nw.mean())
+print("Southwest:", bmi_sw.mean())
+```
+
+**Вывод:**
+
+```text
+Shapiro-Wilk test для northwest: ShapiroResult(statistic=np.float64(0.995464981663833), pvalue=np.float64(0.4655897798883668))
+Shapiro-Wilk test для southwest: ShapiroResult(statistic=np.float64(0.9949269360950754), pvalue=np.float64(0.36296471144790743))
+
+Bartlett test: BartlettResult(statistic=np.float64(3.4000745256459286), pvalue=np.float64(0.06519347353581818))
+
+T-test Стьюдента: TtestResult(statistic=np.float64(-3.2844171500398582), pvalue=np.float64(0.001076958496307695), df=np.float64(648.0))
+
+Средние значения BMI по выборкам:
+Northwest: 29.199784615384615
+Southwest: 30.59661538461538
+```
+
+14. Кубик бросили 600 раз, получили следующие результаты:
+| N | Количество выпадений |
+|---|--------------------|
+| 1 | 97                 |
+| 2 | 98                 |
+| 3 | 109                |
+| 4 | 95                 |
+| 5 | 97                 |
+| 6 | 104                |
+
+С помощью критерия Хи-квадрат проверить, является ли полученное
+распределение
+равномерным.
+scipy.stats.chisquare().
+
+```python
+from scipy.stats import chisquare
+
+# 1. Количество выпадений каждой грани
+observed = [97, 98, 109, 95, 97, 104]
+
+# 2. Ожидаемое количество выпадений для равномерного распределения
+total_rolls = sum(observed)
+expected = [total_rolls / 6] * 6  # равные вероятности для 6 граней
+
+# 3. Применяем критерий Хи-квадрат
+chi2_stat, p_value = chisquare(f_obs=observed, f_exp=expected)
+
+print("Chi-square statistic:", chi2_stat)
+print("p-value:", p_value)
+
+# 4. Вывод о равномерности
+alpha = 0.05
+if p_value < alpha:
+    print("Распределение не равномерное (отвергаем H0)")
+else:
+    print("Распределение можно считать равномерным (не отвергаем H0)")
+```
+
+**Вывод:**
+
+```text
+Chi-square statistic: 1.44
+p-value: 0.9198882077437889
+Распределение можно считать равномерным (не отвергаем H0)
+```
+
+15.  С помощью критерия `Хи-квадрат` проверить, являются ли переменные
+зависимыми.  
+Создать датафрейм, используя следующий код:
+
+
+```
+data = pd.DataFrame({'Женат': [89,17,11,43,22,1],
+'Гражданский брак': [80,22,20,35,6,4],
+'Не состоит в отношениях': [35,44,35,6,8,22]})
+data.index = ['Полный рабочий день','Частичная занятость','Временно не
+работает','На домохозяйстве','На пенсии','Учёба']
+```
+
+
+Использовать функцию `scipy.stats.chi2_contingency()`.
+Влияет ли семейное положение на занятость?
+
+```python
+import pandas as pd
+from scipy.stats import chi2_contingency
+
+# 1. Создаем датафрейм
+data = pd.DataFrame({
+    'Женат': [89, 17, 11, 43, 22, 1],
+    'Гражданский брак': [80, 22, 20, 35, 6, 4],
+    'Не состоит в отношениях': [35, 44, 35, 6, 8, 22]
+})
+data.index = ['Полный рабочий день','Частичная занятость','Временно не работает',
+              'На домохозяйстве','На пенсии','Учёба']
+
+print("Таблица сопряженности:\n")
+print(data)
+
+# 2. Применяем критерий Хи-квадрат для таблицы сопряженности
+chi2_stat, p_value, dof, expected = chi2_contingency(data)
+
+print("\nChi-square statistic:", chi2_stat)
+print("p-value:", p_value)
+print("Степени свободы:", dof)
+print("\nОжидаемые частоты:\n", pd.DataFrame(expected, index=data.index, columns=data.columns))
+
+# 3. Вывод о зависимости
+alpha = 0.05
+if p_value < alpha:
+    print("\nСемейное положение и занятость зависимы (отвергаем H0)")
+else:
+    print("\nСемейное положение и занятость независимы (не отвергаем H0)")
+```
+
+**Вывод:**
+
+```text
+Таблица сопряженности:
+
+                      Женат  Гражданский брак  Не состоит в отношениях
+Полный рабочий день      89                80                       35
+Частичная занятость      17                22                       44
+Временно не работает     11                20                       35
+На домохозяйстве         43                35                        6
+На пенсии                22                 6                        8
+Учёба                     1                 4                       22
+
+Chi-square statistic: 122.29654948595365
+p-value: 1.7291616900960234e-21
+Степени свободы: 10
+
+Ожидаемые частоты:
+                        Женат  Гражданский брак  Не состоит в отношениях
+Полный рабочий день   74.664            68.136                     61.2
+Частичная занятость   30.378            27.722                     24.9
+Временно не работает  24.156            22.044                     19.8
+На домохозяйстве      30.744            28.056                     25.2
+На пенсии             13.176            12.024                     10.8
+Учёба                  9.882             9.018                      8.1
+
+Семейное положение и занятость зависимы (отвергаем H0)
+```
+
+**Вывод:**
+
+В ходе выполнения заданий был использован комплекс технологий анализа данных:  библиотеки pandas, scipy, matplotlib и seaborn.
+
+Получен опыт работы с реальными наборами данных — от первичной загрузки и проверки на пропуски и дубликаты до статистического анализа и визуализации: расчет описательных статистик, построение гистограмм и box-plot, проверка нормальности и гомогенности дисперсий, применение t-теста и χ²-теста для проверки гипотез.
+
+В заданиях столкнулся с обработкой медицинских и эпидемиологических данных, анализом распределений, проверкой равномерности событий и исследованием зависимостей между категориальными переменными, что позволило закрепить практические навыки статистического анализа и работы с данными.

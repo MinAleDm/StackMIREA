@@ -1,0 +1,155 @@
+---
+title: Task 10 — Рекурсия
+sidebar_position: 11
+description: Рекурсивные алгоритмы и базовые условия остановки.
+slug: /java/task-10-recursion
+---
+
+## Задание
+
+Рекурсивные алгоритмы и базовые условия остановки. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task10/Recursion11.java`
+- `Task10/Recursion12.java`
+- `Task10/Recursion13.java`
+- `Task10/Recursion14.java`
+
+#### `Task10/Recursion11.java`
+
+```java title="Task10/Recursion11.java"
+package Task10;
+
+import java.util.Scanner;
+
+public class Recursion11 {
+    public static int Recurs(){
+        Scanner s = new Scanner(System.in);
+        int n = s.nextInt();
+        if (n==1){
+            int m = s.nextInt();
+            if (m == 1){
+                return Recurs()+n+m;
+            }
+            else{
+                int k = s.nextInt();
+                if(k == 1){
+                    return Recurs()+m+n+k;
+                }
+                else{
+                    return n+m+k;
+                }
+            }
+        }
+        else{
+            int m = s.nextInt();
+            if (m==1){
+                return Recurs()+m+n;
+            }
+            else{
+                return n+m;
+            }
+        }
+    }
+    public static void main(String[] args){
+        System.out.println(Recurs());
+    }
+}
+
+```
+
+#### `Task10/Recursion12.java`
+
+```java title="Task10/Recursion12.java"
+package Task10;
+
+import java.util.Scanner;
+
+public class Recursion12 {
+    public static void Recurs(){
+        Scanner s = new Scanner(System.in);
+        int n = s.nextInt();
+        if (n>0){
+            if (n % 2  == 1){
+                System.out.println(n);
+                Recurs();
+            }
+            else{
+                Recurs();
+            }
+        }
+    }
+    public static void main(String[] args){
+        Recurs();
+    }
+}
+
+```
+
+#### `Task10/Recursion13.java`
+
+```java title="Task10/Recursion13.java"
+package Task10;
+
+import java.util.Scanner;
+
+public class Recursion13 {
+    public static void Recurs(){
+        Scanner s = new Scanner(System.in);
+        int n = s.nextInt();
+        if (n >0){
+            System.out.println(n);
+            int m = s.nextInt();
+            if (m>0){
+                Recurs();
+            }
+        }
+    }
+    public static void main(String[] args){
+        Recurs();
+    }
+}
+
+```
+
+#### `Task10/Recursion14.java`
+
+```java title="Task10/Recursion14.java"
+package Task10;
+
+import java.util.Scanner;
+
+public class Recursion14 {
+    public static int Recurs(int n){
+        if (n < 10){
+            return n;
+        }
+        else{
+            System.out.println(n % 10 + " ");
+            return Recurs(n / 10);
+        }
+    }
+    public static void main(String[] args){
+        System.out.println(Recurs(123));
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 4 Java-файлов. Ключевые сущности: Recursion11, Recursion12, Recursion13, Recursion14.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 10 — Рекурсия документирует реальное решение из исходного кода.

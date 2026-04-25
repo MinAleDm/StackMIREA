@@ -1,0 +1,240 @@
+---
+title: Task 18 — Утилиты и валидация
+sidebar_position: 19
+description: Практика с матрицами, калькулятором и проверкой входных данных.
+slug: /java/task-18-utilities-and-validation
+---
+
+## Задание
+
+Практика с матрицами, калькулятором и проверкой входных данных. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task18/Animal.java`
+- `Task18/Calculator.java`
+- `Task18/Exeption1.java`
+- `Task18/Matrix.java`
+- `Task18/MinMax.java`
+
+#### `Task18/Animal.java`
+
+```java title="Task18/Animal.java"
+
+package Task18;
+
+public class Animal {
+}
+
+```
+
+#### `Task18/Calculator.java`
+
+```java title="Task18/Calculator.java"
+package Task18;
+
+public class Calculator<T extends Number, V extends Number> {
+    private T a;
+    private V b;
+
+    public Calculator(T a, V b) {
+        this.a=a;
+        this.b=b;
+    }
+
+    public double sum(){
+        return a.doubleValue()+b.doubleValue();
+    }
+    public double multiply(){
+        return a.doubleValue()*b.doubleValue();
+    }
+    public double divide(){
+        return a.doubleValue()-b.doubleValue();
+    }
+    public double subtraction(){
+
+            return a.doubleValue() / b.doubleValue();
+
+    }
+    public static void main(String[] args){
+        Calculator<Integer, Integer> r = new Calculator<>(1, 0);
+        System.out.println("Сумма: "+r.sum());
+        System.out.println("Вычитание: " + r.divide());
+        System.out.println("Умножение: " +r.multiply());
+        System.out.println("Деление: " + r.subtraction());
+    }
+}
+
+```
+
+#### `Task18/Exeption1.java`
+
+```java title="Task18/Exeption1.java"
+package Task18;
+
+public class Exeption1<T extends String, V extends Animal, K extends Integer>{
+    private T v1;
+    private  V v2;
+    private  K v3;
+
+    public Exeption1(T v1, V v2, K v3) {
+        this.v1 = v1;
+        this.v2 = v2;
+        this.v3 = v3;
+    }
+
+    public T getV1() {
+        return v1;
+    }
+
+    public void setV1(T v1) {
+        this.v1 = v1;
+    }
+
+    public V getV2() {
+        return v2;
+    }
+
+    public void setV2(V v2) {
+        this.v2 = v2;
+    }
+
+    public K getV3() {
+        return v3;
+    }
+
+    public void setV3(K v3) {
+        this.v3 = v3;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + v1 +" (" + v1.getClass() +")"+ '\n' +
+                v2 + " ("+v2.getClass() +")" +'\n'+
+                v3+" (" + v3.getClass() +")"+
+                '}';
+    }
+    public static void main(String[] args){
+        Exeption1<String, Animal, Integer> t = new Exeption1<>("Test", new Animal(), 5);
+        System.out.println(t.toString());
+    }
+}
+
+```
+
+#### `Task18/Matrix.java`
+
+```java title="Task18/Matrix.java"
+package Task18;
+
+public class Matrix <T extends  Number>{
+    private T[][] a;
+    private T[][] b;
+    public Matrix(T[][] a, T[][] b){
+        this.a=a;
+        this.b=b;
+    }
+    public void sum(){
+        System.out.println("Сумма: ");
+        for(int i=0; i<a.length;i++){
+           for(int j=0;j<a.length;j++){
+                System.out.print(a[i][j].doubleValue()+b[i][j].doubleValue()+" ");
+            }
+            System.out.println();
+        }
+    }
+    public void print(){
+        System.out.println("Матрица A: ");
+        for (int i =0;i< a.length;i++){
+            for (int j = 0;j<a.length;j++){
+                System.out.print(a[i][j]+" ");
+            }
+            System.out.println();
+        }
+        System.out.println("Матрица B: ");
+        for (int i =0;i< b.length;i++){
+            for (int j =0;j<b.length;j++){
+                System.out.print(b[i][j]+ " ");
+            }
+            System.out.println();
+        }
+    }
+    public void multi(){
+        double d[][] = new double[a.length][b.length];
+        System.out.println("Произведение матриц: ");
+        for (int i =0;i<a.length;i++){
+            for (int j=0;j<a.length;j++){
+                for (int k =0;k<a.length;k++){
+                    d[i][j] += a[i][k].doubleValue()*b[k][j].doubleValue();
+                }
+                System.out.print(d[i][j]+" ");
+            }
+            System.out.println();
+        }
+    }
+    public static void main(String[] args){
+        Integer[][] arra = new Integer[][] {{1,1},{2,3}};
+        Integer[][] arrb = new Integer[][] {{5,2},{2,3}};
+        Matrix<Integer> arr = new Matrix<>(arra, arrb);
+        arr.print();
+        arr.sum();
+        arr.multi();
+    }
+}
+
+```
+
+#### `Task18/MinMax.java`
+
+```java title="Task18/MinMax.java"
+package Task18;
+
+public class MinMax <T extends Comparable<T>>{
+    private T[] array;
+
+    public MinMax(T[] array) {
+        this.array = array;
+    }
+    public T min(){
+        T min = array[0];
+        for(int i=0; i<array.length;i++){
+            if(array[i].compareTo(min) < 0){
+                min = array[i];
+            }
+        }
+        return min;
+    }
+    public T max(){
+        T max = array[0];
+        for(int i=0;i<array.length;i++){
+            if(array[i].compareTo(max)>0){
+                max=array[i];
+            }
+        }
+        return max;
+    }
+    public static void main(String[] args){
+        MinMax<Integer> m = new MinMax<>(new Integer[] {5, 2, 3, 4, 5,10});
+        System.out.println("min: "+m.min());
+        System.out.println("max: "+m.max());
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 5 Java-файлов. Ключевые сущности: Animal, Calculator, Exeption1, Matrix, MinMax.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 18 — Утилиты и валидация документирует реальное решение из исходного кода.

@@ -1,0 +1,611 @@
+---
+title: Task 22 — Паттерны проектирования
+sidebar_position: 23
+description: Factory, Abstract Factory и MVC в прикладных задачах.
+slug: /java/task-22-design-patterns
+---
+
+## Задание
+
+Factory, Abstract Factory и MVC в прикладных задачах. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task22/one/Complex.java`
+- `Task22/one/ComplexAbstractFactory.java`
+- `Task22/one/ConcreteFactory.java`
+- `Task22/one/TestComplex.java`
+- `Task22/three/CarcasController.java`
+- `Task22/three/CarcasModel.java`
+- `Task22/three/CarcasView.java`
+- `Task22/three/CreateTextDoc.java`
+- `Task22/three/ICreateDocument.java`
+- `Task22/three/IDocument.java`
+- `Task22/three/TestWindow.java`
+- `Task22/three/TextDocument.java`
+- `Task22/two/AbstractChairFactory.java`
+- `Task22/two/Chair.java`
+- `Task22/two/ChairFactory.java`
+- `Task22/two/Client.java`
+- `Task22/two/FunctionalChair.java`
+- `Task22/two/MagicChair.java`
+- `Task22/two/TestChair.java`
+- `Task22/two/VictorianChair.java`
+
+#### `Task22/one/Complex.java`
+
+```java title="Task22/one/Complex.java"
+package Task22.one;
+
+public class Complex {
+    private int real;
+    private int image;
+    public Complex(){
+        this.real=0;
+        this.image=0;
+    }
+    public Complex(int real, int image) {
+        this.real=real;
+        this.image=image;
+    }
+    public int getReal() {
+        return real;
+    }
+    public void setReal(int real) {
+        this.real = real;
+    }
+    public int getImage() {
+        return image;
+    }
+    public void setImage(int image) {
+        this.image = image;
+    }
+    @Override
+    public String toString() {
+        return "Комплексное число = "+ real +
+                " + " + image + "i";
+    }
+}
+
+```
+
+#### `Task22/one/ComplexAbstractFactory.java`
+
+```java title="Task22/one/ComplexAbstractFactory.java"
+package Task22.one;
+
+public interface ComplexAbstractFactory {
+    Complex createComplex();
+    Complex CreateComplex(int real, int image);
+}
+
+```
+
+#### `Task22/one/ConcreteFactory.java`
+
+```java title="Task22/one/ConcreteFactory.java"
+package Task22.one;
+
+public class ConcreteFactory implements ComplexAbstractFactory {
+    @Override
+    public Complex createComplex() {
+        return new Complex();
+    }
+    @Override
+    public Complex CreateComplex(int real, int image) {
+        return new Complex(real, image);
+    }
+}
+
+```
+
+#### `Task22/one/TestComplex.java`
+
+```java title="Task22/one/TestComplex.java"
+package Task22.one;
+
+public class TestComplex {
+    public static void main(String[] args){
+        ComplexAbstractFactory c = new ConcreteFactory();
+        System.out.println(c.CreateComplex(1,7));
+        System.out.println(c.createComplex());
+    }
+}
+
+```
+
+#### `Task22/three/CarcasController.java`
+
+```java title="Task22/three/CarcasController.java"
+package Task22.three;
+import javax.swing.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+public class CarcasController {
+        private final CarcasModel model;
+        private final CarcasView view;
+        public CarcasController() {
+            this.model = new CarcasModel();
+            this.view = new CarcasView<>();
+
+            view.addNewListener(e -> {
+                model.setDocument(new CreateTextDoc().CreateNew());
+                view.showDocText((TextDocument) model.getDocument());
+            });
+
+            view.addOpenListener(e -> {
+                try {
+                    model.setDocument(new CreateTextDoc().CreateOpen(((CarcasView.openDocA) e).getPath()));
+                    view.showDocText((TextDocument) model.getDocument());
+                } catch (FileNotFoundException exc) {
+                    JOptionPane.showMessageDialog(view, "File does not exist");
+                }
+            });
+
+            view.addSaveListener(e -> {
+                var document = ((CarcasView.saveDocA)e).getDocument();
+                System.out.println("Saved");
+                try {
+                    document.save();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+        }
+
+        void showWindow() {
+            this.view.setVisible(true);
+        }
+    }
+
+
+
+```
+
+#### `Task22/three/CarcasModel.java`
+
+```java title="Task22/three/CarcasModel.java"
+package Task22.three;
+
+public class CarcasModel {
+    private IDocument<?> document;
+
+    public CarcasModel() {
+    }
+
+    public CarcasModel(IDocument<?> document) {
+        this.document = document;
+    }
+
+    public IDocument<?> getDocument() {
+        return document;
+    }
+
+    public void setDocument(IDocument<?> document) {
+        this.document = document;
+    }
+
+}
+
+```
+
+#### `Task22/three/CarcasView.java`
+
+```java title="Task22/three/CarcasView.java"
+package Task22.three;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+public class CarcasView<T> extends JFrame {
+    IDocument<T> doc;
+    class newDocA extends ActionEvent {
+        public newDocA(Object obj) {
+            super(obj, 0, "");
+        }
+    }
+    class openDocA extends ActionEvent {
+        private String path;
+
+        public String getPath() {
+            return path;
+        }
+        public openDocA(Object source, String path) {
+            super(source, 0, "");
+            this.path = path;
+        }
+    }
+    JMenuBar menu = new JMenuBar();
+    ArrayList<ActionListener> saveListener = new ArrayList<>();
+    ArrayList<ActionListener> newListener =  new ArrayList<>();
+    ArrayList<ActionListener> openListener = new ArrayList<>();
+    class saveDocA extends ActionEvent {
+        private IDocument<T> doc;
+        public saveDocA(Object obj, IDocument<T> doc) {
+            super(obj, 0, "");
+            this.doc = doc;
+        }
+        public IDocument<T> getDocument() {
+            return doc;
+        }
+    }
+
+    void addNewListener(ActionListener actionListener) {
+        newListener.add(actionListener);
+    }
+    void addOpenListener(ActionListener actionListener) {
+        openListener.add(actionListener);
+    }
+    void addSaveListener(ActionListener actionListener) {
+        saveListener.add(actionListener);
+    }
+    void setOpenDoc(String path) {
+        for (ActionListener actionListener: openListener) {
+            actionListener.actionPerformed(new openDocA(this, path));
+        }
+    }
+
+    void setNewDoc() {
+        for (ActionListener actionListener: newListener) {
+            actionListener.actionPerformed(new newDocA(this));
+        }
+    }
+
+    void setSaveDoc() {
+        for (ActionListener actionListener: saveListener) {
+            actionListener.actionPerformed(new saveDocA(this, doc));
+        }
+    }
+
+    CarcasView() {
+        setTitle("Каркас");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(400, 200);
+        JMenu fileItem = new JMenu("Файл");
+
+        JMenuItem newPosition = new JMenuItem("Создать");
+        newPosition.addActionListener(e -> {
+            setNewDoc();
+        });
+
+        JMenuItem openPosition = new JMenuItem("Открыть");
+        openPosition.addActionListener(e -> {
+            JFileChooser file_choose = new JFileChooser();
+            if (file_choose.showDialog(getContentPane(), "OK") == JFileChooser.APPROVE_OPTION) {
+                setOpenDoc(file_choose.getSelectedFile().getAbsolutePath());
+            }
+        });
+
+        JMenuItem savePosition = new JMenuItem("Сохранить");
+        savePosition.addActionListener(e -> {
+            setSaveDoc();
+        });
+
+        JMenuItem exitPosition = new JMenuItem("Выход");
+        exitPosition.addActionListener(e -> {
+            setVisible(false);
+        });
+        fileItem.add(newPosition);
+        fileItem.add(openPosition);
+        fileItem.add(savePosition);
+        fileItem.add(exitPosition);
+        menu.add(fileItem);
+        setJMenuBar(menu);
+        setBounds(0, 0, 390, 200);
+    }
+
+    void showDocText(TextDocument textDocument) {
+        this.doc = (IDocument<T>) textDocument;
+        setTitle("Текущий документ - " + textDocument.getName());
+        getContentPane().removeAll();
+        repaint();
+        JTextArea textFieldBig = new JTextArea(textDocument.getContent());
+        textFieldBig.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent documentEvent) {
+                ((TextDocument)doc).setContent(textFieldBig.getText());
+            }
+            @Override
+            public void removeUpdate(DocumentEvent documentEvent) {
+                ((TextDocument)doc).setContent(textFieldBig.getText());
+            }
+            @Override
+            public void changedUpdate(DocumentEvent documentEvent) {
+                ((TextDocument)doc).setContent(textFieldBig.getText());
+            }
+        });
+        add(textFieldBig);
+        setBounds(0, 0, 450, 200);
+    }
+
+}
+
+```
+
+#### `Task22/three/CreateTextDoc.java`
+
+```java title="Task22/three/CreateTextDoc.java"
+package Task22.three;
+
+import java.io.*;
+import java.util.stream.Collectors;
+
+public class CreateTextDoc<T> implements ICreateDocument{
+    public IDocument<T> CreateNew() {
+        return (IDocument<T>) new TextDocument("Безымянный");
+    }
+
+    @Override
+    public IDocument<T> CreateOpen(String path) throws FileNotFoundException {
+        BufferedReader file = new BufferedReader(new FileReader(path));
+        return (IDocument<T>) new TextDocument(path, file.lines().collect(Collectors.joining("\n")));
+    }
+
+}
+
+```
+
+#### `Task22/three/ICreateDocument.java`
+
+```java title="Task22/three/ICreateDocument.java"
+package Task22.three;
+import java.io.*;
+public interface ICreateDocument <T>{
+    IDocument<T> CreateNew();
+    IDocument<T> CreateOpen(String path) throws FileNotFoundException;
+
+}
+
+```
+
+#### `Task22/three/IDocument.java`
+
+```java title="Task22/three/IDocument.java"
+package Task22.three;
+
+import java.io.IOException;
+
+public interface IDocument <T>{
+    String getName();
+    void setName(String name);
+    String getContent();
+    void setContent(String content);
+
+    void save() throws IOException;
+
+}
+
+```
+
+#### `Task22/three/TestWindow.java`
+
+```java title="Task22/three/TestWindow.java"
+package Task22.three;
+
+import javax.swing.*;
+
+public class TestWindow {
+    public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored){}
+
+        CarcasController controller = new CarcasController();
+        controller.showWindow();
+    }
+}
+
+
+
+```
+
+#### `Task22/three/TextDocument.java`
+
+```java title="Task22/three/TextDocument.java"
+package Task22.three;
+
+import java.io.*;
+
+public class TextDocument implements IDocument{
+    private String text;
+    private String name;
+
+    TextDocument(String name) {
+        this.name = name;
+    }
+
+    TextDocument(String name, String text) {
+        this.name = name;
+        this.text = text;
+    }
+    @Override
+    public String getName() {
+        return name;
+    }
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+    @Override
+    public String getContent() {
+        return text;
+    }
+    @Override
+    public void setContent(String text) {
+        this.text = text;
+    }
+    @Override
+    public void save() throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(name));
+        writer.write(text);
+        writer.close();
+    }
+
+}
+
+```
+
+#### `Task22/two/AbstractChairFactory.java`
+
+```java title="Task22/two/AbstractChairFactory.java"
+package Task22.two;
+
+public interface AbstractChairFactory {
+    VictorianChair createVictorianChair();
+    MagicChair createMagicanChair();
+    FunctionalChair createFunctionalChair();
+}
+
+```
+
+#### `Task22/two/Chair.java`
+
+```java title="Task22/two/Chair.java"
+package Task22.two;
+
+public interface Chair {
+}
+
+```
+
+#### `Task22/two/ChairFactory.java`
+
+```java title="Task22/two/ChairFactory.java"
+package Task22.two;
+
+public class ChairFactory implements AbstractChairFactory {
+
+    @Override
+    public VictorianChair createVictorianChair() {
+        return new VictorianChair(35);
+    }
+
+    @Override
+    public MagicChair createMagicanChair() {
+        return new MagicChair();
+    }
+    @Override
+    public FunctionalChair createFunctionalChair() {
+        return new FunctionalChair();
+    }
+}
+
+```
+
+#### `Task22/two/Client.java`
+
+```java title="Task22/two/Client.java"
+package Task22.two;
+
+import Task22.two.Chair;
+
+public class Client implements Chair {
+    Chair chair;
+    public void sit(){
+        System.out.println("Клиент сел на стул.");
+    }
+    public void setChair(Chair chair){
+        this.chair=chair;
+    }
+}
+
+```
+
+#### `Task22/two/FunctionalChair.java`
+
+```java title="Task22/two/FunctionalChair.java"
+package Task22.two;
+public class FunctionalChair implements Chair {
+    public int sum(int a, int b){
+        return a+b;
+    }
+}
+
+```
+
+#### `Task22/two/MagicChair.java`
+
+```java title="Task22/two/MagicChair.java"
+package Task22.two;
+public class MagicChair implements Chair {
+    public void doMagic(){
+        System.out.println("Магический стул");
+    }
+}
+
+```
+
+#### `Task22/two/TestChair.java`
+
+```java title="Task22/two/TestChair.java"
+package Task22.two;
+
+import java.util.Scanner;
+
+public class TestChair {
+    public static void main(String[] args){
+        AbstractChairFactory af = new ChairFactory();
+        Scanner s = new Scanner(System.in);
+        Client c = new Client();
+        System.out.println("Введите 1если нужен старинный стул, 2если нужен магический стул, 3если нужен функциональный стул.");
+        int a = s.nextInt();
+        if (a ==1){
+            VictorianChair v = af.createVictorianChair();
+            System.out.println(v.getAge()+" лет");
+        }
+        if (a ==2){
+            MagicChair m = af.createMagicanChair();
+            m.doMagic();
+        }
+        if (a==3){
+            FunctionalChair f = af.createFunctionalChair();
+            System.out.println("Сумма = "+f.sum(39,12));
+        }
+        if (a==1||a==2||a==3){
+            c.sit();
+        }else{
+            System.out.println("В каталоге нет такого вида стульев");
+        }
+    }
+}
+
+```
+
+#### `Task22/two/VictorianChair.java`
+
+```java title="Task22/two/VictorianChair.java"
+package Task22.two;
+
+public class VictorianChair implements Chair {
+    private int age;
+    public VictorianChair(int age) {
+        this.age = age;
+    }
+
+    public int getAge() {
+        return age;
+    }
+}
+
+
+```
+
+
+## Описание
+
+В этом модуле используется 20 Java-файлов. Ключевые сущности: Complex, ComplexAbstractFactory, ConcreteFactory, TestComplex, CarcasController, CarcasModel.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 22 — Паттерны проектирования документирует реальное решение из исходного кода.

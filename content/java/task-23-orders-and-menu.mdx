@@ -1,0 +1,285 @@
+---
+title: Task 23 — Заказы и меню
+sidebar_position: 24
+description: Моделирование меню, заказов и интерфейсов предметной области.
+slug: /java/task-23-orders-and-menu
+---
+
+## Задание
+
+Моделирование меню, заказов и интерфейсов предметной области. Документация собрана по исходному коду этой практики.
+
+## Решение
+
+Полный код решения по этой практике:
+
+### Исходные файлы решения
+
+- `Task23/Dish.java`
+- `Task23/Drink.java`
+- `Task23/InternetOrder.java`
+- `Task23/Item.java`
+- `Task23/Order.java`
+- `Task23/Test.java`
+
+#### `Task23/Dish.java`
+
+```java title="Task23/Dish.java"
+package Task23;
+
+public final class Dish implements Item{
+    private int coast;
+    private String name;
+    private String description;
+    Dish(String name,String description){
+        this.coast = 0;
+        this.name = name;
+        this.description = description;
+    }
+    Dish(int coast,String name,String description){
+        this.coast = coast;
+        this.name = name;
+        this.description = description;
+    }
+    @Override
+    public int getCoast() {
+        return coast;
+    }
+    @Override
+    public String getName() {
+        return name;
+    }
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setCoast(int coast) {
+        this.coast = coast;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+
+    }
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    public String toString(){
+        return "Coast = " + getCoast() + ", name = " + getName() + ", description = " + getDescription() + "\n";
+    }
+}
+```
+
+#### `Task23/Drink.java`
+
+```java title="Task23/Drink.java"
+package Task23;
+
+final class Drink implements Item{
+
+    private int coast;
+    private String name;
+    private String description;
+    Drink(String name,String description){
+        this.coast = 0;
+        this.name = name;
+        this.description = description;
+    }
+    Drink(int coast,String name,String description){
+        this.coast = coast;
+        this.name = name;
+        this.description = description;
+    }
+    @Override
+    public int getCoast() {
+        return coast;
+    }
+    @Override
+    public String getName() {
+        return name;
+    }
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setCoast(int coast) {
+        this.coast = coast;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
+    }
+}
+
+```
+
+#### `Task23/InternetOrder.java`
+
+```java title="Task23/InternetOrder.java"
+package Task23;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class InternetOrder {
+    private Order[] orders;
+    public Order getOrder(String name){
+        return new Order(1);
+    }
+    public void addDish(Dish dish,String name){
+        return;
+    }
+    public boolean removeOrder(String name){
+        return true;
+    }
+    public int freeTableNumber(){
+        return 0;
+    }
+    public int[] freeTableNumbers(){
+        return new int[]{};
+    }
+    public Order[] getOrders(){
+        return new Order[]{};
+    }
+    public double orderCoastSummary(){
+        return 0.0;
+    }
+    public int dishQuantity(String dishName){
+        return 0;
+    }
+}
+
+```
+
+#### `Task23/Item.java`
+
+```java title="Task23/Item.java"
+package Task23;
+
+public interface Item {
+    public int getCoast();
+
+    public String getName();
+
+    public String getDescription();
+    public void setCoast(int coast);
+
+    public void setName(String name);
+
+    public void setDescription(String description);
+}
+
+```
+
+#### `Task23/Order.java`
+
+```java title="Task23/Order.java"
+package Task23;
+
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class Order  {
+    private List<Item> items;
+    private int size;
+    private Dish[] dishes;
+    Order(int size){
+        this.items = new ArrayList<>();
+    }
+    public boolean add(Dish dish){
+        return items.add(dish);
+    }
+    public boolean remove(String Name){
+        for(int i = 0; i < items.size();i++){
+            if(items.get(i).getName().equals(Name)){
+                items.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+    public int removaAll(String Name){
+        int count = 0;
+        for (int i = 0; i < items.size();i++){
+            Item temp = items.get(i);
+            if (temp.getName().equals(Name)){
+                count++;
+                items.remove(i);
+            }
+        }
+        return count;
+    }
+    public int dishQuantity(){
+        return items.size();
+    }
+    public int dishQuantity(String Name){
+        return (int) items.stream().filter(n->n.getName().equals(Name)).count();
+    }
+
+    public Dish[] getDishes() {
+        return items.toArray(new Dish[0]);
+    }
+    public double costTotal(){
+        return items.stream().mapToDouble(Item::getCoast).sum();
+    }
+    public String[] dishesName(){
+        return new String[]{items.stream().filter(n -> n.getName() != "").toArray().toString()};
+    }
+    public Dish[] sortedDishesByCostDesc(){
+        return  items.stream().sorted(Comparator.comparingInt(Item::getCoast)).toList().toArray(new Dish[0]);
+    }
+}
+
+```
+
+#### `Task23/Test.java`
+
+```java title="Task23/Test.java"
+package Task23;
+
+import java.util.Arrays;
+
+public class Test {
+    public static void main(String[] args) {
+        Order order = new Order(5);
+        order.add(new Dish(450,"Оливье","Холодное блюдо"));
+        order.add(new Dish(300,"Лимонад","Напиток"));
+        order.add(new Dish(600,"Рёбра","Горячее блюдо"));
+        order.add(new Dish(400,"Борщ","Горячее блюдо"));
+        System.out.println(order.remove("Лимонад"));
+        System.out.println(order.dishQuantity());
+        System.out.println(order.costTotal());
+        System.out.println(order.dishQuantity("Борщ"));
+        System.out.println(Arrays.stream(order.sortedDishesByCostDesc()).toList().toString());
+    }
+}
+
+```
+
+
+## Описание
+
+В этом модуле используется 6 Java-файлов. Ключевые сущности: Dish, Drink, InternetOrder, Item, Order, Test.
+
+:::tip
+Для проверки практики сначала запускайте тестовый/демо-класс из папки задачи, затем расширяйте модель новыми кейсами.
+:::
+
+## Вывод
+
+Task 23 — Заказы и меню документирует реальное решение из исходного кода.
