@@ -2,82 +2,27 @@
 
 import Link from "next/link";
 import { ArrowRight, BookOpenText, BrainCircuit, Loader2, Search, Sparkles } from "lucide-react";
-import { type FormEvent, startTransition, useDeferredValue, useEffect, useState } from "react";
+import { type FormEvent, startTransition, useDeferredValue, useState } from "react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { buildAskSummary, getSuggestedQueries, getTopicDefinitions, prepareSearchIndex, runSemanticSearch } from "@/lib/search";
-import type { SearchIndexPayload } from "@/lib/search-types";
-import { cn, withBasePath } from "@/lib/utils";
+import { useSearchIndex } from "@/components/search/useSearchIndex";
+import { buildAskSummary, collectRelatedTopicIds, getSuggestedQueries, getTopicDefinitions, runSemanticSearch } from "@/lib/search";
+import { cn } from "@/lib/utils";
 
 const suggestedQueries = getSuggestedQueries();
-const topicDefinitions = getTopicDefinitions().slice(0, 8);
+const allTopicDefinitions = getTopicDefinitions();
+const popularTopicDefinitions = allTopicDefinitions.slice(0, 8);
+const topicDefinitionsById = new Map(allTopicDefinitions.map((topic) => [topic.id, topic]));
 
 export function AskStackMirea() {
-  const [index, setIndex] = useState<ReturnType<typeof prepareSearchIndex> | null>(null);
   const [query, setQuery] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const { index, error, isLoading } = useSearchIndex();
   const deferredQuery = useDeferredValue(query);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadIndex() {
-      try {
-        const response = await fetch(withBasePath("/search-index.json"));
-
-        if (!response.ok) {
-          throw new Error(`Search index request failed with status ${response.status}`);
-        }
-
-        const payload = (await response.json()) as SearchIndexPayload;
-
-        if (!isMounted) {
-          return;
-        }
-
-        setIndex(prepareSearchIndex(payload));
-        setError("");
-      } catch {
-        if (!isMounted) {
-          return;
-        }
-
-        setError("Не удалось загрузить поисковый индекс. Проверь сборку `npm run search:build`.");
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadIndex();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const hasQuery = deferredQuery.trim().length > 0;
   const results = hasQuery && index ? runSemanticSearch(index, deferredQuery) : [];
   const summary = hasQuery ? buildAskSummary(deferredQuery, results) : null;
-  const relatedTopicIds: string[] = [];
-
-  for (const result of results) {
-    for (const topicId of result.matchedTopics) {
-      if (!relatedTopicIds.includes(topicId)) {
-        relatedTopicIds.push(topicId);
-      }
-
-      if (relatedTopicIds.length >= 6) {
-        break;
-      }
-    }
-
-    if (relatedTopicIds.length >= 6) {
-      break;
-    }
-  }
+  const relatedTopicIds = collectRelatedTopicIds(results);
 
   function applyQuery(nextQuery: string) {
     startTransition(() => {
@@ -241,7 +186,7 @@ export function AskStackMirea() {
         <section className="rounded-3xl border border-border/70 bg-card/70 p-5">
           <p className="text-sm font-semibold tracking-tight">Популярные темы</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            {topicDefinitions.map((topic) => (
+            {popularTopicDefinitions.map((topic) => (
               <button
                 key={topic.id}
                 type="button"
@@ -268,7 +213,7 @@ export function AskStackMirea() {
             <p className="text-sm font-semibold tracking-tight">Связанные темы</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {relatedTopicIds.map((topicId) => {
-                const topic = topicDefinitions.find((item) => item.id === topicId);
+                const topic = topicDefinitionsById.get(topicId);
 
                 if (!topic) {
                   return null;

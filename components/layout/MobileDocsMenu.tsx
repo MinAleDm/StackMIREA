@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { BookOpenText, ChevronDown, ChevronRight, ExternalLink, Tag } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { DeploymentVersion } from "@/components/layout/DeploymentVersion";
+import { useDocsNavigationGroups } from "@/components/layout/useDocsNavigationGroups";
 import type { BuildInfo } from "@/lib/build-info";
-import { type SidebarGroup } from "@/lib/navigation";
+import { normalizeDocPath } from "@/lib/docs-navigation";
+import type { SidebarGroup } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 interface MobileDocsMenuProps {
@@ -15,42 +17,14 @@ interface MobileDocsMenuProps {
   currentPath: string;
 }
 
-function normalizePath(value: string) {
-  return value.replace(/\/+$/, "") || "/";
-}
-
 export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
-
-  const normalizedCurrentPath = normalizePath(currentPath);
-
-  const activeGroup = useMemo(
-    () =>
-      groups.find((group) =>
-        group.items.some((item) => normalizePath(item.href) === normalizedCurrentPath)
-      ) ?? groups[0],
-    [groups, normalizedCurrentPath]
-  );
+  const { activeGroup, normalizedCurrentPath, isGroupExpanded, toggleGroup } =
+    useDocsNavigationGroups(groups, currentPath);
 
   if (!groups.length) {
     return null;
   }
-
-  const isGroupExpanded = (groupId: string, containsActive: boolean) => {
-    if (expandedGroups[groupId] !== undefined) {
-      return expandedGroups[groupId];
-    }
-
-    return containsActive;
-  };
-
-  const toggleGroup = (groupId: string, containsActive: boolean) => {
-    setExpandedGroups((state) => ({
-      ...state,
-      [groupId]: !isGroupExpanded(groupId, containsActive)
-    }));
-  };
 
   return (
     <div className="sticky top-14 z-30 border-b border-border/80 bg-background/95 px-4 py-3 backdrop-blur md:hidden">
@@ -103,7 +77,7 @@ export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMen
               <ul className="space-y-2">
                 {groups.map((group) => {
                   const containsActive = group.items.some(
-                    (item) => normalizePath(item.href) === normalizedCurrentPath
+                    (item) => normalizeDocPath(item.href) === normalizedCurrentPath
                   );
                   const expanded = isGroupExpanded(group.id, containsActive);
 
@@ -128,7 +102,7 @@ export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMen
                       {expanded ? (
                         <ul className="mt-1 border-l border-border/70 pl-3">
                           {group.items.map((item) => {
-                            const isActive = normalizePath(item.href) === normalizedCurrentPath;
+                            const isActive = normalizeDocPath(item.href) === normalizedCurrentPath;
 
                             return (
                               <li key={item.href} className="my-1">

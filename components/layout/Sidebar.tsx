@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { BookOpenText, ChevronRight, ExternalLink, Tag } from "lucide-react";
-import { useMemo, useState } from "react";
 
 import { DeploymentVersion } from "@/components/layout/DeploymentVersion";
+import { useDocsNavigationGroups } from "@/components/layout/useDocsNavigationGroups";
 import type { BuildInfo } from "@/lib/build-info";
-import { type SidebarGroup } from "@/lib/navigation";
+import { normalizeDocPath } from "@/lib/docs-navigation";
+import type { SidebarGroup } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -15,36 +16,9 @@ interface SidebarProps {
   currentPath: string;
 }
 
-function normalizePath(value: string) {
-  return value.replace(/\/+$/, "") || "/";
-}
-
 export function Sidebar({ buildInfo, groups, currentPath }: SidebarProps) {
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
-  const normalizedCurrentPath = normalizePath(currentPath);
-
-  const activeGroup = useMemo(
-    () =>
-      groups.find((group) =>
-        group.items.some((item) => normalizePath(item.href) === normalizedCurrentPath)
-      ) ?? groups[0],
-    [groups, normalizedCurrentPath]
-  );
-
-  const isGroupExpanded = (groupId: string, containsActive: boolean) => {
-    if (expandedGroups[groupId] !== undefined) {
-      return expandedGroups[groupId];
-    }
-
-    return containsActive;
-  };
-
-  const toggleGroup = (groupId: string, containsActive: boolean) => {
-    setExpandedGroups((state) => ({
-      ...state,
-      [groupId]: !isGroupExpanded(groupId, containsActive)
-    }));
-  };
+  const { activeGroup, normalizedCurrentPath, isGroupExpanded, toggleGroup } =
+    useDocsNavigationGroups(groups, currentPath);
 
   return (
     <aside className="hidden w-full lg:sticky lg:top-[4.5rem] lg:block lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto lg:pr-3">
@@ -78,7 +52,7 @@ export function Sidebar({ buildInfo, groups, currentPath }: SidebarProps) {
         </div>
 
         {groups.map((group) => {
-          const containsActive = group.items.some((item) => normalizePath(item.href) === normalizedCurrentPath);
+          const containsActive = group.items.some((item) => normalizeDocPath(item.href) === normalizedCurrentPath);
           const expanded = isGroupExpanded(group.id, containsActive);
 
           return (
@@ -100,7 +74,7 @@ export function Sidebar({ buildInfo, groups, currentPath }: SidebarProps) {
               {expanded ? (
                 <ul className="space-y-1">
                   {group.items.map((item) => {
-                    const isActive = normalizePath(item.href) === normalizedCurrentPath;
+                    const isActive = normalizeDocPath(item.href) === normalizedCurrentPath;
 
                     return (
                       <li key={item.href}>

@@ -3,6 +3,8 @@ import type { ContentManifestDoc } from "@/lib/content-manifest";
 import { getTrackOrder, getTrackTitle } from "@/lib/tracks";
 
 export type DocEntry = ContentManifestDoc;
+export type PublishedDocEntry = DocEntry & { isSectionIndex: false };
+export type EditableDocEntry = PublishedDocEntry & { editPath: string };
 
 export interface SidebarGroup {
   id: string;
@@ -22,6 +24,14 @@ interface DocsIndex {
 }
 
 let cachedDocsIndex: DocsIndex | null = null;
+
+export function isPublishedDoc(doc: DocEntry): doc is PublishedDocEntry {
+  return !doc.isSectionIndex;
+}
+
+export function hasEditableSource(doc: PublishedDocEntry): doc is EditableDocEntry {
+  return typeof doc.editPath === "string" && doc.editPath.length > 0;
+}
 
 function getSectionOrder(section: string) {
   return getTrackOrder(section);
@@ -123,6 +133,14 @@ function getDocsIndex() {
 
 export function getAllDocs() {
   return getDocsIndex().docs;
+}
+
+export function getPublishedDocs() {
+  return getDocsIndex().docs.filter(isPublishedDoc);
+}
+
+export function getEditableDocs() {
+  return getPublishedDocs().filter(hasEditableSource);
 }
 
 export function getDocBySlug(slug: string[]) {

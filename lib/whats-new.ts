@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 
 import type { GitHubPerson } from "@/lib/authors";
-import { getAllDocs } from "@/lib/navigation";
+import { getEditableDocs, getPublishedDocs } from "@/lib/navigation";
 import { getTrackDefinitions, getTrackTitle } from "@/lib/tracks";
 
 export interface WhatsNewMaterial {
@@ -105,9 +105,15 @@ function compareDateDesc(left: string | null, right: string | null) {
   return rightTime - leftTime;
 }
 
+function getPublishedDocsCountByTrack() {
+  return getPublishedDocs().reduce(
+    (counts, doc) => counts.set(doc.section, (counts.get(doc.section) ?? 0) + 1),
+    new Map<string, number>()
+  );
+}
+
 function buildRecentMaterials(): WhatsNewMaterial[] {
-  return getAllDocs()
-    .filter((doc) => !doc.isSectionIndex && doc.editPath)
+  return getEditableDocs()
     .map((doc) => {
       const dates = getGitDatesForPath(`docs/${doc.editPath}`);
       const updatedAt = dates.updatedAt ?? dates.createdAt;
@@ -128,9 +134,7 @@ function buildRecentMaterials(): WhatsNewMaterial[] {
 }
 
 function buildRecentTracks(): WhatsNewTrack[] {
-  const itemCountByTrack = getAllDocs()
-    .filter((doc) => !doc.isSectionIndex)
-    .reduce((counts, doc) => counts.set(doc.section, (counts.get(doc.section) ?? 0) + 1), new Map<string, number>());
+  const itemCountByTrack = getPublishedDocsCountByTrack();
 
   return getTrackDefinitions()
     .map((track) => ({
@@ -155,11 +159,7 @@ function buildRecentAuthors(): WhatsNewAuthor[] {
     }
   >();
 
-  for (const doc of getAllDocs()) {
-    if (doc.isSectionIndex || !doc.editPath) {
-      continue;
-    }
-
+  for (const doc of getEditableDocs()) {
     const createdAt = getGitDatesForPath(`docs/${doc.editPath}`).createdAt;
     const key = doc.author.github.toLowerCase();
     const current = authors.get(key);

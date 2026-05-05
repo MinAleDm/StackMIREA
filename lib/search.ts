@@ -367,6 +367,24 @@ export function buildAskSummary(query: string, results: SearchResult[]): SearchA
   };
 }
 
+export function collectRelatedTopicIds(results: SearchResult[], limit = 6) {
+  const relatedTopicIds: string[] = [];
+
+  for (const result of results) {
+    for (const topicId of result.matchedTopics) {
+      if (!relatedTopicIds.includes(topicId)) {
+        relatedTopicIds.push(topicId);
+      }
+
+      if (relatedTopicIds.length >= limit) {
+        return relatedTopicIds;
+      }
+    }
+  }
+
+  return relatedTopicIds;
+}
+
 export function getTopicDefinitions() {
   return topicDefinitions;
 }

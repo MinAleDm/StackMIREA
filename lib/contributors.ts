@@ -1,5 +1,5 @@
 import { getContentTeamMembers, getDevTeamMembers, getProductTeamMembers, type GitHubPerson, type TeamMember } from "@/lib/authors";
-import { getAllDocs } from "@/lib/navigation";
+import { getPublishedDocs } from "@/lib/navigation";
 import { getTrackTitle } from "@/lib/tracks";
 
 export interface AuthorWithSummary extends GitHubPerson {
@@ -38,7 +38,7 @@ function buildSummary(sectionStats: Array<{ section: string; count: number }>) {
 }
 
 export function getAuthorsWithSummary() {
-  const docs = getAllDocs().filter((doc) => !doc.isSectionIndex);
+  const docs = getPublishedDocs();
   const authorsMap = new Map<
     string,
     {
