@@ -257,7 +257,7 @@ export function AskStackMirea() {
         <section className="rounded-3xl border border-border/70 bg-card/70 p-5">
           <p className="text-sm font-semibold tracking-tight">Как это работает</p>
           <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
-            <li>Индекс собирается на build-time из `content/` и остаётся совместимым с GitHub Pages.</li>
+            <li>Индекс собирается на build-time из content manifest и остаётся совместимым с GitHub Pages.</li>
             <li>Поиск учитывает title, description, секцию, чанки контента и словарь тематических синонимов.</li>
             <li>Результаты ранжируются так, чтобы сверху были страницы с самым близким фрагментом по смыслу.</li>
           </ul>

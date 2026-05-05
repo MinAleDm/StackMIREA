@@ -10,15 +10,20 @@ const mdxComponents = {
   CodeBlock
 };
 
-export async function compileDocMdx(source: string) {
+interface CompileDocMdxOptions {
+  collectToc?: boolean;
+}
+
+export async function compileDocMdx(source: string, options: CompileDocMdxOptions = {}) {
   const toc: TocItem[] = [];
+  const collectToc = options.collectToc ?? true;
 
   const result = await compileMDX({
     source,
     options: {
       parseFrontmatter: false,
       mdxOptions: {
-        remarkPlugins: [...getMarkdownRemarkPlugins(toc)],
+        remarkPlugins: [...getMarkdownRemarkPlugins(collectToc ? toc : [])],
         rehypePlugins: [rehypeSlug]
       }
     },

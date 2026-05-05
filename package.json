@@ -11,8 +11,11 @@
     "start": "npx serve out -p 3000",
     "lint": "next lint",
     "typecheck": "tsc --noEmit --incremental false",
-    "prepare:content": "npm run content:sync && npm run search:build",
-    "content:sync": "node scripts/sync-content.mjs",
+    "prepare:content": "npm run content:manifest && npm run search:build",
+    "prepare:content:warning": "node scripts/content-manifest.mjs --mode=warning && npm run search:build",
+    "prepare:content:report": "node scripts/content-manifest.mjs --mode=autofix-report",
+    "content:manifest": "node scripts/content-manifest.mjs --mode=error",
+    "content:sync": "npm run content:manifest",
     "search:build": "node scripts/build-search-index.mjs",
     "validate:content": "node scripts/validate-content.mjs",
     "prebuild": "npm run prepare:content"
@@ -32,7 +35,8 @@
     "remark-directive": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "shiki": "^1.24.4",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "zod": "^4.4.2"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
@@ -49,4 +53,7 @@
   "engines": {
     "node": ">=20.0.0"
   }
+  
+    
 }
+

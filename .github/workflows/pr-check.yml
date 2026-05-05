@@ -33,6 +33,13 @@ jobs:
       - name: Prepare generated content
         run: npm run prepare:content
 
+      - name: Upload content report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-report-json
+          path: .cache/content-report.json
+
       - name: Validate markdown links and content references
         run: npm run validate:content
 

@@ -50,7 +50,7 @@ export default async function DocPage({ params }: DocPageProps) {
   const buildInfo = getBuildInfo();
   const sidebarGroups = getSidebarGroups();
   const pagination = getDocPagination(params.slug);
-  const { content, toc } = await compileDocMdx(doc.body);
+  const { content } = await compileDocMdx(doc.body, { collectToc: false });
   const editUrl = doc.editPath ? `${GITHUB_EDIT_ROOT}/${doc.editPath}` : null;
 
   return (
@@ -91,7 +91,7 @@ export default async function DocPage({ params }: DocPageProps) {
           <Pagination prev={pagination.prev} next={pagination.next} />
         </article>
 
-        <Toc items={toc} />
+        <Toc items={doc.toc} />
       </div>
     </>
   );

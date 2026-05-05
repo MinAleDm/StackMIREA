@@ -1,81 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
-import matter from "gray-matter";
-import GithubSlugger from "github-slugger";
-import { toString } from "mdast-util-to-string";
-import remarkDirective from "remark-directive";
-import remarkGfm from "remark-gfm";
-import remarkMdx from "remark-mdx";
-import remarkParse from "remark-parse";
-import { unified } from "unified";
-import { visit } from "unist-util-visit";
+
+import { manifestPath, readContentManifest } from "./content-manifest.mjs";
 
 const projectRoot = process.cwd();
-const contentRoot = path.join(projectRoot, "content");
 const publicRoot = path.join(projectRoot, "public");
 
 const allowedSchemes = ["http://", "https://", "mailto:", "tel:", "data:"];
-const knownRepoRoots = ["resources/", "public/", "docs/", "content/"];
+const knownRepoRoots = ["resources/", "public/", "docs/"];
 const knownAppRoutes = new Set(["/", "/ask", "/docs", "/robots.txt", "/sitemap.xml"]);
-
-function walkFiles(rootDirectory, predicate) {
-  const files = [];
-  const stack = [rootDirectory];
-
-  while (stack.length > 0) {
-    const currentDirectory = stack.pop();
-
-    if (!currentDirectory || !fs.existsSync(currentDirectory)) {
-      continue;
-    }
-
-    for (const entry of fs.readdirSync(currentDirectory, { withFileTypes: true })) {
-      const fullPath = path.join(currentDirectory, entry.name);
-
-      if (entry.isDirectory()) {
-        stack.push(fullPath);
-        continue;
-      }
-
-      if (entry.isFile() && predicate(fullPath)) {
-        files.push(fullPath);
-      }
-    }
-  }
-
-  return files.sort((left, right) => left.localeCompare(right));
-}
-
-function isMarkdownFile(filePath) {
-  return /\.(md|mdx)$/i.test(filePath);
-}
-
-function normalizeHeading(rawHeading) {
-  return rawHeading
-    .replace(/\[(.*?)\]\(.*?\)/g, "$1")
-    .replace(/`([^`]+)`/g, "$1")
-    .replace(/[*_~]/g, "")
-    .replace(/<[^>]*>/g, "")
-    .replace(/#+$/g, "")
-    .trim();
-}
-
-function extractHeadingAnchors(markdown) {
-  const tree = unified().use(remarkParse).use(remarkMdx).use(remarkGfm).use(remarkDirective).parse(markdown);
-  const slugger = new GithubSlugger();
-  const anchors = new Set();
-  visit(tree, "heading", (node) => {
-    const title = normalizeHeading(toString(node));
-
-    if (!title) {
-      return;
-    }
-
-    anchors.add(slugger.slug(title));
-  });
-
-  return anchors;
-}
 
 function stripOptionalTitle(rawTarget) {
   const trimmed = rawTarget.trim().replace(/^<|>$/g, "");
@@ -85,40 +18,86 @@ function stripOptionalTitle(rawTarget) {
 
 function splitTarget(rawTarget) {
   const cleanedTarget = stripOptionalTitle(rawTarget);
-  const [pathnameWithQuery = "", hash = ""] = cleanedTarget.split("#", 2);
+  const [pathnameWithQuery = "", rawHash = ""] = cleanedTarget.split("#", 2);
   const pathname = pathnameWithQuery.split("?", 1)[0];
 
   return {
     pathname,
-    hash
+    hash: decodeHash(rawHash)
   };
 }
 
-function resolveMarkdownPath(basePathname) {
+function decodeHash(hash) {
+  try {
+    return decodeURIComponent(hash);
+  } catch {
+    return hash;
+  }
+}
+
+function normalizeVirtualPath(value) {
+  return path.posix.normalize(value.replace(/\\/g, "/")).replace(/^\.\//, "");
+}
+
+function createManifestLookup(docs) {
+  const bySlug = new Map();
+  const byVirtualPath = new Map();
+
+  for (const doc of docs) {
+    bySlug.set(doc.slugKey, doc);
+    byVirtualPath.set(doc.virtualPath, doc);
+  }
+
+  return {
+    bySlug,
+    byVirtualPath
+  };
+}
+
+function resolveMarkdownDoc(basePathname, lookup) {
   if (!basePathname) {
     return null;
   }
 
-  const hasExtension = /\.[A-Za-z0-9]+$/.test(basePathname);
+  const normalizedPath = normalizeVirtualPath(basePathname);
+  const hasExtension = /\.[A-Za-z0-9]+$/.test(normalizedPath);
   const candidates = hasExtension
-    ? [basePathname]
+    ? [normalizedPath, normalizedPath.replace(/\.md$/i, ".mdx")]
     : [
-        `${basePathname}.md`,
-        `${basePathname}.mdx`,
-        path.join(basePathname, "index.md"),
-        path.join(basePathname, "index.mdx")
+        `${normalizedPath}.mdx`,
+        `${normalizedPath}.md`,
+        path.posix.join(normalizedPath, "index.mdx"),
+        path.posix.join(normalizedPath, "index.md")
       ];
 
   for (const candidate of candidates) {
-    if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
-      return candidate;
+    const doc = lookup.byVirtualPath.get(candidate);
+
+    if (doc) {
+      return doc;
     }
   }
 
   return null;
 }
 
-function resolveInternalPath(filePath, pathname) {
+function resolveDocsRoute(pathname, lookup) {
+  const slugPath = pathname.replace(/^\/docs\/?/, "").replace(/^\/|\/$/g, "");
+
+  if (!slugPath) {
+    return { kind: "route", resolvedPath: "/docs" };
+  }
+
+  const doc = lookup.bySlug.get(slugPath);
+
+  if (doc) {
+    return { kind: "markdown", doc };
+  }
+
+  return null;
+}
+
+function resolveInternalPath(doc, pathname, lookup) {
   if (!pathname) {
     return null;
   }
@@ -128,15 +107,8 @@ function resolveInternalPath(filePath, pathname) {
       return { kind: "route", resolvedPath: pathname };
     }
 
-    if (pathname.startsWith("/docs/")) {
-      const slugPath = pathname.replace(/^\/docs\//, "");
-      const markdownPath = resolveMarkdownPath(path.join(contentRoot, slugPath));
-
-      if (markdownPath) {
-        return { kind: "markdown", resolvedPath: markdownPath };
-      }
-
-      return null;
+    if (pathname.startsWith("/docs")) {
+      return resolveDocsRoute(pathname, lookup);
     }
 
     const publicPath = path.join(publicRoot, pathname.slice(1));
@@ -147,44 +119,32 @@ function resolveInternalPath(filePath, pathname) {
     return null;
   }
 
-  const resolved = path.resolve(path.dirname(filePath), pathname);
+  const virtualBasePath = path.posix.join(path.posix.dirname(doc.virtualPath), pathname);
+  const targetDoc = resolveMarkdownDoc(virtualBasePath, lookup);
 
-  if (fs.existsSync(resolved)) {
-    return {
-      kind: isMarkdownFile(resolved) ? "markdown" : "asset",
-      resolvedPath: resolved
-    };
+  if (targetDoc) {
+    return { kind: "markdown", doc: targetDoc };
   }
 
-  const markdownPath = resolveMarkdownPath(resolved);
-  if (markdownPath) {
-    return { kind: "markdown", resolvedPath: markdownPath };
+  if (doc.sourcePath) {
+    const sourceDirectory = path.dirname(path.join(projectRoot, doc.sourcePath));
+    const resolvedPath = path.resolve(sourceDirectory, pathname);
+
+    if (fs.existsSync(resolvedPath)) {
+      return { kind: "asset", resolvedPath };
+    }
   }
 
   return null;
 }
 
-function loadFileInfo(filePath, cache) {
-  const cached = cache.get(filePath);
-  if (cached) {
-    return cached;
-  }
-
-  const rawSource = fs.readFileSync(filePath, "utf8");
-  const parsed = matter(rawSource);
-  const info = {
-    rawSource,
-    content: parsed.content,
-    anchors: extractHeadingAnchors(parsed.content)
-  };
-
-  cache.set(filePath, info);
-  return info;
+function hasAnchor(doc, hash) {
+  return new Set(doc.anchors).has(hash);
 }
 
-function collectLinkErrors(filePath, rawSource, cache) {
+function collectLinkErrors(doc, lookup) {
   const errors = [];
-  const lines = rawSource.split("\n");
+  const lines = doc.body.split("\n");
   let inCodeFence = false;
 
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
@@ -207,11 +167,9 @@ function collectLinkErrors(filePath, rawSource, cache) {
       const { pathname, hash } = splitTarget(rawTarget);
 
       if (!pathname && hash) {
-        const currentFileInfo = loadFileInfo(filePath, cache);
-
-        if (!currentFileInfo.anchors.has(hash)) {
+        if (!hasAnchor(doc, hash)) {
           errors.push({
-            filePath,
+            doc,
             line: lineIndex + 1,
             message: `anchor "#${hash}" was not found in the current document`
           });
@@ -226,11 +184,11 @@ function collectLinkErrors(filePath, rawSource, cache) {
         continue;
       }
 
-      const resolved = resolveInternalPath(filePath, pathname);
+      const resolved = resolveInternalPath(doc, pathname, lookup);
 
       if (!resolved) {
         errors.push({
-          filePath,
+          doc,
           line: lineIndex + 1,
           message: `target "${pathname}" does not exist`
         });
@@ -238,16 +196,12 @@ function collectLinkErrors(filePath, rawSource, cache) {
         continue;
       }
 
-      if (hash && resolved.kind === "markdown") {
-        const targetFileInfo = loadFileInfo(resolved.resolvedPath, cache);
-
-        if (!targetFileInfo.anchors.has(hash)) {
-          errors.push({
-            filePath,
-            line: lineIndex + 1,
-            message: `anchor "#${hash}" was not found in "${path.relative(projectRoot, resolved.resolvedPath)}"`
-          });
-        }
+      if (hash && resolved.kind === "markdown" && !hasAnchor(resolved.doc, hash)) {
+        errors.push({
+          doc,
+          line: lineIndex + 1,
+          message: `anchor "#${hash}" was not found in "${resolved.doc.sourcePath ?? resolved.doc.virtualPath}"`
+        });
       }
 
       match = linkPattern.exec(line);
@@ -257,9 +211,9 @@ function collectLinkErrors(filePath, rawSource, cache) {
   return errors;
 }
 
-function collectFenceReferenceErrors(filePath, rawSource) {
+function collectFenceReferenceErrors(doc) {
   const errors = [];
-  const lines = rawSource.split("\n");
+  const lines = doc.body.split("\n");
 
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
     const trimmed = lines[lineIndex].trim();
@@ -283,7 +237,7 @@ function collectFenceReferenceErrors(filePath, rawSource) {
     }
 
     errors.push({
-      filePath,
+      doc,
       line: lineIndex + 1,
       message: `referenced file "${reference}" does not exist`
     });
@@ -293,22 +247,22 @@ function collectFenceReferenceErrors(filePath, rawSource) {
 }
 
 function formatError(error) {
-  return `${path.relative(projectRoot, error.filePath)}:${error.line} ${error.message}`;
+  const label = error.doc.sourcePath ?? `generated:${error.doc.virtualPath}`;
+  return `${label}:${error.line} ${error.message}`;
 }
 
-if (!fs.existsSync(contentRoot)) {
-  console.error('Content directory "content/" was not found. Run "npm run prepare:content" first.');
+if (!fs.existsSync(manifestPath)) {
+  console.error('Content manifest ".cache/content-manifest.json" was not found. Run "npm run prepare:content" first.');
   process.exit(1);
 }
 
-const markdownFiles = walkFiles(contentRoot, isMarkdownFile);
-const cache = new Map();
+const manifest = readContentManifest();
+const lookup = createManifestLookup(manifest.docs);
 const errors = [];
 
-for (const filePath of markdownFiles) {
-  const { rawSource } = loadFileInfo(filePath, cache);
-  errors.push(...collectLinkErrors(filePath, rawSource, cache));
-  errors.push(...collectFenceReferenceErrors(filePath, rawSource));
+for (const doc of manifest.docs) {
+  errors.push(...collectLinkErrors(doc, lookup));
+  errors.push(...collectFenceReferenceErrors(doc));
 }
 
 if (errors.length > 0) {
@@ -321,4 +275,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Content validation passed for ${markdownFiles.length} markdown file(s).`);
+console.log(`Content validation passed for ${manifest.docs.length} manifest document(s).`);

@@ -18,6 +18,7 @@ pnpm-debug.log*
 
 # Build artifacts
 *.tsbuildinfo
+.cache/
 
 # Python
 __pycache__/

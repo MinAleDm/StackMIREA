@@ -1,16 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
-import matter from "gray-matter";
 
-const CONTENT_ROOT = path.join(process.cwd(), "content");
+import { findTopics, manifestPath, readContentManifest, stripMarkdown, normalizeSearchValue } from "./content-manifest.mjs";
+
 const PUBLIC_ROOT = path.join(process.cwd(), "public");
 const SEARCH_INDEX_PATH = path.join(PUBLIC_ROOT, "search-index.json");
-const TOPICS_PATH = path.join(process.cwd(), "lib", "search-topics.json");
-const TRACKS_PATH = path.join(process.cwd(), "lib", "tracks.json");
-
-const topicDefinitions = JSON.parse(fs.readFileSync(TOPICS_PATH, "utf8"));
-const trackDefinitions = JSON.parse(fs.readFileSync(TRACKS_PATH, "utf8"));
-const trackTitles = new Map(trackDefinitions.map((track) => [track.id, track.title]));
 const stopWords = new Set([
   "a",
   "an",
@@ -58,94 +52,10 @@ const stopWords = new Set([
   "эти"
 ]);
 
-function walkMarkdownFiles(rootDirectory) {
-  const files = [];
-  const stack = [rootDirectory];
-
-  while (stack.length > 0) {
-    const currentDirectory = stack.pop();
-
-    if (!currentDirectory || !fs.existsSync(currentDirectory)) {
-      continue;
-    }
-
-    const entries = fs.readdirSync(currentDirectory, { withFileTypes: true });
-
-    for (const entry of entries) {
-      const fullPath = path.join(currentDirectory, entry.name);
-
-      if (entry.isDirectory()) {
-        stack.push(fullPath);
-        continue;
-      }
-
-      if (entry.isFile() && /\.(md|mdx)$/i.test(entry.name)) {
-        files.push(fullPath);
-      }
-    }
-  }
-
-  return files;
-}
-
-function normalizeSlug(relativePath) {
-  const withoutExtension = relativePath.replace(/\.(md|mdx)$/i, "");
-  const parts = withoutExtension.split(path.sep);
-
-  if (parts.at(-1) === "index") {
-    return parts.slice(0, -1);
-  }
-
-  return parts;
-}
-
-function toTitleCase(value) {
-  return value
-    .replace(/[-_]/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function getTrackTitle(trackId) {
-  return trackTitles.get(trackId) ?? toTitleCase(trackId);
-}
-
-function normalizeSearchValue(value) {
-  return value
-    .toLowerCase()
-    .replace(/ё/g, "е")
-    .replace(/c\+\+/g, "cpp")
-    .replace(/c#/g, "csharp")
-    .replace(/model-view-controller/g, "model view controller")
-    .replace(/object-oriented/g, "object oriented")
-    .replace(/k-nearest/g, "k nearest")
-    .replace(/[^\p{L}\p{N}\s#+.-]+/gu, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 function tokenize(value) {
   return normalizeSearchValue(value)
     .split(/\s+/)
     .filter((token) => token.length > 1 && !stopWords.has(token));
-}
-
-function stripMarkdown(source) {
-  return source
-    .replace(/^import\s.+$/gm, " ")
-    .replace(/^export\s.+$/gm, " ")
-    .replace(/```[\s\S]*?```/g, (block) => block.replace(/```/g, " "))
-    .replace(/~~~[\s\S]*?~~~/g, (block) => block.replace(/~~~/g, " "))
-    .replace(/<[^>]+>/g, " ")
-    .replace(/!\[([^\]]*)\]\([^)]+\)/g, " $1 ")
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, " $1 ")
-    .replace(/`([^`]+)`/g, " $1 ")
-    .replace(/^:::(tip|warning|info|note)\s*$/gm, " ")
-    .replace(/^:::\s*$/gm, " ")
-    .replace(/^>\s?/gm, "")
-    .replace(/[#*_~>-]/g, " ")
-    .replace(/\|/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
 }
 
 function splitLongText(text, maxLength = 420) {
@@ -181,14 +91,6 @@ function splitLongText(text, maxLength = 420) {
   }
 
   return parts.filter(Boolean);
-}
-
-function findTopics(value) {
-  const normalized = normalizeSearchValue(value);
-
-  return topicDefinitions
-    .filter((topic) => topic.aliases.some((alias) => normalized.includes(normalizeSearchValue(alias))))
-    .map((topic) => topic.id);
 }
 
 function extractKeywords(values, limit = 18) {
@@ -260,46 +162,35 @@ function createChunks(source, docKeywords) {
   return chunks;
 }
 
-function createDoc(filePath) {
-  const source = fs.readFileSync(filePath, "utf8");
-  const parsed = matter(source);
-  const relativePath = path.relative(CONTENT_ROOT, filePath);
-  const slug = normalizeSlug(relativePath);
-  const section = slug[0] ?? "docs";
-  const sectionTitle = getTrackTitle(section);
-  const title = parsed.data.title?.toString().trim() || toTitleCase(slug.at(-1) ?? section);
-  const description = parsed.data.description?.toString().trim() || "";
-  const previewSource = stripMarkdown(parsed.content);
-  const preview = previewSource.slice(0, 260).trim();
-  const docKeywords = [title, description, section, sectionTitle];
-  const chunks = createChunks(parsed.content, docKeywords);
-  const topics = [...new Set(findTopics(`${title} ${description} ${preview} ${chunks.map((chunk) => `${chunk.heading} ${chunk.text}`).join(" ")}`))];
+function createDoc(doc) {
+  const docKeywords = [doc.title, doc.description, doc.section, doc.sectionTitle];
+  const chunks = createChunks(doc.body, docKeywords);
+  const chunkTopics = chunks.flatMap((chunk) => chunk.topics);
+  const topics = [...new Set([...doc.topics, ...chunkTopics])];
 
   return {
-    id: slug.join("/") || section,
-    href: `/docs/${slug.join("/")}`,
-    slug,
-    section,
-    sectionTitle,
-    title,
-    description,
-    preview,
-    keywords: extractKeywords([title, description, preview, ...chunks.map((chunk) => `${chunk.heading} ${chunk.text}`)], 18),
+    id: doc.slugKey || doc.section,
+    href: doc.href,
+    slug: doc.slug,
+    section: doc.section,
+    sectionTitle: doc.sectionTitle,
+    title: doc.title,
+    description: doc.description,
+    preview: doc.preview,
+    keywords: extractKeywords([doc.title, doc.description, doc.preview, ...chunks.map((chunk) => `${chunk.heading} ${chunk.text}`)], 18),
     topics,
     chunks
   };
 }
 
 function buildSearchIndex() {
-  if (!fs.existsSync(CONTENT_ROOT)) {
-    return {
-      version: 1,
-      generatedAt: new Date().toISOString(),
-      docs: []
-    };
+  if (!fs.existsSync(manifestPath)) {
+    console.error('Content manifest ".cache/content-manifest.json" was not found. Run "npm run content:manifest" first.');
+    process.exit(1);
   }
 
-  const docs = walkMarkdownFiles(CONTENT_ROOT)
+  const manifest = readContentManifest();
+  const docs = manifest.docs
     .map(createDoc)
     .sort((left, right) => left.title.localeCompare(right.title));
 
