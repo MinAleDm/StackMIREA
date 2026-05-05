@@ -2,6 +2,7 @@
 title: Введение
 description: Навигация по учебной документации проекта StackMIREA.
 slug: /intro
+author: minkinad
 ---
 
 # StackMIREA Docs

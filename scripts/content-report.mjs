@@ -16,10 +16,10 @@ export function createContentReport(mode) {
 		summary: {
 			errors: 0,
 			warnings: 0,
-			documents: 0
+			documents: 0,
+			autofixSuggestions: 0
 		},
 		issues: [],
 		autofixSuggestions: []
 	};
 }
-

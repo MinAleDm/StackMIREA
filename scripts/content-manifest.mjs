@@ -13,7 +13,7 @@ import remarkParse from "remark-parse";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
 
-import { parseDocFrontmatter } from "./content-schema.mjs";
+import { collectDocFrontmatterIssues, parseDocFrontmatter } from "./content-schema.mjs";
 import { createContentReport, writeContentReport } from "./content-report.mjs";
 
 export const projectRoot = process.cwd();
@@ -24,6 +24,7 @@ export const manifestPath = path.join(cacheRoot, "content-manifest.json");
 const TOPICS_PATH = path.join(projectRoot, "lib", "search-topics.json");
 const TRACKS_PATH = path.join(projectRoot, "lib", "tracks.json");
 const DEFAULT_DOC_AUTHOR = "minkinad";
+const LEGACY_ALIAS_SOURCE_PATHS = new Set(["docs/intro.md"]);
 
 const topicDefinitions = JSON.parse(fs.readFileSync(TOPICS_PATH, "utf8"));
 const trackDefinitions = JSON.parse(fs.readFileSync(TRACKS_PATH, "utf8"));
@@ -37,6 +38,7 @@ const SECTION_INDEX = {
 title: Java
 description: 24 Java-практики с решениями в формате задания и разбора.
 order: 1
+author: minkinad
 ---
 
 ## Что внутри
@@ -52,6 +54,7 @@ order: 1
 title: Python
 description: Практические работы по Python в формате MDX-документации.
 order: 1
+author: minkinad
 ---
 
 ## Что внутри
@@ -68,6 +71,7 @@ order: 1
 title: AI
 description: Рабочие тетради по искусственному интеллекту в формате MDX.
 order: 1
+author: minkinad
 ---
 
 # AI - обзор
@@ -99,6 +103,7 @@ order: 1
 title: BigData
 description: Практики по анализу больших данных, ML, классификации и кластеризации.
 order: 1
+author: minkinad
 ---
 
 # BigData - обзор
@@ -137,6 +142,7 @@ order: 1
 title: Algorithms
 description: Вводные и вспомогательные материалы StackMIREA Docs.
 order: 1
+author: minkinad
 ---
 
 ## Что внутри
@@ -154,6 +160,7 @@ const ALGORITHMS_GETTING_STARTED = {
 title: Getting Started
 description: How to navigate StackMIREA documentation.
 order: 2
+author: minkinad
 ---
 
 ## Навигация
@@ -192,6 +199,14 @@ function getSlugKey(slug) {
   return slug.join("/");
 }
 
+function getCanonicalHref(slug) {
+  return `/docs/${slug.join("/")}`;
+}
+
+function getCanonicalFrontmatterSlug(slug) {
+  return `/${slug.join("/")}`;
+}
+
 function toTitleCase(value) {
   return value
     .replace(/[-_]/g, " ")
@@ -200,6 +215,43 @@ function toTitleCase(value) {
 
 function getTrackTitle(trackId) {
   return trackTitles.get(trackId) ?? toTitleCase(trackId);
+}
+
+function recordIssue(report, mode, issue) {
+  const severity = issue.severity ?? (mode === "error" ? "error" : "warning");
+
+  report.issues.push({
+    severity,
+    ...issue
+  });
+  report.summary[severity === "error" ? "errors" : "warnings"] += 1;
+}
+
+function recordAutofixSuggestion(report, suggestion) {
+  report.autofixSuggestions.push(suggestion);
+  report.summary.autofixSuggestions += 1;
+}
+
+function getDocumentPriority(document) {
+  const sourcePath = document.sourcePath ?? "";
+  const extensionPriority = sourcePath.endsWith(".mdx") ? 20 : sourcePath.endsWith(".md") ? 10 : 0;
+  const legacyPenalty = LEGACY_ALIAS_SOURCE_PATHS.has(sourcePath) ? -100 : 0;
+
+  return extensionPriority + legacyPenalty;
+}
+
+function pickCanonicalDocument(left, right) {
+  const leftPriority = getDocumentPriority(left);
+  const rightPriority = getDocumentPriority(right);
+
+  if (leftPriority !== rightPriority) {
+    return leftPriority > rightPriority ? [left, right] : [right, left];
+  }
+
+  const leftPath = left.sourcePath ?? left.virtualPath;
+  const rightPath = right.sourcePath ?? right.virtualPath;
+
+  return leftPath.localeCompare(rightPath) <= 0 ? [left, right] : [right, left];
 }
 
 export function normalizeSearchValue(value) {
@@ -369,19 +421,24 @@ export class Parser {
   }
 
   addIssue(issue) {
-    const severity = this.mode === "error" ? "error" : "warning";
+    recordIssue(this.report, this.mode, issue);
+  }
 
-    this.report.issues.push({
-      severity,
-      ...issue
-    });
+  addAutofixSuggestion(suggestion) {
+    if (this.mode !== "autofix-report") {
+      return;
+    }
 
-    this.report.summary[severity === "error" ? "errors" : "warnings"] += 1;
+    recordAutofixSuggestion(this.report, suggestion);
   }
 
   parse(document) {
     const parsed = matter(document.rawSource);
     const frontmatterResult = parseDocFrontmatter(parsed.data);
+    const slug = normalizeSlug(document.virtualPath);
+    const href = getCanonicalHref(slug);
+    const expectedSlug = getCanonicalFrontmatterSlug(slug);
+
     if (!frontmatterResult.success) {
       for (const issue of frontmatterResult.error.issues) {
         this.addIssue({
@@ -392,8 +449,27 @@ export class Parser {
         });
       }
     }
+
     const frontmatter = frontmatterResult.success ? frontmatterResult.data : parsed.data;
-    const slug = normalizeSlug(document.virtualPath);
+    const semanticValidation = collectDocFrontmatterIssues(frontmatter, { expectedSlug });
+
+    for (const issue of semanticValidation.issues) {
+      this.addIssue({
+        code: issue.code,
+        file: document.sourcePath,
+        virtualPath: document.virtualPath,
+        message: `${issue.path.join(".") || "frontmatter"}: ${issue.message}`
+      });
+    }
+
+    for (const suggestion of semanticValidation.autofixSuggestions) {
+      this.addAutofixSuggestion({
+        ...suggestion,
+        file: document.sourcePath,
+        virtualPath: document.virtualPath
+      });
+    }
+
     const section = slug[0] ?? "docs";
 
     if (!knownTrackIds.has(section)) {
@@ -418,7 +494,7 @@ export class Parser {
     return {
       slug,
       slugKey: getSlugKey(slug),
-      href: `/docs/${slug.join("/")}`,
+      href,
       title,
       description,
       author: toGitHubPerson(rawAuthor),
@@ -448,6 +524,25 @@ export class ManifestBuilder {
     this.parser = new Parser(this.report, mode);
   }
 
+  addIssue(issue) {
+    recordIssue(this.report, this.mode, issue);
+  }
+
+  addWarning(issue) {
+    recordIssue(this.report, this.mode, {
+      ...issue,
+      severity: "warning"
+    });
+  }
+
+  addAutofixSuggestion(suggestion) {
+    if (this.mode !== "autofix-report") {
+      return;
+    }
+
+    recordAutofixSuggestion(this.report, suggestion);
+  }
+
   build() {
     const documentsByVirtualPath = new Map();
 
@@ -455,17 +550,23 @@ export class ManifestBuilder {
       const existing = documentsByVirtualPath.get(document.virtualPath);
 
       if (existing) {
-        this.report.issues.push({
-          severity: this.mode === "error" ? "error" : "warning",
-          code: "duplicate_virtual_path",
-          file: document.sourcePath,
+        const [preferred, shadowed] = pickCanonicalDocument(existing, document);
+        documentsByVirtualPath.set(document.virtualPath, preferred);
+        this.addWarning({
+          code: "duplicate_virtual_path_resolved",
+          file: shadowed.sourcePath,
           virtualPath: document.virtualPath,
-          message: `Duplicate virtual path '${document.virtualPath}' already used by ${existing.sourcePath}`
+          message: `Source '${shadowed.sourcePath}' is shadowed by canonical '${preferred.sourcePath ?? preferred.virtualPath}'.`
         });
-        this.report.summary[this.mode === "error" ? "errors" : "warnings"] += 1;
+        this.addAutofixSuggestion({
+          code: "remove-shadowed-source",
+          file: shadowed.sourcePath,
+          virtualPath: document.virtualPath,
+          message: `Remove the shadowed source file or merge it into '${preferred.sourcePath ?? preferred.virtualPath}'.`
+        });
         continue;
       }
-      
+
       documentsByVirtualPath.set(document.virtualPath, document);
     }
 
@@ -481,14 +582,12 @@ export class ManifestBuilder {
       } else {
         const existing = documentsByVirtualPath.get(config.virtualPath);
 
-        this.report.issues.push({
-          severity: "warning",
+        this.addWarning({
           code: "generated-page-shadowed",
           file: existing.sourcePath,
           virtualPath: config.virtualPath,
           message: `Generated path '${config.virtualPath}' is shadowed by source file '${existing.sourcePath}'.`
         });
-        this.report.summary.warnings += 1;
       }
     }
 
@@ -502,15 +601,13 @@ export class ManifestBuilder {
         const existing = docsBySlug.get(doc.slugKey);
 
         if (existing) {
-          this.report.issues.push({
-            severity: this.mode === "error" ? "error" : "warning",
+          this.addIssue({
             code: "duplicate-slug",
             file: doc.sourcePath,
             virtualPath: doc.virtualPath,
             slugKey: doc.slugKey,
             message: `Duplicate slug '${doc.slugKey}' already used by ${existing.sourcePath ?? existing.virtualPath}`
           });
-          this.report.summary[this.mode === "error" ? "errors" : "warnings"] += 1;
         }
 
         docsBySlug.set(doc.slugKey, doc);
@@ -523,14 +620,12 @@ export class ManifestBuilder {
 
       for (const section of sections) {
         if (!sectionIndexes.has(section)) {
-          this.report.issues.push({
-            severity: this.mode === "error" ? "error" : "warning",
+          this.addIssue({
             code: "missing-section-index",
             file: null,
             virtualPath: `${section}/index.mdx`,
             message: `Section '${section}' has no index page. Create docs/${section}/index.mdx.`
           });
-          this.report.summary[this.mode === "error" ? "errors" : "warnings"] += 1;
         }
       }
     

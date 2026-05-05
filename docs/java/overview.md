@@ -3,6 +3,7 @@ title: Java — обзор
 sidebar_position: 1
 description: Карта Java-практик с решениями в формате задания и разбора.
 slug: /java/overview
+author: minkinad
 ---
 
 # Java Практики

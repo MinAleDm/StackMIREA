@@ -1,34 +1,8 @@
-import type { GitHubPerson } from "@/lib/authors";
 import { getContentManifest } from "@/lib/content-manifest";
-import type { TocItem } from "@/lib/markdown";
+import type { ContentManifestDoc } from "@/lib/content-manifest";
 import { getTrackOrder, getTrackTitle } from "@/lib/tracks";
 
-export interface DocFrontmatter {
-  title?: string;
-  description?: string;
-  order?: number;
-  sidebar_position?: number;
-  author?: string;
-}
-
-export interface DocEntry {
-  slug: string[];
-  slugKey: string;
-  href: string;
-  title: string;
-  description: string;
-  order: number;
-  editPath: string | null;
-  section: string;
-  body: string;
-  toc: TocItem[];
-  preview: string;
-  topics: string[];
-  hash: string;
-  author: GitHubPerson;
-  isSectionIndex: boolean;
-  isGenerated: boolean;
-}
+export type DocEntry = ContentManifestDoc;
 
 export interface SidebarGroup {
   id: string;

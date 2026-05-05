@@ -94,6 +94,8 @@ npm run dev
 - `npm run typecheck` - проверка TypeScript.
 - `npm run prepare:content` - сборка content manifest и поискового индекса.
 - `npm run content:manifest` - генерация `.cache/content-manifest.json` из `docs/`.
+- `npm run prepare:content:warning` - сборка manifest в warning-режиме без падения по content issues.
+- `npm run prepare:content:report` - генерация `content-report.json` с autofix suggestions.
 - `npm run content:sync` - compatibility alias для `content:manifest`.
 - `npm run search:build` - генерация `public/search-index.json`.
 - `npm run validate:content` - проверка markdown-ссылок, якорей и репозиторных ссылок в code fence.
@@ -141,7 +143,7 @@ SUPPORT.md
 4. Проверьте проект командами `npm run lint` и `npm run typecheck`.
 5. Откройте Pull Request.
 
-Для автора материала можно указать поле `author` во frontmatter: GitHub login или ссылку на профиль.
+Для каждого материала требуется поле `author` во frontmatter: GitHub login или ссылка на профиль.
 
 Для более подробного процесса контрибуции см. [CONTRIBUTING.md](./CONTRIBUTING.md).
 
