@@ -22,6 +22,7 @@
   --border: 210 10% 87%;
   --input: 210 10% 87%;
   --ring: 0 0% 18%;
+  --site-header-height: 104px;
 }
 
 .dark {
@@ -66,6 +67,12 @@ body {
     radial-gradient(1100px 640px at 88% -12%, rgb(15 23 42 / 0.12), transparent 58%),
     radial-gradient(900px 520px at -8% 18%, rgb(115 115 115 / 0.12), transparent 56%),
     hsl(var(--background));
+}
+
+@media (min-width: 768px) {
+  :root {
+    --site-header-height: 96px;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {

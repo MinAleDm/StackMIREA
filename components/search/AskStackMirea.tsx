@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowRight, BookOpenText, BrainCircuit, Loader2, Search, Sparkles } from "lucide-react";
-import { type FormEvent, startTransition, useDeferredValue, useState } from "react";
+import { type FormEvent, startTransition, useDeferredValue, useEffect, useState } from "react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useSearchIndex } from "@/components/search/useSearchIndex";
@@ -14,8 +15,13 @@ const allTopicDefinitions = getTopicDefinitions();
 const popularTopicDefinitions = allTopicDefinitions.slice(0, 8);
 const topicDefinitionsById = new Map(allTopicDefinitions.map((topic) => [topic.id, topic]));
 
-export function AskStackMirea() {
-  const [query, setQuery] = useState("");
+interface AskStackMireaProps {
+  initialQuery?: string;
+}
+
+export function AskStackMirea({ initialQuery = "" }: AskStackMireaProps) {
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(initialQuery);
   const { index, error, isLoading } = useSearchIndex();
   const deferredQuery = useDeferredValue(query);
 
@@ -34,6 +40,11 @@ export function AskStackMirea() {
     event.preventDefault();
     applyQuery(query.trim());
   }
+
+  useEffect(() => {
+    const queryFromUrl = searchParams.get("q");
+    setQuery(queryFromUrl?.trim() || initialQuery);
+  }, [initialQuery, searchParams]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
