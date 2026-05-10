@@ -27,7 +27,7 @@ export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMen
   }
 
   return (
-    <div className="sticky top-14 z-30 border-b border-border/80 bg-background/95 px-4 py-3 backdrop-blur md:hidden">
+    <div className="sticky top-[var(--site-header-height)] z-30 border-b border-border/80 bg-background/95 px-4 py-3 backdrop-blur md:hidden">
       <button
         className="flex items-center gap-1 py-1 text-sm font-medium text-foreground"
         type="button"

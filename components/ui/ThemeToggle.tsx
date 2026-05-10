@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { flushSync } from "react-dom";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type ThemeName = "light" | "dark";
 
@@ -17,7 +18,11 @@ type ViewTransitionDocument = Document & {
   startViewTransition?: (update: () => void | Promise<void>) => ViewTransition;
 };
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  className?: string;
+}
+
+export function ThemeToggle({ className }: ThemeToggleProps) {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -27,7 +32,7 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    return <Button variant="ghost" size="icon" aria-label="Переключить тему" className="text-muted-foreground" />;
+    return <Button variant="ghost" size="icon" aria-label="Переключить тему" className={cn("text-muted-foreground", className)} />;
   }
 
   const isDark = resolvedTheme !== "light";
@@ -81,7 +86,7 @@ export function ThemeToggle() {
       size="icon"
       aria-label="Переключить тему"
       onClick={toggleTheme}
-      className="text-muted-foreground hover:text-foreground"
+      className={cn("text-muted-foreground hover:text-foreground", className)}
     >
       {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
     </Button>

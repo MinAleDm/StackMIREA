@@ -10,7 +10,15 @@ export const metadata: Metadata = {
   description: "Семантический поиск по материалам StackMIREA: темы, практики, сравнение дисциплин и быстрый вход в нужные страницы."
 };
 
-export default function AskPage() {
+interface AskPageProps {
+  searchParams?: {
+    q?: string;
+  };
+}
+
+export default function AskPage({ searchParams }: AskPageProps) {
+  const initialQuery = typeof searchParams?.q === "string" ? searchParams.q : "";
+
   return (
     <div className="mx-auto w-full max-w-[1440px] px-4 pb-20 pt-14 sm:px-6 lg:px-8">
       <section className="relative overflow-hidden rounded-3xl border border-border/70 bg-card/65 px-6 py-12 sm:px-10">
@@ -39,7 +47,7 @@ export default function AskPage() {
       </section>
 
       <section className="mt-8">
-        <AskStackMirea />
+        <AskStackMirea initialQuery={initialQuery} />
       </section>
     </div>
   );
