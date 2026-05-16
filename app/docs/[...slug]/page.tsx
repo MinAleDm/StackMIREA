@@ -12,6 +12,7 @@ import { GitHubUserBadge } from "@/components/ui/GitHubUserBadge";
 import { Pagination } from "@/components/ui/Pagination";
 import { compileDocMdx } from "@/lib/mdx";
 import { getAllDocs, getDocBySlug, getDocPagination, getSidebarGroups } from "@/lib/navigation";
+import { buildPageMetadata } from "@/lib/seo";
 import { GITHUB_EDIT_ROOT } from "@/lib/utils";
 
 interface DocPageProps {
@@ -34,10 +35,11 @@ export function generateMetadata({ params }: DocPageProps): Metadata {
     return {};
   }
 
-  return {
+  return buildPageMetadata({
     title: doc.title,
-    description: doc.description || `Documentation page: ${doc.title}`
-  };
+    description: doc.description || `Материал StackMIREA: ${doc.title}`,
+    pathname: doc.href
+  });
 }
 
 export default async function DocPage({ params }: DocPageProps) {

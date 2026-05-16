@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { BrainCircuit, Sparkles } from "lucide-react";
 
 import { AskStackMirea } from "@/components/search/AskStackMirea";
+import { buildPageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Спроси StackMIREA",
-  description: "Семантический поиск по материалам StackMIREA: темы, практики, сравнение дисциплин и быстрый вход в нужные страницы."
-};
+  description: "Семантический поиск по материалам StackMIREA: темы, практики, сравнение дисциплин и быстрый вход в нужные страницы.",
+  pathname: "/ask"
+});
 
 export default function AskPage() {
   return (

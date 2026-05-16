@@ -4,11 +4,10 @@ import type { ReactNode } from "react";
 
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
-import { BASE_PATH, SITE_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from "@/lib/utils";
+import { DEFAULT_ROBOTS, SITE_DESCRIPTION, SITE_NAME, socialImage } from "@/lib/seo";
+import { BASE_PATH, SITE_ORIGIN } from "@/lib/utils";
 
 import "./globals.css";
-
-const socialImage = `${SITE_ORIGIN}${BASE_PATH}/preview.png`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${SITE_ORIGIN}${BASE_PATH}/`),
@@ -17,14 +16,19 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`
   },
   description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/"
+  },
   icons: {
     icon: "favicon.png",
     shortcut: "favicon.png",
     apple: "favicon.png"
   },
   keywords: ["Next.js docs", "documentation platform", "python", "ai", "bigdata", "java", "algorithms", "mdx", "shiki"],
+  robots: DEFAULT_ROBOTS,
   openGraph: {
     type: "website",
+    url: "/",
     title: `${SITE_NAME} Документация`,
     description: SITE_DESCRIPTION,
     images: [

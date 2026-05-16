@@ -1,12 +1,20 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowRight, Bot, Brain, Code2, Database, GitPullRequest, ListChecks, Sigma } from "lucide-react";
 
 import { MobileDocsMenu } from "@/components/layout/MobileDocsMenu";
 import { getBuildInfo } from "@/lib/build-info";
 import { getAllDocs, getSidebarGroups } from "@/lib/navigation";
+import { buildPageMetadata } from "@/lib/seo";
 import { getTrackDefinitions, type TrackIconKey } from "@/lib/tracks";
 
 export const dynamic = "force-static";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Документация StackMIREA",
+  description: "Каталог учебных треков StackMIREA: практики, ноутбуки, методички и материалы по ключевым IT-дисциплинам.",
+  pathname: "/docs"
+});
 
 const iconByKey: Record<TrackIconKey, typeof Bot> = {
   bot: Bot,
