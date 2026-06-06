@@ -97,9 +97,45 @@ npm run dev
 - `npm run prepare:content:warning` - сборка manifest в warning-режиме без падения по content issues.
 - `npm run prepare:content:report` - генерация `content-report.json` с autofix suggestions.
 - `npm run content:sync` - compatibility alias для `content:manifest`.
+- `npm run content:quality` - сборка manifest/search index, запуск quality gates и создание JSON/HTML-отчетов.
+- `npm run test:content` - unit-тесты движка, правил и генераторов отчетов.
+- `npm run quality` - подготовка контента и полный запуск content quality gates.
 - `npm run search:build` - генерация `public/search-index.json`.
-- `npm run validate:content` - проверка markdown-ссылок, якорей и репозиторных ссылок в code fence.
+- `npm run validate:content` - compatibility alias для `content:quality`.
 - `npm run export` - информационный скрипт: static export выполняется внутри `next build`.
+
+## Критерии качества контента
+
+Полная локальная проверка контента:
+
+```bash
+npm run quality
+npm run test:content
+```
+
+Отчеты сохраняются в:
+
+- `.cache/content-report.json` - структурированный отчет для автоматической обработки;
+- `.cache/content-report.html` - человекочитаемый отчет с метриками и найденными проблемами.
+
+Ошибки блокируют CI:
+
+- отсутствующий `description`;
+- дублирующийся slug;
+- некорректный author;
+- битая внутренняя ссылка, anchor или ссылка на файл;
+- пустой section index;
+- страница крупнее 1 MiB;
+- search chunk длиннее 420 символов.
+
+Предупреждения не блокируют CI:
+
+- страница крупнее 512 KiB;
+- неиспользуемый файл из `resources/`;
+- orphan page, на которую не ссылаются другие документы.
+
+Пороговые значения и исключения находятся в
+[`scripts/content-quality-config.mjs`](./scripts/content-quality-config.mjs).
 
 ## Структура проекта
 
@@ -122,7 +158,7 @@ SUPPORT.md
 
 ## CI/CD и деплой
 
-- [`.github/workflows/pr-check.yml`](./.github/workflows/pr-check.yml) проверяет `prepare:content`, `validate:content`, `lint`, `typecheck` и `build` для Pull Request.
+- [`.github/workflows/pr-check.yml`](./.github/workflows/pr-check.yml) проверяет content quality rules, публикует JSON/HTML-отчет как artifact, а также запускает `lint`, `typecheck` и `build` для Pull Request.
 - [`.github/workflows/deploy-gh-pages.yml`](./.github/workflows/deploy-gh-pages.yml) публикует сайт в GitHub Pages при пуше в `main` и при ручном запуске.
 - В `Settings -> Pages` должен быть выбран `Source: GitHub Actions`.
 
@@ -138,9 +174,9 @@ SUPPORT.md
 ## Как вносить изменения
 
 1. Добавьте или обновите материал в `docs/<track>/...`.
-2. Запустите `npm run content:manifest` или сразу `npm run prepare:content`.
-3. Проверьте контент командой `npm run validate:content`.
-4. Проверьте проект командами `npm run lint` и `npm run typecheck`.
+2. Запустите `npm run quality`.
+3. Запустите `npm run test:content`.
+4. Проверьте проект командами `npm run lint`, `npm run typecheck` и `npm run build`.
 5. Откройте Pull Request.
 
 Для каждого материала требуется поле `author` во frontmatter: GitHub login или ссылка на профиль.

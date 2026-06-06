@@ -1,7 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-import { findTopics, manifestPath, readContentManifest, stripMarkdown, normalizeSearchValue } from "./content-manifest.mjs";
+import {
+  findTopics,
+  manifestPath,
+  normalizeSearchValue,
+  readContentManifest,
+  stripMarkdown
+} from "./content-manifest.mjs";
 
 const PUBLIC_ROOT = path.join(process.cwd(), "public");
 const SEARCH_INDEX_PATH = path.join(PUBLIC_ROOT, "search-index.json");
@@ -108,7 +115,7 @@ function extractKeywords(values, limit = 18) {
     .map(([token]) => token);
 }
 
-function createChunks(source, docKeywords) {
+export function createChunks(source, docKeywords) {
   const lines = source.split("\n");
   const chunks = [];
   let currentHeading = "";
@@ -162,7 +169,7 @@ function createChunks(source, docKeywords) {
   return chunks;
 }
 
-function createDoc(doc) {
+export function createSearchDocument(doc) {
   const docKeywords = [doc.title, doc.description, doc.section, doc.sectionTitle];
   const chunks = createChunks(doc.body, docKeywords);
   const chunkTopics = chunks.flatMap((chunk) => chunk.topics);
@@ -183,15 +190,9 @@ function createDoc(doc) {
   };
 }
 
-function buildSearchIndex() {
-  if (!fs.existsSync(manifestPath)) {
-    console.error('Content manifest ".cache/content-manifest.json" was not found. Run "npm run content:manifest" first.');
-    process.exit(1);
-  }
-
-  const manifest = readContentManifest();
+export function buildSearchIndex(manifest) {
   const docs = manifest.docs
-    .map(createDoc)
+    .map(createSearchDocument)
     .sort((left, right) => left.title.localeCompare(right.title));
 
   return {
@@ -201,6 +202,28 @@ function buildSearchIndex() {
   };
 }
 
-fs.mkdirSync(PUBLIC_ROOT, { recursive: true });
-fs.writeFileSync(SEARCH_INDEX_PATH, JSON.stringify(buildSearchIndex()), "utf8");
-console.log(`Search index generated at ${path.relative(process.cwd(), SEARCH_INDEX_PATH)}`);
+export function writeSearchIndex(index, targetPath = SEARCH_INDEX_PATH) {
+  fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+  fs.writeFileSync(targetPath, `${JSON.stringify(index)}\n`, "utf8");
+}
+
+const executedPath = process.argv[1] ? path.resolve(process.argv[1]) : "";
+const currentPath = fileURLToPath(import.meta.url);
+
+if (executedPath === currentPath) {
+  if (!fs.existsSync(manifestPath)) {
+    console.error(
+      'Content manifest ".cache/content-manifest.json" was not found. Run "npm run content:manifest" first.'
+    );
+    process.exitCode = 1;
+  } else {
+    const manifest = readContentManifest();
+    const index = buildSearchIndex(manifest);
+
+    writeSearchIndex(index);
+
+    console.log(
+      `Search index generated at ${path.relative(process.cwd(), SEARCH_INDEX_PATH)}`
+    );
+  }
+}
