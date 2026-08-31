@@ -98,6 +98,8 @@ npm run dev
 - `npm run prepare:content:report` - генерация `content-report.json` с autofix suggestions.
 - `npm run content:sync` - compatibility alias для `content:manifest`.
 - `npm run content:quality` - сборка manifest/search index, запуск quality gates и создание JSON/HTML-отчетов.
+- `npm test` - запуск всех автоматических тестов проекта.
+- `npm run test:app` - unit-тесты прикладной логики.
 - `npm run test:content` - unit-тесты движка, правил и генераторов отчетов.
 - `npm run quality` - подготовка контента и полный запуск content quality gates.
 - `npm run search:build` - генерация `public/search-index.json`.
@@ -110,7 +112,7 @@ npm run dev
 
 ```bash
 npm run quality
-npm run test:content
+npm test
 ```
 
 Отчеты сохраняются в:
@@ -175,7 +177,7 @@ SUPPORT.md
 
 1. Добавьте или обновите материал в `docs/<track>/...`.
 2. Запустите `npm run quality`.
-3. Запустите `npm run test:content`.
+3. Запустите `npm test`.
 4. Проверьте проект командами `npm run lint`, `npm run typecheck` и `npm run build`.
 5. Откройте Pull Request.
 

@@ -9,6 +9,8 @@
     "search:build": "node scripts/build-search-index.mjs",
     "content:quality": "node scripts/content-quality.mjs",
     "validate:content": "npm run content:quality",
+    "test": "npm run test:content && npm run test:app",
+    "test:app": "tsx --test lib/__tests__/*.test.ts",
     "test:content": "node --test scripts/content-quality/__tests__/*.test.mjs",
     "quality": "npm run content:quality",
     "dev": "next dev",
@@ -51,6 +53,7 @@
     "eslint-config-next": "^14.2.26",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.20.5",
     "typescript": "^5.8.2"
   },
   "engines": {
