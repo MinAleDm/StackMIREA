@@ -25,7 +25,7 @@ export function Pagination({ prev, next }: PaginationProps) {
         >
           <div className="mb-1 flex items-center text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
             <ArrowLeft className="mr-1 size-3" />
-            Previous
+            Назад
           </div>
           <div className="line-clamp-2 text-sm font-medium text-foreground transition-colors group-hover:text-primary">
             {prev.title}
@@ -41,7 +41,7 @@ export function Pagination({ prev, next }: PaginationProps) {
           className="group rounded-lg border border-border/80 bg-card px-4 py-3 text-right transition-colors hover:border-primary/50"
         >
           <div className="mb-1 flex items-center justify-end text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
-            Next
+            Далее
             <ArrowRight className="ml-1 size-3" />
           </div>
           <div className="line-clamp-2 text-sm font-medium text-foreground transition-colors group-hover:text-primary">

@@ -27,27 +27,31 @@ export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMen
   }
 
   return (
-    <div className="sticky top-14 z-30 border-b border-border/80 bg-background/95 px-4 py-3 backdrop-blur md:hidden">
+    <div className="sticky top-14 z-30 border-b border-border/80 bg-background/95 px-4 py-3 backdrop-blur lg:hidden">
       <button
-        className="flex items-center gap-1 py-1 text-sm font-medium text-foreground"
+        className="flex w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted/70"
         type="button"
         aria-expanded={isOpen}
+        aria-controls="mobile-docs-menu"
         onClick={() => setIsOpen((value) => !value)}
       >
-        <ChevronDown className={cn("size-4 transition-transform", isOpen ? "rotate-180" : "rotate-0")} />
-        <span>Menu</span>
+        <span className="min-w-0 truncate">
+          Навигация
+          {activeGroup ? <span className="font-normal text-muted-foreground"> · {activeGroup.title}</span> : null}
+        </span>
+        <ChevronDown className={cn("size-4 shrink-0 transition-transform", isOpen ? "rotate-180" : "rotate-0")} />
       </button>
 
       {isOpen ? (
-        <div className="pt-3">
+        <div id="mobile-docs-menu" className="pt-3">
           <div className="space-y-2 border-b border-border/70 pb-3">
             <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2 rounded-md border border-border/80 bg-card/80 p-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-md border border-primary/50 bg-primary/10 text-primary">
                 <BookOpenText className="size-4" />
               </div>
               <div className="min-w-0 text-left">
-                <p className="break-words text-sm font-medium leading-5">{activeGroup?.title ?? "Documentation"}</p>
-                <p className="text-xs text-muted-foreground">Current section</p>
+                <p className="break-words text-sm font-medium leading-5">{activeGroup?.title ?? "Документация"}</p>
+                <p className="text-xs text-muted-foreground">Текущий раздел</p>
               </div>
               <ChevronDown className="size-4 text-muted-foreground" />
             </div>
@@ -86,6 +90,8 @@ export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMen
                       <button
                         type="button"
                         onClick={() => toggleGroup(group.id, containsActive)}
+                        aria-expanded={expanded}
+                        aria-controls={`mobile-docs-group-${group.id}`}
                         className={cn(
                           "flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm font-medium transition-colors",
                           containsActive
@@ -100,7 +106,7 @@ export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMen
                       </button>
 
                       {expanded ? (
-                        <ul className="mt-1 border-l border-border/70 pl-3">
+                        <ul id={`mobile-docs-group-${group.id}`} className="mt-1 border-l border-border/70 pl-3">
                           {group.items.map((item) => {
                             const isActive = normalizeDocPath(item.href) === normalizedCurrentPath;
 
@@ -115,6 +121,7 @@ export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMen
                                       ? "bg-primary/12 font-medium text-primary"
                                       : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
                                   )}
+                                  aria-current={isActive ? "page" : undefined}
                                 >
                                   <span className="break-words">{item.title}</span>
                                 </Link>

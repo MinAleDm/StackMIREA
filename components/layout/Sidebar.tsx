@@ -29,8 +29,8 @@ export function Sidebar({ buildInfo, groups, currentPath }: SidebarProps) {
               <BookOpenText className="size-4" />
             </div>
             <div className="min-w-0 text-left">
-              <p className="break-words text-sm font-medium leading-5">{activeGroup?.title ?? "Documentation"}</p>
-              <p className="text-xs text-muted-foreground">Current section</p>
+              <p className="break-words text-sm font-medium leading-5">{activeGroup?.title ?? "Документация"}</p>
+              <p className="text-xs text-muted-foreground">Текущий раздел</p>
             </div>
           </div>
 
@@ -60,6 +60,8 @@ export function Sidebar({ buildInfo, groups, currentPath }: SidebarProps) {
               <button
                 type="button"
                 onClick={() => toggleGroup(group.id, containsActive)}
+                aria-expanded={expanded}
+                aria-controls={`desktop-docs-group-${group.id}`}
                 className={cn(
                   "mb-2 flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors",
                   containsActive
@@ -72,7 +74,7 @@ export function Sidebar({ buildInfo, groups, currentPath }: SidebarProps) {
               </button>
 
               {expanded ? (
-                <ul className="space-y-1">
+                <ul id={`desktop-docs-group-${group.id}`} className="space-y-1">
                   {group.items.map((item) => {
                     const isActive = normalizeDocPath(item.href) === normalizedCurrentPath;
 

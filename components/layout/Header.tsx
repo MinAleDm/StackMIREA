@@ -23,7 +23,7 @@ export function Header() {
               className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <Home className="size-4" />
-              <span>Главная</span>
+              <span className="hidden sm:inline">Главная</span>
             </Link>
             <Link
               href="/docs"
@@ -31,7 +31,7 @@ export function Header() {
               className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <BookOpenText className="size-4" />
-              <span>Документация</span>
+              <span className="hidden sm:inline">Документация</span>
             </Link>
             <Link
               href="/ask"
@@ -39,7 +39,7 @@ export function Header() {
               className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <BrainCircuit className="size-4" />
-              <span>Спросить</span>
+              <span className="hidden sm:inline">Спросить</span>
             </Link>
           </nav>
         </div>

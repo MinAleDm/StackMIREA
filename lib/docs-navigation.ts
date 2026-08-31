@@ -7,9 +7,7 @@ export function normalizeDocPath(value: string) {
 export function getActiveSidebarGroup(groups: SidebarGroup[], currentPath: string) {
   const normalizedCurrentPath = normalizeDocPath(currentPath);
 
-  return (
-    groups.find((group) => group.items.some((item) => normalizeDocPath(item.href) === normalizedCurrentPath)) ??
-    groups[0] ??
-    null
-  );
+  return groups.find((group) =>
+    group.items.some((item) => normalizeDocPath(item.href) === normalizedCurrentPath)
+  ) ?? null;
 }
