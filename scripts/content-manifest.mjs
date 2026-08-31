@@ -13,6 +13,10 @@ import remarkParse from "remark-parse";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
 
+import {
+  findMatchingTopicIds,
+  normalizeSearchValue
+} from "../lib/search-normalization.mjs";
 import { collectDocFrontmatterIssues, parseDocFrontmatter } from "./content-schema.mjs";
 import { createContentReport, writeContentReport } from "./content-report.mjs";
 
@@ -254,26 +258,10 @@ function pickCanonicalDocument(left, right) {
   return leftPath.localeCompare(rightPath) <= 0 ? [left, right] : [right, left];
 }
 
-export function normalizeSearchValue(value) {
-  return value
-    .toLowerCase()
-    .replace(/ё/g, "е")
-    .replace(/c\+\+/g, "cpp")
-    .replace(/c#/g, "csharp")
-    .replace(/model-view-controller/g, "model view controller")
-    .replace(/object-oriented/g, "object oriented")
-    .replace(/k-nearest/g, "k nearest")
-    .replace(/[^\p{L}\p{N}\s#+.-]+/gu, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+export { normalizeSearchValue };
 
 export function findTopics(value) {
-  const normalized = normalizeSearchValue(value);
-
-  return topicDefinitions
-    .filter((topic) => topic.aliases.some((alias) => normalized.includes(normalizeSearchValue(alias))))
-    .map((topic) => topic.id);
+  return findMatchingTopicIds(value, topicDefinitions);
 }
 
 export function stripMarkdown(source) {

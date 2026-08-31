@@ -1,5 +1,12 @@
 import searchTopics from "@/lib/search-topics.json";
+import {
+  containsNormalizedPhrase,
+  findMatchingTopicIds,
+  normalizeSearchValue
+} from "@/lib/search-normalization.mjs";
 import type { SearchAnswerSummary, SearchIndexChunk, SearchIndexDoc, SearchIndexPayload, SearchResult, SearchTopicDefinition } from "@/lib/search-types";
+
+export { normalizeSearchValue } from "@/lib/search-normalization.mjs";
 
 interface PreparedChunk extends SearchIndexChunk {
   normalizedHeading: string;
@@ -74,20 +81,6 @@ const stopWords = new Set([
   "ко"
 ]);
 
-export function normalizeSearchValue(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/ё/g, "е")
-    .replace(/c\+\+/g, "cpp")
-    .replace(/c#/g, "csharp")
-    .replace(/model-view-controller/g, "model view controller")
-    .replace(/object-oriented/g, "object oriented")
-    .replace(/k-nearest/g, "k nearest")
-    .replace(/[^\p{L}\p{N}\s#+.-]+/gu, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 export function tokenizeSearchValue(value: string) {
   return normalizeSearchValue(value)
     .split(/\s+/)
@@ -103,11 +96,9 @@ function getTopicAliasTokens(topic: SearchTopicDefinition) {
 }
 
 function findMatchedTopics(query: string) {
-  const normalizedQuery = normalizeSearchValue(query);
+  const matchedTopicIds = new Set(findMatchingTopicIds(query, topicDefinitions));
 
-  return topicDefinitions.filter((topic) =>
-    topic.aliases.some((alias) => normalizedQuery.includes(normalizeSearchValue(alias)))
-  );
+  return topicDefinitions.filter((topic) => matchedTopicIds.has(topic.id));
 }
 
 function buildSearchContext(query: string): SearchContext {
@@ -136,7 +127,7 @@ function scoreByPhrases(haystack: string, phrases: string[], weight: number) {
   let score = 0;
 
   for (const phrase of phrases) {
-    if (haystack.includes(phrase)) {
+    if (containsNormalizedPhrase(haystack, phrase)) {
       score += weight + Math.min(phrase.length, 16);
     }
   }
@@ -148,7 +139,7 @@ function scoreByTokens(haystack: string, tokens: string[], weight: number) {
   let score = 0;
 
   for (const token of tokens) {
-    if (haystack.includes(token)) {
+    if (containsNormalizedPhrase(haystack, token)) {
       score += weight;
     }
   }
@@ -202,7 +193,9 @@ function scoreDoc(doc: PreparedDoc, context: SearchContext) {
     }
   }
 
-  const fullTitleMatch = context.tokens.length > 1 && context.tokens.every((token) => doc.normalizedTitle.includes(token));
+  const fullTitleMatch =
+    context.tokens.length > 1 &&
+    context.tokens.every((token) => containsNormalizedPhrase(doc.normalizedTitle, token));
   if (fullTitleMatch) {
     score += 18;
   }

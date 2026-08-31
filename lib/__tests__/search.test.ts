@@ -79,6 +79,31 @@ test("runSemanticSearch ranks the most relevant document first", () => {
   assert.ok(results[0]?.matchedTopics.includes("pandas"));
 });
 
+test("short topic aliases do not match inside unrelated words", () => {
+  const index = prepareSearchIndex(
+    createIndex([
+      createDoc({
+        id: "web/html",
+        href: "/docs/web/html",
+        slug: ["web", "html"],
+        section: "web",
+        sectionTitle: "Web",
+        title: "HTML basics",
+        description: "Markup language overview.",
+        preview: "Elements and attributes.",
+        keywords: ["html"],
+        topics: ["ai"],
+        chunks: []
+      })
+    ])
+  );
+
+  const [result] = runSemanticSearch(index, "HTML");
+
+  assert.equal(result?.doc.id, "web/html");
+  assert.deepEqual(result?.matchedTopics, []);
+});
+
 test("buildAskSummary describes comparisons between recognized topics", () => {
   const doc = createDoc();
   const results: SearchResult[] = [
