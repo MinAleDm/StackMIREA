@@ -1,8 +1,8 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
-  - name: Политика Безопасности
+  - name: Политика безопасности
     url: https://github.com/minkinad/StackMIREA/blob/main/SECURITY.md
     about: Для чувствительных уязвимостей используйте security-процесс, а не публичные issues.
-  - name: Руководство По Поддержке
+  - name: Руководство по поддержке
     url: https://github.com/minkinad/StackMIREA/blob/main/SUPPORT.md
     about: Перед обычным запросом на помощь загляните в SUPPORT.md.

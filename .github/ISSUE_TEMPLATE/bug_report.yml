@@ -1,4 +1,4 @@
-name: Сообщение Об Ошибке
+name: Сообщение об ошибке
 description: Сообщить об ошибке в сайте, рендере docs, сборке, валидации или workflow репозитория.
 title: "[Bug]: "
 labels:
@@ -11,7 +11,7 @@ body:
   - type: textarea
     id: summary
     attributes:
-      label: Краткое Описание
+      label: Краткое описание
       description: Коротко опишите проблему.
       placeholder: Что именно сломалось?
     validations:
@@ -19,7 +19,7 @@ body:
   - type: textarea
     id: steps
     attributes:
-      label: Шаги Воспроизведения
+      label: Шаги воспроизведения
       description: Укажите точные шаги, команды, маршруты или файлы.
       placeholder: |
         1. Запустить ...
@@ -31,31 +31,31 @@ body:
   - type: textarea
     id: expected
     attributes:
-      label: Ожидаемое Поведение
+      label: Ожидаемое поведение
       placeholder: Что должно было произойти?
     validations:
       required: true
   - type: textarea
     id: actual
     attributes:
-      label: Фактическое Поведение
+      label: Фактическое поведение
       placeholder: Что произошло вместо этого?
     validations:
       required: true
   - type: input
     id: affected_path
     attributes:
-      label: Затронутый Путь Или Маршрут
-      description: Например: docs/python/overview.mdx или /docs/python/overview
+      label: Затронутый путь или маршрут
+      description: "Например: docs/python/overview.mdx или /docs/python/overview"
       placeholder: docs/... or /docs/...
   - type: textarea
     id: verification
     attributes:
-      label: Локальная Проверка
-      description: Если есть, приложите вывод prepare, validate, lint, typecheck или build.
+      label: Локальная проверка
+      description: Если есть, приложите вывод quality, test, lint, typecheck или build.
       render: shell
   - type: textarea
     id: extra
     attributes:
-      label: Дополнительный Контекст
+      label: Дополнительный контекст
       description: Скриншоты, логи, детали окружения или любые полезные заметки.

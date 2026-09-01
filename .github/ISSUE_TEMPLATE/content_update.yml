@@ -1,4 +1,4 @@
-name: Обновление Контента
+name: Обновление контента
 description: Предложить новый учебный материал или обновление существующего.
 title: "[Content]: "
 labels:
@@ -15,13 +15,13 @@ body:
   - type: input
     id: target
     attributes:
-      label: Целевой Файл Или Планируемый Путь
-      description: Например: docs/python/practice-7.mdx
+      label: Целевой файл или планируемый путь
+      description: "Например: docs/python/practice-7.mdx"
       placeholder: docs/<track>/...
   - type: textarea
     id: summary
     attributes:
-      label: Предлагаемое Изменение
+      label: Предлагаемое изменение
       description: Что именно нужно добавить, обновить или удалить?
       placeholder: Кратко опишите изменение.
     validations:
@@ -29,7 +29,7 @@ body:
   - type: textarea
     id: reason
     attributes:
-      label: Почему Это Важно
+      label: Почему это важно
       description: Объясните, зачем это изменение нужно проекту.
       placeholder: Какую потребность или пробел это закрывает?
     validations:
@@ -37,13 +37,16 @@ body:
   - type: textarea
     id: sources
     attributes:
-      label: Источники Или Референсы
+      label: Источники или референсы
       description: Необязательно. Можно приложить ссылки, датасеты, ноутбуки или старые материалы.
   - type: checkboxes
     id: checks
     attributes:
-      label: Чеклист Контрибьютора
+      label: Чеклист контрибьютора
       options:
-        - label: Я буду редактировать контент в docs/ и пересоберу content manifest
-        - label: Я запущу prepare:content и validate:content перед открытием PR
-        - label: Я добавлю author metadata, если это уместно
+        - label: Я буду редактировать исходный контент в `docs/`
+          required: true
+        - label: Я запущу `npm run quality` и `npm test` перед открытием PR
+          required: true
+        - label: Я добавлю обязательные метаданные, включая `author`
+          required: true

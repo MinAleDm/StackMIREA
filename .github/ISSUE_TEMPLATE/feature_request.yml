@@ -1,4 +1,4 @@
-name: Запрос На Улучшение
+name: Запрос на улучшение
 description: Предложить новую функцию, улучшение или доработку workflow.
 title: "[Feature]: "
 labels:
@@ -7,7 +7,7 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: Проблема Или Возможность
+      label: Проблема или возможность
       description: Какую проблему вы хотите решить?
       placeholder: Чего сейчас не хватает?
     validations:
@@ -15,7 +15,7 @@ body:
   - type: textarea
     id: proposal
     attributes:
-      label: Предлагаемое Решение
+      label: Предлагаемое решение
       description: Опишите желаемое изменение.
       placeholder: Что нужно добавить или изменить?
     validations:
@@ -23,17 +23,17 @@ body:
   - type: textarea
     id: scope
     attributes:
-      label: Область Изменения
+      label: Область изменения
       description: Какую часть проекта это затрагивает?
       placeholder: UI, search, docs structure, content pipeline, CI, deployment...
   - type: textarea
     id: alternatives
     attributes:
-      label: Рассмотренные Альтернативы
+      label: Рассмотренные альтернативы
       description: Необязательно. Опишите альтернативные идеи или почему текущего поведения недостаточно.
   - type: textarea
     id: success
     attributes:
-      label: Критерии Готовности
+      label: Критерии готовности
       description: Как понять, что задача действительно решена?
       placeholder: Как должен выглядеть хороший результат?
