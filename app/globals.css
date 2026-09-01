@@ -7,39 +7,43 @@
 @import "../styles/docs.css";
 
 :root {
-  --background: 210 17% 98%;
-  --foreground: 0 0% 8%;
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 8%;
-  --primary: 0 0% 9%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 210 11% 95%;
-  --secondary-foreground: 0 0% 12%;
-  --muted: 210 12% 96%;
-  --muted-foreground: 215 8% 40%;
-  --accent: 210 10% 92%;
-  --accent-foreground: 0 0% 10%;
-  --border: 210 10% 87%;
-  --input: 210 10% 87%;
-  --ring: 0 0% 18%;
+  --background: 252 60% 98%;
+  --foreground: 260 42% 14%;
+  --card: 255 100% 100%;
+  --card-foreground: 260 42% 14%;
+  --primary: 263 83% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 252 55% 94%;
+  --secondary-foreground: 260 48% 25%;
+  --muted: 252 38% 95%;
+  --muted-foreground: 256 16% 42%;
+  --accent: 270 67% 92%;
+  --accent-foreground: 265 60% 32%;
+  --border: 253 30% 87%;
+  --input: 253 30% 84%;
+  --ring: 263 83% 58%;
+  --glow-primary: 139 92 246;
+  --glow-secondary: 192 132 252;
 }
 
 .dark {
-  --background: 0 0% 5%;
-  --foreground: 210 12% 95%;
-  --card: 0 0% 7%;
-  --card-foreground: 210 12% 95%;
-  --primary: 0 0% 96%;
-  --primary-foreground: 0 0% 8%;
-  --secondary: 0 0% 12%;
-  --secondary-foreground: 210 12% 95%;
-  --muted: 0 0% 12%;
-  --muted-foreground: 0 0% 70%;
-  --accent: 0 0% 16%;
-  --accent-foreground: 210 12% 95%;
-  --border: 0 0% 18%;
-  --input: 0 0% 18%;
-  --ring: 0 0% 82%;
+  --background: 259 42% 8%;
+  --foreground: 252 45% 96%;
+  --card: 259 36% 11%;
+  --card-foreground: 252 45% 96%;
+  --primary: 263 90% 68%;
+  --primary-foreground: 260 52% 10%;
+  --secondary: 258 29% 17%;
+  --secondary-foreground: 252 40% 94%;
+  --muted: 258 25% 16%;
+  --muted-foreground: 253 17% 70%;
+  --accent: 268 38% 22%;
+  --accent-foreground: 261 100% 89%;
+  --border: 258 24% 23%;
+  --input: 258 24% 27%;
+  --ring: 263 90% 72%;
+  --glow-primary: 124 58 237;
+  --glow-secondary: 168 85 247;
 }
 
 * {
@@ -61,11 +65,17 @@ body {
   font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
+::selection {
+  background: hsl(var(--primary) / 0.24);
+  color: hsl(var(--foreground));
+}
+
 .site-background {
   background:
-    radial-gradient(1100px 640px at 88% -12%, rgb(15 23 42 / 0.12), transparent 58%),
-    radial-gradient(900px 520px at -8% 18%, rgb(115 115 115 / 0.12), transparent 56%),
+    radial-gradient(1100px 640px at 88% -12%, rgb(var(--glow-primary) / 0.2), transparent 58%),
+    radial-gradient(900px 520px at -8% 18%, rgb(var(--glow-secondary) / 0.14), transparent 56%),
     hsl(var(--background));
+  background-attachment: fixed;
 }
 
 @media (prefers-reduced-motion: no-preference) {

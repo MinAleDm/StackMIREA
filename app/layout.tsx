@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     canonical: "/"
   },
   icons: {
-    icon: "favicon.png",
-    shortcut: "favicon.png",
+    icon: "favicon.svg",
+    shortcut: "favicon.svg",
     apple: "favicon.png"
   },
   keywords: ["Next.js docs", "documentation platform", "python", "ai", "bigdata", "java", "algorithms", "mdx", "shiki"],

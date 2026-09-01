@@ -1,6 +1,7 @@
 .docs-prose {
-  @apply prose prose-slate max-w-none dark:prose-invert;
+  @apply prose max-w-none;
   --tw-prose-body: hsl(var(--foreground));
+  --tw-prose-lead: hsl(var(--muted-foreground));
   --tw-prose-headings: hsl(var(--foreground));
   --tw-prose-links: hsl(var(--primary));
   --tw-prose-bold: hsl(var(--foreground));
@@ -8,8 +9,13 @@
   --tw-prose-bullets: hsl(var(--muted-foreground));
   --tw-prose-hr: hsl(var(--border));
   --tw-prose-quotes: hsl(var(--foreground));
-  --tw-prose-quote-borders: hsl(var(--border));
+  --tw-prose-quote-borders: hsl(var(--primary));
   --tw-prose-captions: hsl(var(--muted-foreground));
+  --tw-prose-code: hsl(var(--accent-foreground));
+  --tw-prose-pre-code: hsl(var(--foreground));
+  --tw-prose-pre-bg: hsl(var(--card));
+  --tw-prose-th-borders: hsl(var(--border));
+  --tw-prose-td-borders: hsl(var(--border));
 }
 
 .docs-prose :where(h1, h2, h3, h4) {
@@ -47,7 +53,7 @@
 }
 
 .docs-prose blockquote {
-  @apply border-l-2 border-border pl-4 italic text-muted-foreground;
+  @apply border-l-2 border-primary/50 pl-4 italic text-muted-foreground;
   overflow-wrap: anywhere;
 }
 

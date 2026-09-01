@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { BookOpenText, BrainCircuit, Github, Home } from "lucide-react";
 
-import siteLogo from "@/public/favicon.png";
+import siteLogo from "@/public/favicon.svg";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { REPO_URL, SITE_NAME } from "@/lib/utils";
 

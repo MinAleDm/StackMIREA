@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="240" viewBox="0 0 900 240" role="img" aria-labelledby="title desc">
+  <title id="title">StackMIREA</title>
+  <desc id="desc">Логотип образовательной платформы StackMIREA</desc>
+  <defs>
+    <linearGradient id="panel" x1="24" y1="20" x2="876" y2="220" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#271342"/>
+      <stop offset="1" stop-color="#140A28"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="54" y1="52" x2="190" y2="190" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="0.48" stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="wordmark" x1="246" y1="72" x2="716" y2="172" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#C7D2FE"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+  </defs>
+
+  <rect x="10" y="10" width="880" height="220" rx="42" fill="url(#panel)"/>
+  <rect x="10.75" y="10.75" width="878.5" height="218.5" rx="41.25" fill="none" stroke="#6D28D9" stroke-width="1.5"/>
+  <circle cx="122" cy="120" r="76" fill="#4F46E5" opacity=".2" filter="url(#glow)"/>
+  <rect x="44" y="42" width="156" height="156" rx="38" fill="url(#accent)"/>
+
+  <path d="M78 88.5 122 67l44 21.5L122 110 78 88.5Z" fill="#fff"/>
+  <path d="M78 112.5 122 134l44-21.5v18L122 152l-44-21.5v-18Z" fill="#fff" opacity=".82"/>
+  <path d="M78 142.5 122 164l44-21.5v18L122 182l-44-21.5v-18Z" fill="#fff" opacity=".58"/>
+  <path d="m168 84 15 7.5-15 7.5" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+
+  <text x="242" y="123" fill="url(#wordmark)" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="70" font-weight="750" letter-spacing="-3">StackMIREA</text>
+  <text x="246" y="164" fill="#C4B5FD" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="20" font-weight="500" letter-spacing="2.8">УЧИСЬ · СОЗДАВАЙ · ДЕЛИСЬ</text>
+</svg>
