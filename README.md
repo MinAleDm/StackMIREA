@@ -1,191 +1,118 @@
-[![GitHub Pages Deploy](https://github.com/minkinad/StackMIREA/actions/workflows/deploy-gh-pages.yml/badge.svg)](https://github.com/minkinad/StackMIREA/actions/workflows/deploy-gh-pages.yml)
+<div align="center">
+  <img src="./public/logo.svg" width="720" alt="StackMIREA — открытая база учебных материалов по IT-дисциплинам РТУ МИРЭА" />
 
-# StackMIREA
+  <p><strong>Учебные практики, конспекты и ноутбуки — в формате современной документации.</strong></p>
 
-StackMIREA - статическая документационная платформа для IT-дисциплин РТУ МИРЭА. Проект собирает учебные треки, практики, ноутбуки и методические материалы в единый интерфейс с документацией, семантическим поиском, блоком авторов на главной и публикацией через GitHub Pages.
+  <p>
+    <a href="https://minkinad.github.io/StackMIREA/">Открыть сайт</a>
+    ·
+    <a href="https://minkinad.github.io/StackMIREA/docs/">Смотреть материалы</a>
+    ·
+    <a href="./CONTRIBUTING.md">Предложить изменение</a>
+  </p>
 
-Production URL: https://minkinad.github.io/StackMIREA/
+  <p>
+    <a href="https://github.com/minkinad/StackMIREA/actions/workflows/deploy-gh-pages.yml"><img src="https://github.com/minkinad/StackMIREA/actions/workflows/deploy-gh-pages.yml/badge.svg" alt="Статус публикации" /></a>
+    <a href="https://github.com/minkinad/StackMIREA/actions/workflows/pr-check.yml"><img src="https://github.com/minkinad/StackMIREA/actions/workflows/pr-check.yml/badge.svg" alt="Статус проверок" /></a>
+    <img src="https://img.shields.io/badge/Next.js-14-111827?logo=next.js" alt="Next.js 14" />
+    <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" alt="TypeScript 5" />
+    <a href="./LICENSE"><img src="https://img.shields.io/badge/код-MIT-22C55E" alt="Лицензия кода MIT" /></a>
+  </p>
+</div>
 
-## Актуальное состояние проекта
+## О проекте
 
-Актуально на 4 апреля 2026 года.
+StackMIREA — статическая образовательная платформа для IT-дисциплин РТУ МИРЭА. Она объединяет учебные треки, практические работы, ноутбуки и дополнительные материалы в одном интерфейсе.
 
-- 19 учебных треков в едином content manifest.
-- 68 исходных Markdown/MDX-файлов в `docs/`.
-- 71 Markdown/MDX-страница в `.cache/content-manifest.json`.
-- 52 отдельных учебных материала без учёта индексных страниц разделов.
-- Крупнейшие треки: `java` (26 страниц), `ai` (9), `bigdata` (9), `python` (6), `procedural-programming` (6).
-- Два workflow в CI/CD: `PR Checks` и `Deploy Docs to GitHub Pages`.
-- Добавлены community health файлы для GitHub: `CONTRIBUTING`, `CODE_OF_CONDUCT`, `SECURITY`, `SUPPORT`, issue templates и PR template.
+Внутри есть:
 
-## Что есть?
-
-- Главная страница с семантическим поиском, блоком авторов и команд, правилами публикации и быстрыми переходами.
-- Раздел документации `/docs` с карточками треков, sidebar, breadcrumbs, оглавлением страницы и пагинацией.
-- Страница `/ask` с локальным семантическим поиском по `public/search-index.json`.
-- MDX-рендеринг с подсветкой кода через Shiki и пользовательскими UI-компонентами.
-- Ссылка `Редактировать источник` для перехода к редактированию материала в GitHub.
-- Статическая публикация в GitHub Pages через GitHub Actions.
-
-## Технологии
-
-- Next.js 14 App Router
-- React 18
-- TypeScript 5
-- Tailwind CSS
-- `next-mdx-remote`, `remark-gfm`, `rehype-slug`
-- Shiki
-
-## Как устроен контент
-
-- `docs/` - исходные материалы, которые редактируются вручную.
-- `.cache/content-manifest.json` - единый build-time manifest, который используют приложение, поиск и валидатор.
-- `resources/` - дополнительные файлы, датасеты и артефакты практик.
-- `scripts/` - сборка content manifest, поискового индекса и валидация ссылок.
-- `public/search-index.json` - локальный поисковый индекс для страницы `/ask`.
-
-Основной pipeline:
-
-1. Материалы редактируются в `docs/`.
-2. `npm run content:manifest` собирает `.cache/content-manifest.json` с slug, frontmatter, author, toc, preview, topics и hash.
-3. `npm run search:build` собирает поисковый индекс из manifest.
-4. `npm run prepare:content` объединяет оба шага.
-5. `npm run build` запускает `prepare:content` автоматически через `prebuild`.
-
-## Учебные треки
-
-- `algorithms`
-- `ai`
-- `bigdata`
-- `business-process-modeling`
-- `configuration-management`
-- `data-structures-and-algorithms-part-1`
-- `data-structures-and-algorithms-part-2`
-- `database-development`
-- `internet-of-things`
-- `java`
-- `object-oriented-programming`
-- `procedural-programming`
-- `project-management`
-- `python`
-- `react`
-- `software-application-development-part-1`
-- `software-testing-and-verification`
-- `system-administration`
-- `systems-analysis-and-conceptual-modeling-part-1`
+- каталог учебных треков с боковой навигацией, хлебными крошками и оглавлением;
+- локальный поиск по материалам на странице «Спроси StackMIREA»;
+- MDX-страницы с подсветкой кода и переиспользуемыми компонентами;
+- ссылки на авторов и исходники материалов;
+- автоматическая проверка структуры, метаданных, ссылок и поискового индекса;
+- статическая публикация в GitHub Pages.
 
 ## Быстрый старт
 
-Требование: `Node.js >= 20`.
+Понадобятся Git и Node.js 20 или новее.
 
 ```bash
+git clone https://github.com/minkinad/StackMIREA.git
+cd StackMIREA
 npm ci
 npm run dev
 ```
 
-Локальный dev-сервер будет доступен на `http://localhost:3000`.
+После запуска сайт будет доступен на <http://localhost:3000>.
 
-## Скрипты
+## Как всё устроено
 
-- `npm run dev` - локальная разработка; перед запуском автоматически выполняется `prepare:content`.
-- `npm run build` - production build со статическим экспортом в `out/`.
-- `npm run start` - локальный запуск собранной статической версии на `:3000`.
-- `npm run lint` - проверка ESLint.
-- `npm run typecheck` - проверка TypeScript.
-- `npm run prepare:content` - сборка content manifest и поискового индекса.
-- `npm run content:manifest` - генерация `.cache/content-manifest.json` из `docs/`.
-- `npm run prepare:content:warning` - сборка manifest в warning-режиме без падения по content issues.
-- `npm run prepare:content:report` - генерация `content-report.json` с autofix suggestions.
-- `npm run content:sync` - compatibility alias для `content:manifest`.
-- `npm run content:quality` - сборка manifest/search index, запуск quality gates и создание JSON/HTML-отчетов.
-- `npm test` - запуск всех автоматических тестов проекта.
-- `npm run test:app` - unit-тесты прикладной логики.
-- `npm run test:content` - unit-тесты движка, правил и генераторов отчетов.
-- `npm run quality` - подготовка контента и полный запуск content quality gates.
-- `npm run search:build` - генерация `public/search-index.json`.
-- `npm run validate:content` - compatibility alias для `content:quality`.
-- `npm run export` - информационный скрипт: static export выполняется внутри `next build`.
+```text
+app/          маршруты и страницы Next.js
+components/   интерфейс и MDX-компоненты
+docs/         редактируемые учебные материалы
+lib/          навигация, поиск и работа с manifest
+resources/    датасеты и файлы для практик
+scripts/      сборка и проверка контента
+public/       статические и сгенерированные ассеты
+```
 
-## Критерии качества контента
+`docs/` — единственный источник учебного контента. Во время подготовки проекта из него собираются `.cache/content-manifest.json` и `public/search-index.json`:
 
-Полная локальная проверка контента:
+```mermaid
+flowchart LR
+  A[docs/**/*.mdx] --> B[content manifest]
+  B --> C[страницы сайта]
+  B --> D[поисковый индекс]
+  C --> E[статический экспорт]
+  D --> E
+```
+
+Не редактируйте manifest и поисковый индекс вручную — используйте команды проекта.
+
+## Основные команды
+
+| Команда | Назначение |
+| --- | --- |
+| `npm run dev` | Подготовить контент и запустить локальную разработку |
+| `npm run build` | Собрать статический сайт в `out/` |
+| `npm run quality` | Проверить manifest, ссылки, метаданные и поисковый индекс |
+| `npm test` | Запустить тесты контентного движка и приложения |
+| `npm run lint` | Проверить код с ESLint |
+| `npm run typecheck` | Проверить типы TypeScript |
+| `npm run prepare:content` | Пересобрать manifest и поисковый индекс |
+
+Полный локальный прогон перед pull request:
 
 ```bash
 npm run quality
 npm test
+npm run lint
+npm run typecheck
+npm run build
 ```
 
-Отчеты сохраняются в:
+Отчёты о качестве контента сохраняются в `.cache/content-report.json` и `.cache/content-report.html`.
 
-- `.cache/content-report.json` - структурированный отчет для автоматической обработки;
-- `.cache/content-report.html` - человекочитаемый отчет с метриками и найденными проблемами.
+## Добавление материала
 
-Ошибки блокируют CI:
+1. Выберите существующий трек в `docs/` или заведите новый трек одновременно в `lib/tracks.json`.
+2. Создайте Markdown- или MDX-файл с обязательными полями `title`, `description`, `author` и `order` либо `sidebar_position`.
+3. Добавьте воспроизводимые примеры, подпишите языки блоков кода и проверьте ссылки.
+4. Запустите `npm run quality` и `npm test`.
+5. Откройте pull request и кратко опишите изменения.
 
-- отсутствующий `description`;
-- дублирующийся slug;
-- некорректный author;
-- битая внутренняя ссылка, anchor или ссылка на файл;
-- пустой section index;
-- страница крупнее 1 MiB;
-- search chunk длиннее 420 символов.
+Подробные правила и чеклисты собраны в [руководстве для контрибьюторов](./CONTRIBUTING.md). Инструкции для кодовых агентов находятся в [AGENTS.md](./AGENTS.md).
 
-Предупреждения не блокируют CI:
+## Помощь и сообщество
 
-- страница крупнее 512 KiB;
-- неиспользуемый файл из `resources/`;
-- orphan page, на которую не ссылаются другие документы.
-
-Пороговые значения и исключения находятся в
-[`scripts/content-quality-config.mjs`](./scripts/content-quality-config.mjs).
-
-## Структура проекта
-
-```text
-app/
-components/
-docs/
-lib/
-public/
-resources/
-scripts/
-styles/
-.github/workflows/
-.github/ISSUE_TEMPLATE/
-CODE_OF_CONDUCT.md
-CONTRIBUTING.md
-SECURITY.md
-SUPPORT.md
-```
-
-## CI/CD и деплой
-
-- [`.github/workflows/pr-check.yml`](./.github/workflows/pr-check.yml) проверяет content quality rules, публикует JSON/HTML-отчет как artifact, а также запускает `lint`, `typecheck` и `build` для Pull Request.
-- [`.github/workflows/deploy-gh-pages.yml`](./.github/workflows/deploy-gh-pages.yml) публикует сайт в GitHub Pages при пуше в `main` и при ручном запуске.
-- В `Settings -> Pages` должен быть выбран `Source: GitHub Actions`.
-
-## Community и вклад в проект
-
-- [CONTRIBUTING.md](./CONTRIBUTING.md) - как правильно вносить изменения.
-- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) - правила поведения в проекте.
-- [SECURITY.md](./SECURITY.md) - как безопасно сообщать об уязвимостях.
-- [SUPPORT.md](./SUPPORT.md) - как запросить помощь и куда писать.
-- [`.github/ISSUE_TEMPLATE/`](./.github/ISSUE_TEMPLATE/) - шаблоны для bug report, feature request и content update.
-- [`.github/pull_request_template.md`](./.github/pull_request_template.md) - шаблон описания pull request.
-
-## Как вносить изменения
-
-1. Добавьте или обновите материал в `docs/<track>/...`.
-2. Запустите `npm run quality`.
-3. Запустите `npm test`.
-4. Проверьте проект командами `npm run lint`, `npm run typecheck` и `npm run build`.
-5. Откройте Pull Request.
-
-Для каждого материала требуется поле `author` во frontmatter: GitHub login или ссылка на профиль.
-
-Для более подробного процесса контрибуции см. [CONTRIBUTING.md](./CONTRIBUTING.md).
+- [История изменений](./CHANGELOG.md) — новые возможности, исправления и заметки о релизах.
+- [Поддержка](./SUPPORT.md) — куда обратиться с вопросом или проблемой.
+- [Кодекс поведения](./CODE_OF_CONDUCT.md) — правила общения в проекте.
+- [Политика безопасности](./SECURITY.md) — как приватно сообщить об уязвимости.
+- [Шаблоны issues](./.github/ISSUE_TEMPLATE/) — ошибки, идеи и обновления контента.
 
 ## Лицензии
 
-- Код проекта распространяется по лицензии MIT. См. [LICENSE](./LICENSE).
-- Контент сайта, статьи и учебные материалы - CC BY-NC-SA 4.0. См. [CC-BY-NC-SA-4.0](./CC-BY-NC-SA-4.0).
+Код распространяется по [лицензии MIT](./LICENSE). Учебные материалы — по [CC BY-NC-SA 4.0](./CC-BY-NC-SA-4.0).
