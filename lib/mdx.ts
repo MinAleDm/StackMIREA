@@ -3,11 +3,17 @@ import rehypeSlug from "rehype-slug";
 
 import { Callout } from "@/components/ui/Callout";
 import { CodeBlock } from "@/components/ui/CodeBlock";
+import { CollapsibleCode } from "@/components/ui/CollapsibleCode";
+import { Figure } from "@/components/ui/Figure";
+import { SelfCheck } from "@/components/ui/SelfCheck";
 import { getMarkdownRemarkPlugins, type TocItem } from "@/lib/markdown";
 
 const mdxComponents = {
   Callout,
-  CodeBlock
+  CodeBlock,
+  CollapsibleCode,
+  Figure,
+  SelfCheck
 };
 
 interface CompileDocMdxOptions {

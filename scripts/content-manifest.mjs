@@ -309,11 +309,13 @@ function extractHeadingData(markdown) {
     const id = slugger.slug(title);
     anchors.push(id);
 
-    if (node.depth === 2 || node.depth === 3) {
+    const renderedDepth = node.depth === 1 ? 2 : node.depth;
+
+    if (renderedDepth === 2 || renderedDepth === 3) {
       toc.push({
         id,
         title,
-        depth: node.depth
+        depth: renderedDepth
       });
     }
   });
@@ -339,6 +341,23 @@ function toGitHubPerson(rawGitHub) {
 
 function createHash(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+function inferMaterialType(slug, isSectionIndex) {
+  if (isSectionIndex) {
+    return "guide";
+  }
+
+  const leaf = slug.at(-1) ?? "";
+  if (leaf.includes("notebook")) return "notebook";
+  if (/(practice|task|homework)/.test(leaf)) return "practice";
+  if (/(overview|getting-started|guide)/.test(leaf)) return "guide";
+  return "theory";
+}
+
+function estimateReadingMinutes(source) {
+  const wordCount = stripMarkdown(source).split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(wordCount / 200));
 }
 
 export class ContentRepository {
@@ -478,6 +497,8 @@ export class Parser {
     const preview = stripMarkdown(parsed.content).slice(0, 260).trim();
     const { anchors, toc } = extractHeadingData(parsed.content);
     const topicSource = `${title} ${description} ${preview} ${stripMarkdown(parsed.content)}`;
+    const materialType = frontmatter.type ?? inferMaterialType(slug, isSectionIndex);
+    const tags = Array.isArray(frontmatter.tags) ? [...new Set(frontmatter.tags)] : [];
 
     return {
       slug,
@@ -496,6 +517,12 @@ export class Parser {
       toc,
       preview,
       topics: [...new Set(findTopics(topicSource))],
+      materialType,
+      tags,
+      difficulty: frontmatter.difficulty ?? null,
+      updatedAt: frontmatter.updatedAt ?? null,
+      estimatedMinutes: frontmatter.estimatedMinutes ?? estimateReadingMinutes(parsed.content),
+      status: frontmatter.status ?? "published",
       anchors,
       hash: createHash(document.rawSource),
       isSectionIndex,
@@ -581,6 +608,7 @@ export class ManifestBuilder {
 
     const docs = [...documentsByVirtualPath.values()]
       .map((document) => this.parser.parse(document))
+      .filter((document) => document.status !== "draft")
       .sort((left, right) => left.slugKey.localeCompare(right.slugKey));
 
       const docsBySlug = new Map();

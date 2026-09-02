@@ -42,7 +42,7 @@ export function AskStackMirea() {
           <div>
             <p className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs text-muted-foreground">
               <Sparkles className="size-3.5" />
-              Semantic-style search over StackMIREA content
+              Поиск ответа по содержимому материалов
             </p>
             <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">Спроси StackMIREA</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
@@ -174,7 +174,8 @@ export function AskStackMirea() {
                 </div>
               ) : (
                 <div className="rounded-3xl border border-dashed border-border/80 bg-background/40 p-6 text-sm text-muted-foreground">
-                  По запросу пока ничего релевантного не нашлось. Попробуй назвать инструмент, метод или дисциплину короче.
+                  <p className="font-medium text-foreground">Ничего не найдено</p>
+                  <p className="mt-2">Попробуйте изменить формулировку или найти материал по технологии.</p>
                 </div>
               )}
             </div>
@@ -243,7 +244,7 @@ export function AskStackMirea() {
             Если знаешь дисциплину, но не знаешь конкретную страницу, начни с общего каталога треков.
           </p>
           <Link href="/docs" className={cn(buttonVariants({ variant: "outline" }), "mt-4 w-full rounded-2xl border-border/80 bg-background/70")}>
-            Перейти в каталог docs
+            Перейти в каталог
           </Link>
         </section>
       </aside>

@@ -29,14 +29,14 @@ export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMen
   return (
     <div className="sticky top-14 z-30 border-b border-border/80 bg-background/95 px-4 py-3 backdrop-blur lg:hidden">
       <button
-        className="flex w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted/70"
+        className="flex min-h-11 w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted/70"
         type="button"
         aria-expanded={isOpen}
         aria-controls="mobile-docs-menu"
         onClick={() => setIsOpen((value) => !value)}
       >
         <span className="min-w-0 truncate">
-          Навигация
+          Содержание курса
           {activeGroup ? <span className="font-normal text-muted-foreground"> · {activeGroup.title}</span> : null}
         </span>
         <ChevronDown className={cn("size-4 shrink-0 transition-transform", isOpen ? "rotate-180" : "rotate-0")} />
@@ -77,7 +77,7 @@ export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMen
             <div className="pointer-events-none absolute left-0 top-0 z-10 h-3 w-full bg-gradient-to-b from-background to-transparent" />
             <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-3 w-full bg-gradient-to-t from-background to-transparent" />
 
-            <nav aria-label="Mobile docs navigation" className="max-h-[65vh] overflow-y-auto pb-4 pr-1">
+            <nav aria-label="Мобильное содержание курса" className="max-h-[65vh] overflow-y-auto pb-4 pr-1">
               <ul className="space-y-2">
                 {groups.map((group) => {
                   const containsActive = group.items.some(
@@ -93,7 +93,7 @@ export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMen
                         aria-expanded={expanded}
                         aria-controls={`mobile-docs-group-${group.id}`}
                         className={cn(
-                          "flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm font-medium transition-colors",
+                          "flex min-h-11 w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm font-medium transition-colors",
                           containsActive
                             ? "text-primary"
                             : "text-foreground hover:bg-muted/70 hover:text-foreground"
@@ -116,7 +116,7 @@ export function MobileDocsMenu({ buildInfo, groups, currentPath }: MobileDocsMen
                                   href={item.href}
                                   onClick={() => setIsOpen(false)}
                                   className={cn(
-                                    "block rounded-md px-2 py-1.5 text-sm leading-5 transition-colors",
+                                    "flex min-h-11 items-center rounded-md px-2 py-1.5 text-sm leading-5 transition-colors",
                                     isActive
                                       ? "bg-primary/12 font-medium text-primary"
                                       : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"

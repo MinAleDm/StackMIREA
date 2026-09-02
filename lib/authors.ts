@@ -12,15 +12,15 @@ export interface TeamMember extends GitHubPerson {
 
 const DEFAULT_DOC_AUTHOR = REPO_OWNER;
 const PRODUCT_TEAM_MEMBERS: Array<{ github: string; role: string }> = [
-  { github: REPO_OWNER, role: "CPO" }
+  { github: REPO_OWNER, role: "Creator & Maintainer" }
 ];
 const CONTENT_TEAM_MEMBERS: Array<{ github: string; role: string }> = [
-  { github: REPO_OWNER, role: "Head of Content" },
-  { github: "g10bus", role: "Media Team Lead" }
+  { github: REPO_OWNER, role: "Content Contributor" },
+  { github: "g10bus", role: "Media Contributor" }
 ];
 const DEV_TEAM_MEMBERS: Array<{ github: string; role: string }> = [
-  { github: REPO_OWNER, role: "Dashboard Team Lead" },
-  { github: "https://github.com/rbdnv", role: "Frontend Developer" }
+  { github: REPO_OWNER, role: "Maintainer" },
+  { github: "https://github.com/rbdnv", role: "Frontend Contributor" }
 ];
 
 function normalizeGitHubLogin(rawValue: string) {

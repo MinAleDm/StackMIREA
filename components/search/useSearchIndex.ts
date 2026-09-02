@@ -13,33 +13,52 @@ interface SearchIndexState {
 }
 
 const SEARCH_INDEX_ERROR = "Не удалось загрузить поисковый индекс. Проверь сборку `npm run search:build`.";
+let cachedSearchIndex: ReturnType<typeof prepareSearchIndex> | null = null;
+let searchIndexRequest: Promise<ReturnType<typeof prepareSearchIndex>> | null = null;
 
-export function useSearchIndex(): SearchIndexState {
+async function loadSearchIndex() {
+  if (cachedSearchIndex) return cachedSearchIndex;
+  if (!searchIndexRequest) {
+    searchIndexRequest = fetch(withBasePath("/search-index.json"))
+      .then((response) => {
+        if (!response.ok) throw new Error(`Search index request failed with status ${response.status}`);
+        return response.json() as Promise<SearchIndexPayload>;
+      })
+      .then((payload) => {
+        cachedSearchIndex = prepareSearchIndex(payload);
+        return cachedSearchIndex;
+      })
+      .finally(() => {
+        searchIndexRequest = null;
+      });
+  }
+  return searchIndexRequest;
+}
+
+export function useSearchIndex(enabled = true): SearchIndexState {
   const [state, setState] = useState<SearchIndexState>({
-    index: null,
+    index: cachedSearchIndex,
     error: "",
-    isLoading: true
+    isLoading: !cachedSearchIndex
   });
 
   useEffect(() => {
+    if (!enabled || state.index) {
+      return;
+    }
+
     let isMounted = true;
 
-    async function loadIndex() {
+    async function resolveIndex() {
       try {
-        const response = await fetch(withBasePath("/search-index.json"));
-
-        if (!response.ok) {
-          throw new Error(`Search index request failed with status ${response.status}`);
-        }
-
-        const payload = (await response.json()) as SearchIndexPayload;
+        const preparedIndex = await loadSearchIndex();
 
         if (!isMounted) {
           return;
         }
 
         setState({
-          index: prepareSearchIndex(payload),
+          index: preparedIndex,
           error: "",
           isLoading: false
         });
@@ -56,12 +75,12 @@ export function useSearchIndex(): SearchIndexState {
       }
     }
 
-    void loadIndex();
+    void resolveIndex();
 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [enabled, state.index]);
 
   return state;
 }

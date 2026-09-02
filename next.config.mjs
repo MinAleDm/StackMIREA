@@ -10,7 +10,7 @@ const nextConfig = {
     unoptimized: true
   },
   basePath: isProduction ? basePath : "",
-  assetPrefix: isProduction ? `${basePath}/` : undefined
+  assetPrefix: isProduction ? basePath : undefined
 };
 
 export default nextConfig;

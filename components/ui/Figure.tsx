@@ -1,0 +1,13 @@
+import Image from "next/image";
+
+interface FigureProps {
+  src: string;
+  alt: string;
+  caption?: string;
+  width: number;
+  height: number;
+}
+
+export function Figure({ src, alt, caption, width, height }: FigureProps) {
+  return <figure className="my-8"><Image src={src} alt={alt} width={width} height={height} className="h-auto max-w-full rounded-xl border border-border" />{caption ? <figcaption className="mt-2 text-center text-sm text-muted-foreground">{caption}</figcaption> : null}</figure>;
+}

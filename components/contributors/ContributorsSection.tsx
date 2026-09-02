@@ -77,7 +77,7 @@ export function ContributorsSection({
       <div className="rounded-3xl border border-border/70 bg-card/70 p-6 sm:p-8">
         <div className="grid gap-8 xl:grid-cols-3">
           <div>
-            <h3 className="mb-4 text-xl font-semibold tracking-tight">StackMirea Product</h3>
+            <h3 className="mb-4 text-xl font-semibold tracking-tight">Проект</h3>
             <div className="grid gap-3">
               {productTeam.map((member) => (
                 <GitHubUserBadge key={`product-${member.github}`} person={member} description={member.role} className="w-full justify-start" />
@@ -86,7 +86,7 @@ export function ContributorsSection({
           </div>
 
           <div>
-            <h3 className="mb-4 text-xl font-semibold tracking-tight">Content Managers</h3>
+            <h3 className="mb-4 text-xl font-semibold tracking-tight">Контент</h3>
             <div className="grid gap-3">
               {contentManagers.map((member) => (
                 <GitHubUserBadge
@@ -100,7 +100,7 @@ export function ContributorsSection({
           </div>
 
           <div>
-            <h3 className="mb-4 text-xl font-semibold tracking-tight">Developers Group</h3>
+            <h3 className="mb-4 text-xl font-semibold tracking-tight">Разработка</h3>
             <div className="grid gap-3">
               {devTeam.map((member) => (
                 <GitHubUserBadge key={`dev-${member.github}`} person={member} description={member.role} className="w-full justify-start" />
