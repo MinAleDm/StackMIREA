@@ -34,6 +34,21 @@ order: 1
 ---
 ```
 
+При необходимости добавьте тип (`theory`, `practice`, `notebook`, `guide`, `reference`), теги, сложность, дату обновления, ожидаемое время и статус:
+
+```yaml
+type: practice
+tags:
+  - Java
+  - MVC
+difficulty: intermediate
+updatedAt: 2026-09-02
+estimatedMinutes: 20
+status: published
+```
+
+Статусы `draft`, `published` и `archived` позволяют управлять жизненным циклом страницы. Черновики не попадают в production manifest. Подробная структура страницы описана в [стандарте учебного материала](./docs/algorithms/content-standard.mdx).
+
 Вместо `order` можно использовать `sidebar_position`. Для нового учебного трека добавьте запись в `lib/tracks.json` и индексную страницу `docs/<track>/index.mdx`.
 
 Хороший материал:

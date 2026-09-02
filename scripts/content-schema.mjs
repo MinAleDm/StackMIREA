@@ -6,6 +6,13 @@ const explicitSlugSchema = z
   .string()
   .trim()
   .regex(/^\/[A-Za-z0-9/_-]*$/, "Slug must start with '/' and contain only URL-safe path segments");
+const materialTypeSchema = z.enum(["theory", "practice", "notebook", "guide", "reference"]);
+const difficultySchema = z.enum(["beginner", "intermediate", "advanced"]);
+const contentStatusSchema = z.enum(["draft", "published", "archived"]);
+const isoDateSchema = z.preprocess(
+  (value) => value instanceof Date ? value.toISOString().slice(0, 10) : value,
+  z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD format")
+);
 
 export const githubAuthorSchema = z
   .string()
@@ -19,7 +26,13 @@ export const docFrontmatterSchema = z
     order: z.coerce.number().int().min(0).optional(),
     sidebar_position: z.coerce.number().int().min(0).optional(),
     author: githubAuthorSchema.optional(),
-    slug: explicitSlugSchema.optional()
+    slug: explicitSlugSchema.optional(),
+    type: materialTypeSchema.optional(),
+    tags: z.array(trimmedStringSchema).optional(),
+    difficulty: difficultySchema.optional(),
+    updatedAt: isoDateSchema.optional(),
+    estimatedMinutes: z.coerce.number().int().positive().optional(),
+    status: contentStatusSchema.optional()
   })
   .passthrough();
 

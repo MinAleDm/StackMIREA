@@ -1,5 +1,6 @@
 .docs-prose {
-  @apply prose max-w-none;
+  @apply prose;
+  max-width: 800px;
   --tw-prose-body: hsl(var(--foreground));
   --tw-prose-lead: hsl(var(--muted-foreground));
   --tw-prose-headings: hsl(var(--foreground));
@@ -31,7 +32,7 @@
 }
 
 .docs-prose p {
-  @apply leading-7 text-foreground;
+  @apply text-base leading-7 text-foreground;
   overflow-wrap: anywhere;
 }
 
@@ -71,6 +72,8 @@
 
 .docs-prose img {
   @apply rounded-lg border border-border/70;
+  max-width: 100%;
+  height: auto;
 }
 
 .shiki {
@@ -90,4 +93,21 @@
   display: inline-block;
   min-height: 1.5rem;
   padding-right: 1rem;
+}
+
+.shiki .line.highlighted {
+  margin-inline: -1rem;
+  padding-inline: 1rem;
+  border-left: 2px solid hsl(var(--primary));
+  background: hsl(var(--primary) / 0.1);
+}
+
+@media (max-width: 640px) {
+  .docs-prose h2 {
+    margin-top: 2.5rem;
+  }
+
+  .docs-prose table {
+    font-size: 0.875rem;
+  }
 }

@@ -27,8 +27,9 @@ export interface TocItem {
   depth: 2 | 3;
 }
 
-const CALLOUT_TYPES = new Set(["tip", "warning", "info", "note"]);
+const CALLOUT_TYPES = new Set(["tip", "warning", "info", "note", "important"]);
 const CODE_FILENAME_PATTERN = /(?:title|filename)=["']?([^\s"']+)["']?/;
+const CODE_HIGHLIGHT_PATTERN = /\{([\d,\s-]+)\}/;
 
 function createMdxAttribute(name: string, value: string) {
   return {
@@ -44,7 +45,8 @@ function parseCodeInfo(lang?: string | null, meta?: string | null) {
 
   return {
     lang: normalizedLang,
-    filename: filenameMatch?.[1]
+    filename: filenameMatch?.[1],
+    highlight: meta ? CODE_HIGHLIGHT_PATTERN.exec(meta)?.[1] : undefined
   };
 }
 
@@ -55,6 +57,10 @@ export function createDocsAstPlugin(tocItems: TocItem[] = []): Plugin {
     return (tree) => {
       visit(tree, (node: unknown, index: number | undefined, parent: unknown) => {
         const typedNode = node as MdastNode;
+
+        if (typedNode.type === "heading" && typedNode.depth === 1) {
+          typedNode.depth = 2;
+        }
 
         if (typedNode.type === "heading" && (typedNode.depth === 2 || typedNode.depth === 3)) {
           const title = toString(typedNode).trim();
@@ -77,7 +83,7 @@ export function createDocsAstPlugin(tocItems: TocItem[] = []): Plugin {
         const typedParent = parent as MdastParent;
 
         if (typedNode.type === "code") {
-          const { lang, filename } = parseCodeInfo(typedNode.lang, typedNode.meta);
+          const { lang, filename, highlight } = parseCodeInfo(typedNode.lang, typedNode.meta);
           const attributes = [
             createMdxAttribute("lang", lang),
             createMdxAttribute("code", "value" in typedNode && typeof typedNode.value === "string" ? typedNode.value : "")
@@ -85,6 +91,9 @@ export function createDocsAstPlugin(tocItems: TocItem[] = []): Plugin {
 
           if (filename) {
             attributes.push(createMdxAttribute("filename", filename));
+          }
+          if (highlight) {
+            attributes.push(createMdxAttribute("highlight", highlight));
           }
 
           typedParent.children[index] = {

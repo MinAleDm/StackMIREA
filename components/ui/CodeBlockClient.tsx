@@ -31,7 +31,7 @@ export function CodeBlockClient({ code, html, filename, language }: CodeBlockCli
         <span className="truncate font-medium">{filename ?? language ?? "фрагмент"}</span>
         <Button variant="ghost" size="sm" onClick={handleCopy} className="h-7 px-2 text-xs">
           {copied ? <Check className="mr-1 size-3" /> : <Copy className="mr-1 size-3" />}
-          {copied ? "Скопировано" : "Копировать"}
+          <span aria-live="polite">{copied ? "Скопировано" : "Копировать"}</span>
         </Button>
       </figcaption>
       <div className="overflow-x-auto p-4 text-sm leading-6" dangerouslySetInnerHTML={{ __html: html }} />
