@@ -22,7 +22,7 @@ export function Sidebar({ buildInfo, groups, currentPath }: SidebarProps) {
 
   return (
     <aside className="hidden w-full lg:sticky lg:top-[4.5rem] lg:block lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto lg:pr-3">
-      <nav aria-label="Documentation sidebar" className="space-y-6 pb-12">
+      <nav aria-label="Содержание курса" className="space-y-6 pb-12">
         <div className="space-y-2 border-b border-border/70 pb-4">
           <div className="grid grid-cols-[auto_1fr] items-center gap-2 rounded-md border border-border/80 bg-card/80 p-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-md border border-primary/50 bg-primary/10 text-primary">

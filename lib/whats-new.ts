@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import type { GitHubPerson } from "@/lib/authors";
 import { getEditableDocs, getPublishedDocs } from "@/lib/navigation";
 import { getTrackDefinitions, getTrackTitle } from "@/lib/tracks";
+import { materialTypeLabels } from "@/lib/catalog";
 
 export interface WhatsNewMaterial {
   title: string;
@@ -11,6 +12,9 @@ export interface WhatsNewMaterial {
   updatedAt: string | null;
   createdAt: string | null;
   isNew: boolean;
+  description: string;
+  typeLabel: string;
+  estimatedMinutes: number;
 }
 
 export interface WhatsNewTrack {
@@ -116,7 +120,7 @@ function buildRecentMaterials(): WhatsNewMaterial[] {
   return getEditableDocs()
     .map((doc) => {
       const dates = getGitDatesForPath(`docs/${doc.editPath}`);
-      const updatedAt = dates.updatedAt ?? dates.createdAt;
+      const updatedAt = doc.updatedAt ?? dates.updatedAt ?? dates.createdAt;
       const createdAt = dates.createdAt;
 
       return {
@@ -125,7 +129,10 @@ function buildRecentMaterials(): WhatsNewMaterial[] {
         sectionTitle: getTrackTitle(doc.section),
         updatedAt,
         createdAt,
-        isNew: Boolean(createdAt && updatedAt && createdAt === updatedAt)
+        isNew: Boolean((createdAt && updatedAt && createdAt === updatedAt) || (!createdAt && doc.updatedAt)),
+        description: doc.description,
+        typeLabel: materialTypeLabels[doc.materialType],
+        estimatedMinutes: doc.estimatedMinutes
       };
     })
     .filter((item) => item.updatedAt || item.createdAt)

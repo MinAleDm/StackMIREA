@@ -26,7 +26,7 @@ interface DocsIndex {
 let cachedDocsIndex: DocsIndex | null = null;
 
 export function isPublishedDoc(doc: DocEntry): doc is PublishedDocEntry {
-  return !doc.isSectionIndex;
+  return !doc.isSectionIndex && doc.status === "published";
 }
 
 export function hasEditableSource(doc: PublishedDocEntry): doc is EditableDocEntry {
@@ -87,6 +87,7 @@ function createSidebarGroups(docs: DocEntry[]) {
   }
 
   return [...groupsMap.values()]
+    .filter((group) => group.items.length > 1)
     .sort((left, right) => {
       const orderDelta = getSectionOrder(left.id) - getSectionOrder(right.id);
       if (orderDelta !== 0) {
@@ -154,14 +155,18 @@ export function getSidebarGroups() {
 export function getDocPagination(slug: string[]) {
   const indexState = getDocsIndex();
   const slugKey = getSlugKey(slug);
-  const docIndex = indexState.docOrderBySlug.get(slugKey);
+  const currentDoc = indexState.docsBySlug.get(slugKey);
 
-  if (docIndex === undefined) {
+  if (!currentDoc || currentDoc.isSectionIndex || currentDoc.status !== "published") {
     return { prev: null, next: null };
   }
 
-  const prevDoc = indexState.docs[docIndex - 1];
-  const nextDoc = indexState.docs[docIndex + 1];
+  const courseDocs = indexState.docs.filter(
+    (doc) => doc.section === currentDoc.section && !doc.isSectionIndex && doc.status === "published"
+  );
+  const docIndex = courseDocs.findIndex((doc) => doc.slugKey === slugKey);
+  const prevDoc = courseDocs[docIndex - 1];
+  const nextDoc = courseDocs[docIndex + 1];
 
   return {
     prev: prevDoc ? { title: prevDoc.title, href: prevDoc.href } : null,

@@ -9,15 +9,18 @@ interface PaginationDoc {
 interface PaginationProps {
   prev: PaginationDoc | null;
   next: PaginationDoc | null;
+  course?: PaginationDoc;
 }
 
-export function Pagination({ prev, next }: PaginationProps) {
-  if (!prev && !next) {
+export function Pagination({ prev, next, course }: PaginationProps) {
+  if (!prev && !next && !course) {
     return null;
   }
 
   return (
-    <div className="mt-14 grid gap-3 sm:grid-cols-2">
+    <div className="mt-14">
+      {course ? <Link href={course.href} className="mb-3 inline-flex min-h-11 items-center text-sm font-medium text-primary">← Вернуться к курсу «{course.title}»</Link> : null}
+      <div className="grid gap-3 sm:grid-cols-2">
       {prev ? (
         <Link
           href={prev.href}
@@ -51,6 +54,7 @@ export function Pagination({ prev, next }: PaginationProps) {
       ) : (
         <div className="hidden sm:block" />
       )}
+      </div>
     </div>
   );
 }

@@ -72,3 +72,18 @@ export function Toc({ items }: TocProps) {
     </aside>
   );
 }
+
+export function MobileToc({ items }: TocProps) {
+  if (!items.length) return null;
+
+  return (
+    <details className="mb-8 rounded-xl border border-border bg-card/70 p-4 xl:hidden">
+      <summary className="min-h-6 cursor-pointer font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">На этой странице</summary>
+      <nav aria-label="Оглавление статьи" className="mt-3 border-t border-border pt-3">
+        <ul className="space-y-1">
+          {items.map((item) => <li key={item.id} className={item.depth === 3 ? "pl-4" : ""}><Link href={`#${item.id}`} className="flex min-h-11 items-center text-sm text-muted-foreground hover:text-primary">{item.title}</Link></li>)}
+        </ul>
+      </nav>
+    </details>
+  );
+}

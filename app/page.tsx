@@ -1,192 +1,73 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Brain, BrainCircuit, ExternalLink, GitPullRequest, ListChecks } from "lucide-react";
+import { ArrowRight, BookOpenText, Github, GitPullRequest, Search, Sparkles } from "lucide-react";
 
-import { ContributorsSection } from "@/components/contributors/ContributorsSection";
-import { WhatsNewSection } from "@/components/home/WhatsNewSection";
+import { MaterialCard } from "@/components/cards/MaterialCard";
+import { TrackCard } from "@/components/cards/TrackCard";
+import { HeroSearch } from "@/components/home/HeroSearch";
+import { SearchLauncher } from "@/components/search/SearchDialog";
 import { buttonVariants } from "@/components/ui/button";
+import { getCatalogStats, getTrackOverviews } from "@/lib/catalog";
+import { buildPageMetadata } from "@/lib/seo";
+import { formatWhatsNewDate, getWhatsNewOverview } from "@/lib/whats-new";
 import { cn, REPO_URL } from "@/lib/utils";
-import { getContributorsOverview } from "@/lib/contributors";
 
 export const dynamic = "force-static";
 
-const publicationRules = [
-  {
-    title: "Публикуй материал в нужный трек",
-    description: "Размещай файл в соответствующем разделе документации и соблюдай структуру текущего трека."
-  },
-  {
-    title: "Соблюдай единый формат",
-    description: "Используй понятную структуру: цель, шаги решения, код, результат и краткие выводы."
-  },
-  {
-    title: "Оформляй кодовые примеры",
-    description: "Добавляй язык в код-блоки и оставляй только воспроизводимые, проверенные фрагменты."
-  },
-  {
-    title: "Фиксируй контекст и источники",
-    description: "Если материал опирается на внешние источники, обязательно оставляй ссылки и пояснения."
-  },
-  {
-    title: "Проверяй изменения перед PR",
-    description: "Перед публикацией запускай `npm run lint` и `npm run typecheck`, чтобы не ломать сборку."
-  }
-];
-
-const pullRequestLinks = [
-  {
-    title: "Создать Pull Request",
-    href: `${REPO_URL}/compare?expand=1`,
-    description: "Откроет форму сравнения веток и создания PR для публикации."
-  },
-  {
-    title: "Все Pull Request",
-    href: `${REPO_URL}/pulls`,
-    description: "Список открытых и закрытых PR по проекту."
-  },
-  {
-    title: "Открытые Pull Request",
-    href: `${REPO_URL}/pulls?q=is%3Apr+is%3Aopen`,
-    description: "Быстрый фильтр для проверки, что уже находится на ревью."
-  }
-];
+export const metadata: Metadata = buildPageMetadata({
+  title: "Учебные материалы МИРЭА",
+  description: "Практики, разборы, ноутбуки и код по IT-дисциплинам МИРЭА — в едином каталоге с полнотекстовым поиском.",
+  pathname: "/"
+});
 
 export default function HomePage() {
-  const { authors, productTeam, contentManagers, devTeam } = getContributorsOverview();
+  const tracks = getTrackOverviews();
+  const populatedTracks = tracks.filter((track) => track.materialsCount > 0);
+  const stats = getCatalogStats();
+  const recentMaterials = getWhatsNewOverview().materials;
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] px-4 pb-20 pt-14 sm:px-6 lg:px-8">
-      <section className="relative overflow-hidden rounded-3xl border border-border/70 bg-card/65 px-6 py-14 sm:px-10">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-foreground/10 blur-3xl" />
+    <div className="mx-auto w-full max-w-[1440px] px-4 pb-20 pt-8 sm:px-6 sm:pt-12 lg:px-8">
+      <section className="relative overflow-hidden rounded-3xl border border-border/70 bg-card/70 px-6 py-12 sm:px-10 sm:py-16 lg:px-14">
+        <div className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-primary/10 blur-3xl" />
+        <div className="relative max-w-5xl">
+          <p className="inline-flex items-center gap-2 rounded-full border border-border bg-background/75 px-3 py-1 text-xs text-muted-foreground"><BookOpenText className="size-3.5" />Открытая база знаний для студентов МИРЭА</p>
+          <h1 className="mt-5 max-w-4xl text-balance text-4xl font-semibold tracking-tight sm:text-6xl">Учебные материалы МИРЭА без хаоса в файлах и репозиториях</h1>
+          <p className="mt-5 max-w-3xl text-pretty text-base leading-7 text-muted-foreground sm:text-lg">Практики, разборы, ноутбуки и код по IT-дисциплинам — в едином каталоге с полнотекстовым поиском.</p>
 
-        <div className="relative mx-auto max-w-4xl">
-          <p className="inline-flex animate-fade-up items-center gap-2 rounded-full border border-border/80 bg-background/70 px-3 py-1 text-xs text-muted-foreground">
-            <Brain className="size-3.5" />
-            Центр документации StackMIREA
-          </p>
+          <HeroSearch />
 
-          <h1
-            className="mt-5 text-balance text-4xl font-semibold tracking-tight text-foreground opacity-0 sm:text-6xl"
-            style={{ animation: "fade-up 720ms ease-out forwards", animationDelay: "120ms" }}
-          >
-            Практики и ноутбуки
-            <br />
-            в едином формате docs
-          </h1>
-
-          <p
-            className="mt-6 max-w-3xl text-pretty text-base leading-7 text-muted-foreground opacity-0 sm:text-lg"
-            style={{ animation: "fade-up 720ms ease-out forwards", animationDelay: "220ms" }}
-          >
-            Учебные материалы StackMIREA по ключевым IT-дисциплинам. Каждая страница оформлена как техническая
-            документация с кодом, разбором и привязкой к исходникам.
-          </p>
-
-          <div
-            className="mt-8 flex flex-col gap-3 opacity-0 sm:flex-row"
-            style={{ animation: "fade-up 720ms ease-out forwards", animationDelay: "320ms" }}
-          >
-            <Link href="/docs" className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}>
-              Открыть документацию
-              <ArrowRight className="size-4" />
-            </Link>
-            <Link
-              href="/ask"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full border-border/80 bg-background/70 sm:w-auto")}
-            >
-              <BrainCircuit className="size-4" />
-              Спроси StackMIREA
-            </Link>
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <SearchLauncher className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}><Search className="size-4" />Найти материал</SearchLauncher>
+            <Link href="/docs" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full bg-background/70 sm:w-auto")}>Открыть каталог <ArrowRight className="size-4" /></Link>
+            <Link href="/contribute" className="inline-flex min-h-11 items-center justify-center px-3 text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:justify-start">Как добавить материал →</Link>
           </div>
         </div>
       </section>
 
-      <section className="mt-10 rounded-3xl border border-border/70 bg-card/70 p-6 sm:p-8">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-center">
-          <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/70 px-3 py-1 text-xs text-muted-foreground">
-              <BrainCircuit className="size-3.5" />
-              Бета семантического поиска
-            </p>
-            <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">Новая навигация по материалам</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
-              Есть вопрос? Можешь найти ответы на него в ИИ-поиске. 
-              Например: `где есть KNN`, `покажи материалы по pandas`, `сравни MVC и OOP`.
-            </p>
-          </div>
-
-          <Link href="/ask" className={cn(buttonVariants({ size: "lg" }), "w-full rounded-2xl lg:w-auto")}>
-            Открыть &quot;Спроси StackMIREA&quot;
-            <ArrowRight className="size-4" />
-          </Link>
-        </div>
+      <section aria-label="Статистика платформы" className="grid grid-cols-2 border-x border-b border-border/70 bg-card/40 sm:grid-cols-4">
+        <div className="border-b border-r border-border/70 p-4 sm:border-b-0 sm:p-5"><strong className="block text-xl font-semibold">{stats.materialsCount}</strong><span className="text-xs text-muted-foreground sm:text-sm">материалов</span></div>
+        <div className="border-b border-border/70 p-4 sm:border-b-0 sm:border-r sm:p-5"><strong className="block text-xl font-semibold">{stats.populatedTracksCount}</strong><span className="text-xs text-muted-foreground sm:text-sm">направлений</span></div>
+        <div className="border-r border-border/70 p-4 sm:p-5"><strong className="block text-sm font-semibold sm:text-base">Полнотекстовый</strong><span className="text-xs text-muted-foreground sm:text-sm">поиск по содержимому</span></div>
+        <div className="p-4 sm:p-5"><strong className="block text-sm font-semibold sm:text-base">Open Source</strong><span className="text-xs text-muted-foreground sm:text-sm">открытый проект</span></div>
       </section>
 
-      <WhatsNewSection />
-
-      <ContributorsSection
-        authors={authors}
-        productTeam={productTeam}
-        contentManagers={contentManagers}
-        devTeam={devTeam}
-        title="Авторы и команды"
-        description="Здесь собрали авторов публикаций и команды, которые развивают StackMIREA как продукт, контентную платформу и инженерный проект."
-        className="mt-10 rounded-3xl border border-border/70 bg-card/70 p-6 sm:p-8"
-        sectionId="contributors"
-      />
-
-      <section className="mt-10 grid gap-4 lg:grid-cols-2">
-        <article className="rounded-2xl border border-border/70 bg-card/70 p-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/70 px-3 py-1 text-xs text-muted-foreground">
-            <ListChecks className="size-3.5" />
-            Правила публикации
-          </div>
-          <h2 className="mt-4 text-2xl font-semibold tracking-tight">Как публиковать материалы в StackMIREA</h2>
-          <ol className="mt-5 space-y-4">
-            {publicationRules.map((rule, index) => (
-              <li key={rule.title} className="flex gap-3 rounded-xl border border-border/70 bg-background/60 p-4">
-                <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                  {index + 1}
-                </span>
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground">{rule.title}</h3>
-                  <p className="mt-1 text-sm leading-6 text-muted-foreground">{rule.description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </article>
-
-        <article className="rounded-2xl border border-border/70 bg-card/70 p-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/70 px-3 py-1 text-xs text-muted-foreground">
-            <GitPullRequest className="size-3.5" />
-            Публикация через PR
-          </div>
-          <h2 className="mt-4 text-2xl font-semibold tracking-tight">Ссылки на Pull Request</h2>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            Для публикации открывай PR с изменениями в документации. В описании укажи, что именно добавлено и в каком
-            треке лежит материал.
-          </p>
-
-          <div className="mt-5 space-y-3">
-            {pullRequestLinks.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                target="_blank"
-                rel="noreferrer"
-                className="group flex items-start justify-between gap-3 rounded-xl border border-border/70 bg-background/60 p-4 transition-colors hover:border-primary/40"
-              >
-                <span>
-                  <span className="block text-sm font-semibold text-foreground">{item.title}</span>
-                  <span className="mt-1 block text-sm leading-6 text-muted-foreground">{item.description}</span>
-                </span>
-                <ExternalLink className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
-              </a>
-            ))}
-          </div>
-        </article>
+      <section className="mt-16" aria-labelledby="directions-title">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-sm font-medium text-primary">Основные направления</p><h2 id="directions-title" className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Начните с дисциплины</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Здесь показаны только направления с опубликованными материалами.</p></div><Link href="/docs" className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-primary">Весь каталог <ArrowRight className="size-4" /></Link></div>
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">{populatedTracks.map((track) => <TrackCard key={track.id} track={track} compact />)}</div>
       </section>
+
+      <section className="mt-16" aria-labelledby="recent-title">
+        <div className="flex items-end justify-between gap-4"><div><p className="text-sm font-medium text-primary">Новое и обновлённое</p><h2 id="recent-title" className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Последние материалы</h2></div><Sparkles className="size-6 text-muted-foreground" /></div>
+        {recentMaterials.length ? <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{recentMaterials.map((material) => <MaterialCard key={material.href} title={material.title} href={material.href} description={material.description} sectionTitle={material.sectionTitle} typeLabel={material.typeLabel} estimatedMinutes={material.estimatedMinutes} dateLabel={formatWhatsNewDate(material.updatedAt ?? material.createdAt)} badge={material.isNew ? "Новый" : "Обновлено"} />)}</div> : <p className="mt-6 rounded-2xl border border-dashed border-border p-6 text-sm text-muted-foreground">История изменений недоступна в этой сборке. Все опубликованные материалы остаются доступны в каталоге.</p>}
+      </section>
+
+      <section className="mt-16 grid gap-5 lg:grid-cols-2">
+        <article className="rounded-3xl border border-border/70 bg-card/65 p-6 sm:p-8"><p className="inline-flex items-center gap-2 text-sm font-medium text-primary"><Search className="size-4" />Поиск и StackMIREA Ask</p><h2 className="mt-3 text-2xl font-semibold tracking-tight">Ищите страницу или задайте вопрос</h2><p className="mt-3 text-sm leading-7 text-muted-foreground">Глобальный поиск быстро находит конкретную тему. Ask помогает сформулировать запрос естественным языком и показывает подходящие фрагменты материалов.</p><div className="mt-6 flex flex-wrap gap-3"><SearchLauncher className={buttonVariants()}>Открыть поиск</SearchLauncher><Link href="/ask" className={buttonVariants({ variant: "outline" })}>Как работает Ask</Link></div></article>
+        <article className="rounded-3xl border border-border/70 bg-card/65 p-6 sm:p-8"><p className="inline-flex items-center gap-2 text-sm font-medium text-primary"><GitPullRequest className="size-4" />Есть материал?</p><h2 className="mt-3 text-2xl font-semibold tracking-tight">Помогите StackMIREA стать полезнее</h2><p className="mt-3 text-sm leading-7 text-muted-foreground">Добавьте практику, исправьте неточность или предложите новое направление. На отдельной странице собраны точные шаги и команды проекта.</p><Link href="/contribute" className={cn(buttonVariants({ variant: "outline" }), "mt-6")}>Добавить материал <ArrowRight className="size-4" /></Link></article>
+      </section>
+
+      <section className="mt-5 flex flex-col gap-5 rounded-3xl border border-border/70 bg-foreground p-6 text-background sm:flex-row sm:items-center sm:justify-between sm:p-8"><div><p className="inline-flex items-center gap-2 text-sm font-medium text-background/70"><Github className="size-4" />Открытый проект</p><h2 className="mt-2 text-2xl font-semibold tracking-tight">Код, материалы и развитие — на GitHub</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-background/70">Изучайте архитектуру, открывайте issues и отправляйте Pull Request.</p></div><Link href={REPO_URL} target="_blank" rel="noreferrer" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-background px-5 text-sm font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background">Открыть GitHub <ArrowRight className="size-4" /></Link></section>
     </div>
   );
 }
