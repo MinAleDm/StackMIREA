@@ -5,14 +5,14 @@ import type { ReactNode } from "react";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { DEFAULT_ROBOTS, SITE_DESCRIPTION, SITE_NAME, socialImage } from "@/lib/seo";
-import { BASE_PATH, SITE_ORIGIN } from "@/lib/utils";
+import { BASE_PATH, SITE_ORIGIN, withBasePath } from "@/lib/utils";
 
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${SITE_ORIGIN}${BASE_PATH}/`),
   title: {
-    default: `${SITE_NAME} Документация`,
+    default: `Учебные материалы МИРЭА | ${SITE_NAME}`,
     template: `%s | ${SITE_NAME}`
   },
   description: SITE_DESCRIPTION,
@@ -20,16 +20,16 @@ export const metadata: Metadata = {
     canonical: "/"
   },
   icons: {
-    icon: "favicon.svg",
-    shortcut: "favicon.svg",
-    apple: "favicon.png"
+    icon: withBasePath("/favicon.svg"),
+    shortcut: withBasePath("/favicon.svg"),
+    apple: withBasePath("/favicon.png")
   },
-  keywords: ["Next.js docs", "documentation platform", "python", "ai", "bigdata", "java", "algorithms", "mdx", "shiki"],
+  keywords: ["МИРЭА", "учебные материалы", "практики", "Python", "AI", "Big Data", "Java", "алгоритмы"],
   robots: DEFAULT_ROBOTS,
   openGraph: {
     type: "website",
     url: "/",
-    title: `${SITE_NAME} Документация`,
+    title: `Учебные материалы МИРЭА | ${SITE_NAME}`,
     description: SITE_DESCRIPTION,
     images: [
       {
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} Документация`,
+    title: `Учебные материалы МИРЭА | ${SITE_NAME}`,
     description: SITE_DESCRIPTION,
     images: [socialImage]
   }

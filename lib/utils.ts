@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 
 export const SITE_NAME = "StackMIREA";
 export const SITE_DESCRIPTION =
-  "Production-grade documentation platform for Python, AI, BigData, Java and algorithms practices.";
+  "Открытая база учебных практик, разборов, ноутбуков и кода по IT-дисциплинам РТУ МИРЭА.";
 export const REPO_OWNER = "minkinad";
 export const REPO_NAME = "StackMIREA";
 export const DEFAULT_BRANCH = "main";
